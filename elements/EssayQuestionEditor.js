@@ -162,3 +162,15 @@ export default class EssayQuestionEditor
         );
     }
 }
+const styles = StyleSheet.create({
+    textAreaContainer: {
+        borderColor: 'lightgrey',
+        borderWidth: 1,
+        padding: 5,
+        margin: 10
+    },
+    textArea: {
+        height: 150,
+        justifyContent: "flex-start"
+    }
+});

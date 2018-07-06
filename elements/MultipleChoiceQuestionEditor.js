@@ -1,29 +1,29 @@
-
 import React from 'react';
-import {ScrollView, StyleSheet} from 'react-native';
+import {ScrollView, StyleSheet, TextInput} from 'react-native';
 import {FormLabel, FormInput, FormValidationMessage} from 'react-native-elements';
-import {Button, CheckBox, Text} from 'react-native-elements';
-import CustomMultiPicker from "react-native-multiple-select-list";
+import {Button, Text} from 'react-native-elements';
+import CustomMultiPicker from 'react-native-multiple-select-list';
 import QuestionServiceClient from "../services/QuestionServiceClient";
 
 
-export default class TrueFalseQuestionEditor
+export default class MultipleChoiceQuestionEditor
     extends React.Component {
 
-    static navigationOptions = {title: 'True or False'};
+    static navigationOptions = {title: 'Multiple Choice'};
 
     constructor(props) {
         super(props);
 
         this.state = {
-            questionId: 0,
             examId: 0,
+            questionId: 0,
             title: '',
             description: '',
+            choices: '',
             points: 0,
-            isTrue: true,
+            correctAnswer: '',
             previewMode: false,
-            icon: 'check'
+            icon: 'list'
         };
 
         this.questionServiceClient = QuestionServiceClient.instance();
@@ -35,14 +35,16 @@ export default class TrueFalseQuestionEditor
         const title = this.props.navigation.getParam('title', '');
         const description = this.props.navigation.getParam('description', '');
         const points = this.props.navigation.getParam('points', 0);
-        const isTrue = this.props.navigation.getParam('isTrue', true);
+        const choices = this.props.navigation.getParam('choices', '');
+        const correctAnswer = this.props.navigation.getParam('correctAnswer', '');
 
         this.setState({questionId: questionId});
         this.setState({examId: examId});
         this.setState({title: title});
         this.setState({description: description});
         this.setState({points: points});
-        this.setState({isTrue: isTrue});
+        this.setState({choices: choices});
+        this.setState({correctAnswer: correctAnswer});
     }
 
     componentWillUnmount() {
@@ -50,6 +52,8 @@ export default class TrueFalseQuestionEditor
     }
 
     render() {
+        const options = this.state.choices.split('\n');
+
         return (
             <ScrollView>
                 {!this.state.previewMode &&
@@ -72,6 +76,17 @@ export default class TrueFalseQuestionEditor
                         {this.state.description !== '' && ''}
                     </FormValidationMessage>
 
+                    <FormLabel>Choices(one option per line)</FormLabel>
+                    <TextInput style={styles.textAreaContainer}
+                               multiline={true}
+                               onChangeText={(text) => this.setState({choices: text})}>
+                        {this.state.choices}
+                    </TextInput>
+                    <FormValidationMessage>
+                        {this.state.choices === '' && 'Choices are required'}
+                        {this.state.choices !== '' && ''}
+                    </FormValidationMessage>
+
                     <FormLabel>Points</FormLabel>
                     <FormInput onChangeText={(text) => this.setState({points: text.valueOf()})}>
                         {this.state.points}
@@ -81,9 +96,14 @@ export default class TrueFalseQuestionEditor
                         {this.state.points !== 0 && ''}
                     </FormValidationMessage>
 
-                    <CheckBox onPress={() => this.setState({isTrue: !this.state.isTrue})}
-                              checked={this.state.isTrue}
-                              title='The answer is true'/>
+                    <FormLabel>Correct Answer(index of correct answer, e.g. 0)</FormLabel>
+                    <FormInput onChangeText={(text) => this.setState({correctAnswer: text})}>
+                        {this.state.correctAnswer}
+                    </FormInput>
+                    <FormValidationMessage>
+                        {this.state.correctAnswer === '' && 'Correct answer is required'}
+                        {this.state.correctAnswer !== '' && ''}
+                    </FormValidationMessage>
 
                     <Button buttonStyle={{
                         width: 330,
@@ -99,24 +119,26 @@ export default class TrueFalseQuestionEditor
                                     let question = {
                                         'title': this.state.title,
                                         'description': this.state.description,
-                                        'isTrue': this.state.isTrue,
                                         'points': this.state.points,
-                                        'questionType': 'TrueFalse',
+                                        'choices': this.state.choices,
+                                        'correctAnswer': this.state.correctAnswer,
+                                        'questionType': 'Multiple',
                                         'icon': this.state.icon
                                     };
 
-                                    this.questionServiceClient.createTrueFalseQuestion(this.state.examId, question)
+                                    this.questionServiceClient.createMultipleChoiceQuestion(this.state.examId, question)
                                         .then(this.props.navigation.navigate('ExamWidget', {examId: this.state.examId}));
                                 }
                                 else {
                                     let question = {
                                         'title': this.state.title,
                                         'description': this.state.description,
-                                        'isTrue': this.state.isTrue,
                                         'points': this.state.points,
+                                        'choices': this.state.choices,
+                                        'correctAnswer': this.state.correctAnswer
                                     };
 
-                                    this.questionServiceClient.updateTrueFalseQuestion(this.state.questionId, question)
+                                    this.questionServiceClient.updateMultipleChoiceQuestion(this.state.questionId, question)
                                         .then(this.props.navigation.navigate('ExamWidget', {examId: this.state.examId}));
                                 }
                             }}/>
@@ -129,16 +151,16 @@ export default class TrueFalseQuestionEditor
                             buttonStyle={{
                                 width: 330,
                                 height: 40,
-                                marginTop: 1,
-                                margin: 10,
+                                marginTop: 1, margin: 10,
                             }}/>
-                    {this.questionId !== 0 &&
+                    {this.state.questionId !== 0 &&
                     <Button backgroundColor='#FA8072'
                             color='white'
                             title='Delete'
                             onPress={() => {
-                                this.questionServiceClient.deleteTrueFalseQuestion(this.state.questionId)
+                                this.questionServiceClient.deleteMultipleChoiceQuestion(this.state.questionId)
                                     .then(this.props.navigation.navigate('ExamWidget', {examId: this.state.examId}));
+
                             }}
                             buttonStyle={{
                                 width: 330,
@@ -164,16 +186,13 @@ export default class TrueFalseQuestionEditor
                     <Text h4>{this.state.description}</Text>
                     <Text h5>{this.state.points} pts</Text>
                     <CustomMultiPicker
-                        options={{
-                            "123": "True",
-                            "124": "False"
-                        }}
+                        options={Object.assign({}, options)}
                         multiple={false}
                         placeholderTextColor={'#757575'}
-                        returnValue={"label"}
+                        returnValue={"label"} // label or value
                         callback={(res) => {
                             console.log(res)
-                        }}
+                        }} // callback, array of selected items
                         rowBackgroundColor={"#eee"}
                         rowHeight={40}
                         rowRadius={5}
@@ -182,10 +201,9 @@ export default class TrueFalseQuestionEditor
                         selectedIconName={"ios-checkmark-circle-outline"}
                         unselectedIconName={"ios-radio-button-off-outline"}
                         scrollViewHeight={130}
-                        selected={this.state.isTrue ? 'True' : 'False'} // list of options which are selected by default
+                        selected={options[this.state.correctAnswer]} // list of options which are selected by default
                     />
-                </ScrollView>
-                }
+                </ScrollView>}
             </ScrollView>
         );
     }
@@ -200,7 +218,7 @@ const styles = StyleSheet.create({
         margin: 10
     },
     textArea: {
-        height: 150,
+        height: 80,
         justifyContent: "flex-start"
     }
 });

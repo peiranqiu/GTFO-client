@@ -1,29 +1,27 @@
-
 import React from 'react';
-import {ScrollView, StyleSheet} from 'react-native';
+import {ScrollView, StyleSheet, TextInput, View} from 'react-native';
 import {FormLabel, FormInput, FormValidationMessage} from 'react-native-elements';
-import {Button, CheckBox, Text} from 'react-native-elements';
-import CustomMultiPicker from "react-native-multiple-select-list";
+import {Button, Text} from 'react-native-elements';
 import QuestionServiceClient from "../services/QuestionServiceClient";
 
 
-export default class TrueFalseQuestionEditor
+export default class EssayQuestionEditor
     extends React.Component {
 
-    static navigationOptions = {title: 'True or False'};
+    static navigationOptions = {title: 'Fill In Blank'};
 
     constructor(props) {
         super(props);
 
         this.state = {
-            questionId: 0,
             examId: 0,
+            questionId: 0,
             title: '',
             description: '',
+            variables: '',
             points: 0,
-            isTrue: true,
             previewMode: false,
-            icon: 'check'
+            icon: 'code'
         };
 
         this.questionServiceClient = QuestionServiceClient.instance();
@@ -35,14 +33,14 @@ export default class TrueFalseQuestionEditor
         const title = this.props.navigation.getParam('title', '');
         const description = this.props.navigation.getParam('description', '');
         const points = this.props.navigation.getParam('points', 0);
-        const isTrue = this.props.navigation.getParam('isTrue', true);
+        const variables = this.props.navigation.getParam('variables', '');
 
         this.setState({questionId: questionId});
         this.setState({examId: examId});
         this.setState({title: title});
         this.setState({description: description});
         this.setState({points: points});
-        this.setState({isTrue: isTrue});
+        this.setState({variables: variables});
     }
 
     componentWillUnmount() {
@@ -50,6 +48,8 @@ export default class TrueFalseQuestionEditor
     }
 
     render() {
+        const texts = this.state.variables.split('\n');
+
         return (
             <ScrollView>
                 {!this.state.previewMode &&
@@ -72,6 +72,17 @@ export default class TrueFalseQuestionEditor
                         {this.state.description !== '' && ''}
                     </FormValidationMessage>
 
+                    <FormLabel>Variables e.g.(1+1=[two=2])</FormLabel>
+                    <TextInput style={styles.textAreaContainer}
+                               multiline={true}
+                               onChangeText={(text) => this.setState({variables: text})}>
+                        {this.state.variables}
+                    </TextInput>
+                    <FormValidationMessage>
+                        {this.state.variables === '' && 'Variables are required'}
+                        {this.state.variables !== '' && ''}
+                    </FormValidationMessage>
+
                     <FormLabel>Points</FormLabel>
                     <FormInput onChangeText={(text) => this.setState({points: text.valueOf()})}>
                         {this.state.points}
@@ -80,10 +91,6 @@ export default class TrueFalseQuestionEditor
                         {this.state.points === 0 && 'Points is required'}
                         {this.state.points !== 0 && ''}
                     </FormValidationMessage>
-
-                    <CheckBox onPress={() => this.setState({isTrue: !this.state.isTrue})}
-                              checked={this.state.isTrue}
-                              title='The answer is true'/>
 
                     <Button buttonStyle={{
                         width: 330,
@@ -99,24 +106,24 @@ export default class TrueFalseQuestionEditor
                                     let question = {
                                         'title': this.state.title,
                                         'description': this.state.description,
-                                        'isTrue': this.state.isTrue,
                                         'points': this.state.points,
-                                        'questionType': 'TrueFalse',
+                                        'variables': this.state.variables,
+                                        'questionType': 'FillInBlank',
                                         'icon': this.state.icon
                                     };
 
-                                    this.questionServiceClient.createTrueFalseQuestion(this.state.examId, question)
+                                    this.questionServiceClient.createFillInBlanksQuestion(this.state.examId, question)
                                         .then(this.props.navigation.navigate('ExamWidget', {examId: this.state.examId}));
                                 }
                                 else {
                                     let question = {
                                         'title': this.state.title,
                                         'description': this.state.description,
-                                        'isTrue': this.state.isTrue,
                                         'points': this.state.points,
+                                        'variables': this.state.variables
                                     };
 
-                                    this.questionServiceClient.updateTrueFalseQuestion(this.state.questionId, question)
+                                    this.questionServiceClient.updateFillInBlanksQuestion(this.state.questionId, question)
                                         .then(this.props.navigation.navigate('ExamWidget', {examId: this.state.examId}));
                                 }
                             }}/>
@@ -132,12 +139,12 @@ export default class TrueFalseQuestionEditor
                                 marginTop: 1,
                                 margin: 10,
                             }}/>
-                    {this.questionId !== 0 &&
+                    {this.state.questionId !== 0 &&
                     <Button backgroundColor='#FA8072'
                             color='white'
                             title='Delete'
                             onPress={() => {
-                                this.questionServiceClient.deleteTrueFalseQuestion(this.state.questionId)
+                                this.questionServiceClient.deleteFillInBlanksQuestion(this.state.questionId)
                                     .then(this.props.navigation.navigate('ExamWidget', {examId: this.state.examId}));
                             }}
                             buttonStyle={{
@@ -163,36 +170,58 @@ export default class TrueFalseQuestionEditor
                 <ScrollView style={styles.textAreaContainer}>
                     <Text h4>{this.state.description}</Text>
                     <Text h5>{this.state.points} pts</Text>
-                    <CustomMultiPicker
-                        options={{
-                            "123": "True",
-                            "124": "False"
-                        }}
-                        multiple={false}
-                        placeholderTextColor={'#757575'}
-                        returnValue={"label"}
-                        callback={(res) => {
-                            console.log(res)
-                        }}
-                        rowBackgroundColor={"#eee"}
-                        rowHeight={40}
-                        rowRadius={5}
-                        iconColor={"#00a2dd"}
-                        iconSize={30}
-                        selectedIconName={"ios-checkmark-circle-outline"}
-                        unselectedIconName={"ios-radio-button-off-outline"}
-                        scrollViewHeight={130}
-                        selected={this.state.isTrue ? 'True' : 'False'} // list of options which are selected by default
-                    />
-                </ScrollView>
-                }
+                    {texts.map((text, index) => (
+                        parseBlank(text, index)
+                    ))}
+                </ScrollView>}
             </ScrollView>
         );
     }
 }
 
+const parseBlank = (text, index) => {
+    let open = 0;
+    let previousClose = -1;
+    let close = 0;
+    let expressions = [];
+
+    while (text.indexOf('[', previousClose + 1) !== -1) {
+        open = text.indexOf('[', previousClose + 1);
+        close = text.indexOf(']', open);
+        if (open === 0) {
+            expressions.push('[]');
+        }
+        else {
+            expressions.push(text.substring(previousClose + 1, open));
+            expressions.push('[]');
+        }
+        previousClose = close;
+    }
+    if (close !== text.length - 1) {
+
+        expressions.push(text.substring(close + 1, text.length));
+    }
+
+    return (
+        <View style={styles.row} key={index}>
+            {expressions.map((expression, index) => {
+                if (expression === '[]') {
+                    return (<TextInput key={index}
+                                       style={styles.input}/>);
+                }
+                else {
+                    return (<Text h4 key={index}>{expression}</Text>);
+                }
+            })}
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
+    row: {
+        flex: 1,
+        flexDirection: "row"
+    },
     textAreaContainer: {
         borderColor: 'lightgrey',
         borderWidth: 1,
@@ -202,5 +231,11 @@ const styles = StyleSheet.create({
     textArea: {
         height: 150,
         justifyContent: "flex-start"
-    }
+    },
+    input: {
+        height: 40,
+        width: 80,
+        borderColor: 'black',
+        borderWidth: 1
+    },
 });

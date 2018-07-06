@@ -6,7 +6,7 @@ import TextHeadings from './elements/TextHeadings'
 import Icons from './elements/Icons'
 import ExamWidget from './elements/ExamWidget'
 import QuestionTypeChooser from './elements/QuestionTypeChooser'
-import QuestionTypePicker from "./elements/QuestionTypePicker";
+import WidgetTypePicker from "./elements/WidgetTypePicker";
 import TrueFalseQuestionEditor from "./elements/TrueFalseQuestionEditor";
 import {Button} from "react-native-elements";
 import ScreenX from './elements/ScreenX'
@@ -41,7 +41,7 @@ class Home extends React.Component {
                         onPress={() => this.props.navigation.navigate('ScreenB')}/>
                 <TrueFalseQuestionEditor/>
                 <QuestionTypeChooser/>
-                <QuestionTypePicker/>
+                <WidgetTypePicker/>
                 <ExamWidget/>
                 <TextHeadings/>
                 <Icons/>
