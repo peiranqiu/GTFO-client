@@ -67,7 +67,7 @@ export default class WidgetList
                                   key={widget.id}
                                   subtitle={widget.widgetType}
                                   onPress={() => {
-                                      if (widget.widgetType === 'Exam') {
+                                      if (widget.widgetType === 'ExamWidget') {
                                           this.props.navigation.navigate('ExamWidget', {
                                               courseId: this.state.courseId,
                                               moduleId: this.state.moduleId,

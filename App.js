@@ -4,7 +4,7 @@ import {createStackNavigator} from 'react-navigation'
 import FixedHeader from './elements/FixedHeader'
 import TextHeadings from './elements/TextHeadings'
 import Icons from './elements/Icons'
-import Exam from './elements/Exam'
+import ExamWidget from './elements/ExamWidget'
 import QuestionTypeChooser from './elements/QuestionTypeChooser'
 import QuestionTypePicker from "./elements/QuestionTypePicker";
 import TrueFalseQuestionEditor from "./elements/TrueFalseQuestionEditor";
@@ -42,7 +42,7 @@ class Home extends React.Component {
                 <TrueFalseQuestionEditor/>
                 <QuestionTypeChooser/>
                 <QuestionTypePicker/>
-                <Exam/>
+                <ExamWidget/>
                 <TextHeadings/>
                 <Icons/>
             </ScrollView>
