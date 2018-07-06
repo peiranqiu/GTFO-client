@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e820de49-8161-4083-9d7b-1a5d8cf90dd7" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/components/TopicList.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/services/TopicServiceClient.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/LessonList.js" beforeDir="false" afterPath="$PROJECT_DIR$/components/LessonList.js" afterDir="false" />
-    </list>
+    <list default="true" id="e820de49-8161-4083-9d7b-1a5d8cf90dd7" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -88,8 +83,8 @@
       <file leaf-file-name="TopicServiceClient.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/services/TopicServiceClient.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="574">
-              <caret line="74" column="32" lean-forward="true" selection-start-line="74" selection-start-column="32" selection-end-line="74" selection-end-column="32" />
+            <state relative-caret-position="469">
+              <caret line="67" column="53" lean-forward="true" selection-start-line="67" selection-start-column="53" selection-end-line="67" selection-end-column="53" />
             </state>
           </provider>
         </entry>
@@ -223,6 +218,11 @@
             <path>
               <item name="native-app" type="b2602c69:ProjectViewProjectNode" />
               <item name="native-app" type="462c0819:PsiDirectoryNode" />
+              <item name="elements" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="native-app" type="b2602c69:ProjectViewProjectNode" />
+              <item name="native-app" type="462c0819:PsiDirectoryNode" />
               <item name="services" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -277,12 +277,12 @@
       <workItem from="1530664521386" duration="661000" />
       <workItem from="1530809434866" duration="869000" />
       <workItem from="1530810675905" duration="876000" />
-      <workItem from="1530816959020" duration="14214000" />
+      <workItem from="1530816959020" duration="15435000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="16620000" />
+    <option name="totallyTimeSpent" value="17841000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="585" y="22" width="855" height="878" extended-state="0" />
@@ -595,8 +595,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/services/TopicServiceClient.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="574">
-          <caret line="74" column="32" lean-forward="true" selection-start-line="74" selection-start-column="32" selection-end-line="74" selection-end-column="32" />
+        <state relative-caret-position="469">
+          <caret line="67" column="53" lean-forward="true" selection-start-line="67" selection-start-column="53" selection-end-line="67" selection-end-column="53" />
         </state>
       </provider>
     </entry>
