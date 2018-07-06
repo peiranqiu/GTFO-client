@@ -20,6 +20,7 @@ const App = createStackNavigator({
     },
     ModuleList: {screen: ModuleList},
     LessonList: {screen: LessonList},
+    TopicList: {screen: TopicList},
     WidgetList: {screen: WidgetList},
     AddExamComponent,
     ExamWidget,

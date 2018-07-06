@@ -1,13 +1,13 @@
 import React from 'react';
-import LessonServiceClient from "../services/LessonServiceClient";
+import TopicServiceClient from "../services/TopicServiceClient";
 import {ScrollView} from 'react-native';
 import {ListItem} from "react-native-elements";
 
 
-export default class LessonList
+export default class TopicList
     extends React.Component {
 
-    static navigationOptions = {title: 'Lessons'};
+    static navigationOptions = {title: 'Topics'};
 
     constructor(props) {
         super(props);
@@ -15,38 +15,42 @@ export default class LessonList
         this.state = {
             courseId: 0,
             moduleId: 0,
-            lessons: []
+            lessonId: 0,
+            topics: []
         };
 
-        this.lessonServiceClient = LessonServiceClient.instance();
+        this.topicServiceClient = TopicServiceClient.instance();
     }
 
     componentDidMount() {
         const courseId = this.props.navigation.getParam('courseId', 0);
         const moduleId = this.props.navigation.getParam('moduleId', 0);
+        const lessonId = this.props.navigation.getParam('lessonId', 0);
 
         this.setState({courseId: courseId});
         this.setState({moduleId: moduleId});
+        this.setState({lessonId: lessonId});
 
-        this.lessonServiceClient.findAllLessonsForModule(courseId, moduleId)
-            .then((lessons) => {
-                this.setState({lessons: lessons});
+        this.topicServiceClient.findAllTopicsForLesson(courseId, moduleId,lessonId)
+            .then((topics) => {
+                this.setState({topics: topics});
             });
     }
 
     render() {
         return (
             <ScrollView>
-                {this.state.lessons.map((lesson) =>
+                {this.state.topics.map((topic) =>
                     <ListItem
                         onPress={() =>
-                            this.props.navigation.navigate("TopicList", {
+                            this.props.navigation.navigate("WidgetList", {
                                 courseId: this.state.courseId,
                                 moduleId: this.state.moduleId,
-                                lessonId: lesson.id,
+                                lessonId: this.state.lessonId,
+                                topicId: topic.id,
                             })}
-                        title={lesson.title}
-                        key={lesson.id}/>)}
+                        title={topic.title}
+                        key={topic.id}/>)}
             </ScrollView>
         );
     }
