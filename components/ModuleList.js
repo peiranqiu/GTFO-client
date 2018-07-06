@@ -1,7 +1,7 @@
 import React from 'react';
 import ModuleServiceClient from "../services/ModuleServiceClient";
 import {ScrollView} from "react-native";
-import {ListItem, Text} from "react-native-elements";
+import {ListItem} from "react-native-elements";
 
 
 export default class ModuleList

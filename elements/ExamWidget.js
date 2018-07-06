@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView, View} from "react-native";
+import {ScrollView} from "react-native";
 import {FormLabel, FormInput, FormValidationMessage} from "react-native-elements";
 import {Button} from "react-native-elements";
 import QuestionTypeButtonGroupChooser from "./QuestionTypeChooser";

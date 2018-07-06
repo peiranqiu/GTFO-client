@@ -16,8 +16,7 @@ export default class AddExamComponent
         this.state = {
             lessonId: 0,
             title: '',
-            description: '',
-            // points: 0
+            description: ''
         };
 
         this.widgetServiceClient = WidgetServiceClient.instance();
@@ -53,15 +52,6 @@ export default class AddExamComponent
                     {this.state.description === '' && 'Description is required'}
                     {this.state.description !== '' && ''}
                 </FormValidationMessage>
-
-                {/*<FormLabel>Points</FormLabel>*/}
-                {/*<FormInput onChangeText={(text) => {*/}
-                {/*this.setState({points: text.valueOf()});*/}
-                {/*}}>{this.state.points}</FormInput>*/}
-                {/*<FormValidationMessage>*/}
-                {/*{this.state.points === 0 && 'Points is required'}*/}
-                {/*{this.state.points !== 0 && ''}*/}
-                {/*</FormValidationMessage>*/}
 
                 <Button backgroundColor="#4c73c4"
                         title="Create Exam"
