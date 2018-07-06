@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View, StatusBar, ScrollView} from 'react-native';
+import {StyleSheet, Text, View, StatusBar, ScrollView, Alert} from 'react-native';
 import {createStackNavigator} from 'react-navigation'
 import FixedHeader from './elements/FixedHeader'
 import TextHeadings from './elements/TextHeadings'
@@ -10,6 +10,13 @@ import QuestionTypePicker from "./elements/QuestionTypePicker";
 import TrueFalseQuestionEditor from "./elements/TrueFalseQuestionEditor";
 import {Button} from "react-native-elements";
 import ScreenX from './elements/ScreenX'
+import QuestionListContainer from "./elements/QuestionListContainer";
+
+let questions = [
+    {id:1, label:'Question 1'},
+    {id:2, label:'Question 2'},
+    {id:3, label:'Question 3'},
+]
 
 class Home extends React.Component {
     static navigationOptions = {title: 'Home'};
@@ -22,7 +29,9 @@ class Home extends React.Component {
         return (
             <ScrollView>
                 <StatusBar
-                    barStyle="light-content"/>
+                    hidden={true}/>
+                <QuestionListContainer questions={questions}
+                addQuestion={()=> Alert.alert('add question')}/>
                 <FixedHeader/>
                 <Button title="Go to Screen X"
                         onPress={() => this.props.navigation.navigate('ScreenX', {parameter: 'Parameter Value'})}/>
