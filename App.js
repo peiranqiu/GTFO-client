@@ -5,6 +5,7 @@ import CourseList from "./components/CourseList";
 import ModuleList from "./components/ModuleList";
 import LessonList from "./components/LessonList";
 import WidgetList from "./components/WidgetList";
+import TopicList from "./components/WidgetList";
 import AddExamComponent from "./elements/AddExamComponent";
 import AssignmentWidget from "./elements/AssignmentWidget";
 import MultipleChoiceQuestionEditor from "./elements/MultipleChoiceQuestionEditor";

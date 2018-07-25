@@ -1,125 +1,120 @@
 let _singleton = Symbol();
 
-const EXAM_API_URL = 'https://myapp-peiran.herokuapp.com/api/exam';
-const MULTI_API_URL = 'https://myapp-peiran.herokuapp.com/api/multi';
-const TRUEFALSE_API_URL = 'https://myapp-peiran.herokuapp.com/api/truefalse';
-const ESSAY_API_URL = 'https://myapp-peiran.herokuapp.com/api/essay';
-const BLANK_API_URL = 'https://myapp-peiran.herokuapp.com/api/blanks';
+import {QUESTION_API_URL, DELETE_QUESTION_API_URL, ALL_QUESTION_API_URL} from '../constants'
 
+
+const QUESTION_API_URL = 'http://localhost:8080/api/exam/EID/QTYPE';
+const DELETE_QUESTION_API_URL = 'http://localhost:8080/api/question/QID';
+const ALL_QUESTION_API_URL = 'http://localhost:8080/api/exam/EID/question';
 
 export default class QuestionServiceClient {
     constructor(singletonToken) {
-        if (_singleton !== singletonToken) {
-            throw new Error('Singleton question service.');
-        }
+        if (_singleton !== singletonToken)
+            throw new Error('Cannot instantiate directly.');
     }
 
-    static instance() {
-        if (!this[_singleton]) {
+    static get instance() {
+        if (!this[_singleton])
             this[_singleton] = new QuestionServiceClient(_singleton);
-        }
-        return this[_singleton];
+        return this[_singleton]
     }
 
     findAllQuestionsForExam(examId) {
-        return fetch(EXAM_API_URL + '/' + examId + '/question')
-            .then((response) => (response.json()));
+        return fetch(ALL_QUESTION_API_URL.replace('EID',examId))
+            .then(response => (response.json()));
     }
 
-    createMultipleChoiceQuestion(examId, question) {
-        return fetch(EXAM_API_URL + '/' + examId + '/choice', {
-            method: 'post',
-            body: JSON.stringify(question),
-            headers: {
-                'content-type': 'application/json'
-            }});
-    }
-
-    updateMultipleChoiceQuestion(questionId, question) {
-        return fetch(MULTI_API_URL + '/' + questionId, {
+    updateMultipleChoiceQuestionForExam(examId, questionId, question) {
+        return fetch(QUESTION_API_URL
+            .replace('EID', examId)
+            .replace('QTYPE', 'choice') + '/' + questionId, {
             method: 'put',
             body: JSON.stringify(question),
             headers: {
                 'content-type': 'application/json'
-            }});
+            }
+        }).then(response => (response.json()));
     }
 
-    deleteMultipleChoiceQuestion(questionId) {
-        return fetch(MULTI_API_URL + '/' + questionId, {
-            method: 'delete'
-        });
-    }
-
-
-    createTrueFalseQuestion(examId, question) {
-        return fetch(EXAM_API_URL + '/' + examId + '/truefalse', {
-            method: 'post',
-            body: JSON.stringify(question),
-            headers: {
-                'content-type': 'application/json'
-            }});
-    }
-
-    updateTrueFalseQuestion(questionId, question) {
-        return fetch(TRUEFALSE_API_URL + '/' + questionId, {
+    updateEssayQuestionForExam(examId, questionId, question) {
+        return fetch(QUESTION_API_URL
+            .replace('EID', examId)
+            .replace('QTYPE', 'essay') + '/' + questionId, {
             method: 'put',
             body: JSON.stringify(question),
             headers: {
                 'content-type': 'application/json'
-            }});
+            }
+        }).then(response => (response.json()));
     }
 
-    deleteTrueFalseQuestion(questionId) {
-        return fetch(TRUEFALSE_API_URL + '/' + questionId, {
+    updateFillInTheBlankQuestionForExam(examId, questionId, question) {
+        return fetch(QUESTION_API_URL
+            .replace('EID', examId)
+            .replace('QTYPE', 'blanks') + '/' + questionId, {
+            method: 'put',
+            body: JSON.stringify(question),
+            headers: {
+                'content-type': 'application/json'
+            }
+        }).then(response => (response.json()));
+    }
+
+    updateTrueFalseQuestionForExam(examId, questionId, question) {
+        return fetch(QUESTION_API_URL
+            .replace('EID', examId)
+            .replace('QTYPE', 'truefalse') + '/' + questionId, {
+            method: 'put',
+            body: JSON.stringify(question),
+            headers: {
+                'content-type': 'application/json'
+            }
+        }).then(response => (response.json()));
+    }
+
+    deleteQuestionById(questionId) {
+        return fetch(DELETE_QUESTION_API_URL.replace('QID', questionId), {
             method: 'delete'
         });
+    }
+
+    createTrueFalseQuestionForExam(examId, question) {
+        return fetch(QUESTION_API_URL.replace('EID', examId).replace('QTYPE', 'truefalse'), {
+            method: 'post',
+            body: JSON.stringify(question),
+            headers: {
+                'content-type': 'application/json'
+            }
+        }).then(response => (response.json()));
+    }
+
+    createMultipleChoiceQuestionForExam(examId, question) {
+        return fetch(QUESTION_API_URL.replace('EID', examId).replace('QTYPE', 'choice'), {
+            method: 'post',
+            body: JSON.stringify(question),
+            headers: {
+                'content-type': 'application/json'
+            }
+        }).then(response => (response.json()));
     }
 
     createEssayQuestion(examId, question) {
-        return fetch(EXAM_API_URL + '/' + examId + '/essay', {
+        return fetch(QUESTION_API_URL.replace('EID', examId).replace('QTYPE', 'essay'), {
             method: 'post',
             body: JSON.stringify(question),
             headers: {
                 'content-type': 'application/json'
-            }});
+            }
+        }).then(response => (response.json()));
     }
 
-    updateEssayQuestion(questionId, question) {
-        return fetch(ESSAY_API_URL + '/' + questionId, {
-            method: 'put',
-            body: JSON.stringify(question),
-            headers: {
-                'content-type': 'application/json'
-            }});
-    }
-
-    deleteEssayQuestion(questionId) {
-        return fetch(ESSAY_API_URL + '/' + questionId, {
-            method: 'delete'
-        });
-    }
-
-    createFillInBlanksQuestion(examId, question) {
-        return fetch(EXAM_API_URL + '/' + examId + '/blanks', {
+    createFillInTheBlankQuestion(examId, question) {
+        return fetch(QUESTION_API_URL.replace('EID', examId).replace('QTYPE', 'blanks'), {
             method: 'post',
             body: JSON.stringify(question),
             headers: {
                 'content-type': 'application/json'
-            }});
-    }
-
-    updateFillInBlanksQuestion(questionId, question) {
-        return fetch(BLANK_API_URL + '/' + questionId, {
-            method: 'put',
-            body: JSON.stringify(question),
-            headers: {
-                'content-type': 'application/json'
-            }});
-    }
-
-    deleteFillInBlanksQuestion(questionId) {
-        return fetch(BLANK_API_URL + '/' + questionId, {
-            method: 'delete'
-        });
+            }
+        }).then(response => (response.json()));
     }
 }

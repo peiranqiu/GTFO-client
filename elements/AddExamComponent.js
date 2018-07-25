@@ -2,7 +2,7 @@ import React from 'react';
 import {ScrollView} from 'react-native';
 import {Button} from 'react-native-elements';
 import {FormLabel, FormInput, FormValidationMessage} from 'react-native-elements';
-import WidgetServiceClient from "../services/WidgetServiceClient";
+import ExamServiceClient from "../services/ExamServiceClient";
 
 
 export default class AddExamComponent
@@ -19,7 +19,7 @@ export default class AddExamComponent
             description: ''
         };
 
-        this.widgetServiceClient = WidgetServiceClient.instance();
+        this.widgetServiceClient = ExamServiceClient.instance();
     }
 
     componentDidMount() {

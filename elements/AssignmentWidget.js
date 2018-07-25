@@ -2,7 +2,7 @@ import React from 'react';
 import {ScrollView, StyleSheet, TextInput} from "react-native";
 import {FormLabel, FormInput, FormValidationMessage} from 'react-native-elements';
 import {Button, Text} from 'react-native-elements';
-import WidgetServiceClient from "../services/WidgetServiceClient";
+import ExamServiceClient from "../services/ExamServiceClient";
 
 
 export default class AssignmentWidget
@@ -23,7 +23,7 @@ export default class AssignmentWidget
             previewMode: false
         };
 
-        this.widgetServiceClient = WidgetServiceClient.instance();
+        this.widgetServiceClient = ExamServiceClient.instance();
     }
 
     componentDidMount() {

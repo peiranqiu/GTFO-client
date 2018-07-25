@@ -148,11 +148,11 @@ export default class EssayQuestionEditor
                         }}/>
 
                 {this.state.previewMode &&
-                <ScrollView style={styles.textAreaContainer}>
+                <ScrollView style={{borderColor: 'lightgrey',borderWidth: 1,padding: 5,margin: 10}}>
                     <Text h4>{this.state.description}</Text>
                     <Text h5>{this.state.points} pts</Text>
                     <TextInput
-                        style={styles.textArea}
+                        style={{height: 150,justifyContent: "flex-start"}}
                         placeholder={"Type your answer here."}
                         placeholderTextColor={"grey"}
                         numberOfLines={10}
@@ -162,15 +162,3 @@ export default class EssayQuestionEditor
         );
     }
 }
-const styles = StyleSheet.create({
-    textAreaContainer: {
-        borderColor: 'lightgrey',
-        borderWidth: 1,
-        padding: 5,
-        margin: 10
-    },
-    textArea: {
-        height: 150,
-        justifyContent: "flex-start"
-    }
-});

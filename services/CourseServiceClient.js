@@ -1,70 +1,46 @@
 let _singleton = Symbol();
 
-const COURSE_API_URL = 'https://myapp-peiran.herokuapp.com/api/course';
+const COURSE_API_URL = 'http://localhost:8080/api/course';
+const MODULE_API_URL = 'http://localhost:8080/api/course/CID/module';
+const LESSON_API_URL = 'http://localhost:8080/api/course/CID/module/MID/lesson';
+const TOPIC_API_URL = 'http://localhost:8080/api/course/CID/module/MID/lesson/LID/topic';
 
 export default class CourseServiceClient {
     constructor(singletonToken) {
-        if (_singleton !== singletonToken) {
-            throw new Error('Singleton course service.');
-        }
+        if (_singleton !== singletonToken)
+            throw new Error('Cannot instantiate directly.');
     }
 
-    static instance() {
-        if(!this[_singleton]) {
+    static get instance() {
+        if (!this[_singleton])
             this[_singleton] = new CourseServiceClient(_singleton);
-        }
-        return this[_singleton];
+        return this[_singleton]
     }
 
-    createCourse(course) {
-        return fetch(COURSE_API_URL, {
-            method: 'post',
-            body: JSON.stringify(course),
-            headers: {
-                'content-type': 'application/json'
-            }
-        })
-            .then(function(response) {
-                return response.json();
-            });
+    finaAllTopicsForLesson(courseId, moduleId, lessonId) {
+        return fetch(TOPIC_API_URL
+            .replace('CID', courseId)
+            .replace('MID', moduleId)
+            .replace('LID', lessonId))
+            .then(response => (response.json()));
     }
 
-    deleteCourse(courseId) {
-        return fetch(COURSE_API_URL + '/' + courseId, {
-            method: 'delete'
-        })
-            .then(function(response) {
-                return response;
-            });
+    finaAllLessonsForModule(courseId, moduleId) {
+        return fetch(LESSON_API_URL
+            .replace('CID', courseId)
+            .replace('MID', moduleId))
+            .then(response => (response.json()));
     }
 
     findAllCourses() {
         return fetch(COURSE_API_URL)
-            .then(function(response) {
-                return response.json();
-            });
+            .then(response => (response.json()));
     }
 
-    findCourseById(courseId) {
-        return fetch(COURSE_API_URL + '/' + courseId)
-            .then(function(response) {
-                return response.json();
-            })
-    }
+    findAllModulesForCourse(courseId) {
+        return fetch(MODULE_API_URL
+            .replace('CID', courseId))
+            .then(response => (response.json()))
 
-    updateCourse(course) {
-        return fetch(COURSE_API_URL, {
-            method: 'put',
-            body: JSON.stringify(course),
-            headers: {
-                'content-type': 'application/json'
-            }
-        })
-            .then(function(response) {
-                if (response.status === 409) {
-                    return null;
-                }
-                return response.json();
-            });
     }
 }

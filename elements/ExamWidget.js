@@ -4,7 +4,7 @@ import {FormLabel, FormInput, FormValidationMessage} from "react-native-elements
 import {Button} from "react-native-elements";
 import QuestionTypeButtonGroupChooser from "./QuestionTypeChooser";
 import QuestionList from "../components/QuestionList";
-import WidgetServiceClient from "../services/WidgetServiceClient";
+import ExamServiceClient from "../services/ExamServiceClient";
 import QuestionServiceClient from "../services/QuestionServiceClient";
 
 
@@ -26,7 +26,7 @@ export default class ExamWidget
 
         this.refresh = this.refresh.bind(this);
 
-        this.widgetServiceClient = WidgetServiceClient.instance();
+        this.widgetServiceClient = ExamServiceClient.instance();
         this.questionServiceClient = QuestionServiceClient.instance();
     }
 

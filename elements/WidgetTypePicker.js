@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Picker} from 'react-native';
 import {Button} from 'react-native-elements';
-import WidgetServiceClient from "../services/WidgetServiceClient";
+import ExamServiceClient from "../services/ExamServiceClient";
 
 
 export default class WidgetTypePicker
@@ -15,7 +15,7 @@ export default class WidgetTypePicker
             lessonId: 0
         };
 
-        this.widgetServiceClient = WidgetServiceClient.instance();
+        this.widgetServiceClient = ExamServiceClient.instance();
     }
 
     componentDidMount() {

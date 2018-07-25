@@ -2,7 +2,7 @@ import React from 'react';
 import {ScrollView} from 'react-native';
 import {ListItem} from 'react-native-elements';
 import WidgetTypePicker from '../elements/WidgetTypePicker';
-import WidgetServiceClient from "../services/WidgetServiceClient";
+import ExamServiceClient from "../services/ExamServiceClient";
 
 
 export default class WidgetList
@@ -20,7 +20,7 @@ export default class WidgetList
             widgets: []
         };
 
-        this.widgetServiceClient = WidgetServiceClient.instance();
+        this.widgetServiceClient = ExamServiceClient.instance();
     }
 
     componentDidMount() {
