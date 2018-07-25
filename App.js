@@ -1,5 +1,5 @@
 import React from 'react';import {createStackNavigator} from 'react-navigation'
-import ExamWidget from './elements/ExamWidget'
+import Exam from './elements/Exam'
 import TrueFalseQuestionEditor from "./elements/TrueFalseQuestionEditor";
 import CourseList from "./components/CourseList";
 import ModuleList from "./components/ModuleList";
@@ -7,10 +7,10 @@ import LessonList from "./components/LessonList";
 import WidgetList from "./components/WidgetList";
 import TopicList from "./components/WidgetList";
 import AddExamComponent from "./elements/AddExamComponent";
-import AssignmentWidget from "./elements/AssignmentWidget";
+import Assignment from "./elements/Assignment";
 import MultipleChoiceQuestionEditor from "./elements/MultipleChoiceQuestionEditor";
 import EssayQuestionEditor from "./elements/EssayQuestionEditor";
-import FillInBlankQuestionEditor from "./elements/FillInBlankQuestionEditor";
+import FillInBlankQuestionEditor from "./elements/FillInTheBlankQuestionEditor";
 
 const App = createStackNavigator({
     CourseList: {
@@ -24,8 +24,8 @@ const App = createStackNavigator({
     TopicList: {screen: TopicList},
     WidgetList: {screen: WidgetList},
     AddExamComponent,
-    ExamWidget,
-    AssignmentWidget,
+    ExamWidget: Exam,
+    AssignmentWidget: Assignment,
     TrueFalseQuestionEditor,
     MultipleChoiceQuestionEditor,
     EssayQuestionEditor,

@@ -1,206 +1,167 @@
+import React from 'react'
+import {View} from 'react-native'
+import {Text, Button, CheckBox} from 'react-native-elements'
+import {FormLabel, FormInput, FormValidationMessage} from 'react-native-elements'
+import QuestionServiceClient from '../services/QuestionService'
 
-import React from 'react';
-import {ScrollView, StyleSheet} from 'react-native';
-import {FormLabel, FormInput, FormValidationMessage} from 'react-native-elements';
-import {Button, CheckBox, Text} from 'react-native-elements';
-import CustomMultiPicker from "react-native-multiple-select-list";
-import QuestionServiceClient from "../services/QuestionServiceClient";
-
-
-export default class TrueFalseQuestionEditor
-    extends React.Component {
-
-    static navigationOptions = {title: 'True or False'};
-
+class TrueFalseQuestionEditor extends React.Component {
+    static navigationOptions = {title: "True or False"}
     constructor(props) {
         super(props);
-
+        const {navigation} = this.props;
+        this.questionService = QuestionServiceClient.instance;
+        this.createTrueFalseQuestion = this.createTrueFalseQuestion.bind(this);
+        this.deleteQuestion = this.deleteQuestion.bind(this);
+        this.updateTrueFalseQuestion = this.updateTrueFalseQuestion.bind(this);
         this.state = {
-            questionId: 0,
-            examId: 0,
+            examId: navigation.getParam("examId"),
+            questionID: navigation.getParam("questionId"),
             title: '',
             description: '',
             points: 0,
             isTrue: true,
-            previewMode: false,
-            icon: 'check'
-        };
-
-        this.questionServiceClient = QuestionServiceClient.instance();
+            preview:false
+        }
     }
 
     componentDidMount() {
-        const examId = this.props.navigation.getParam('examId', 0);
-        const questionId = this.props.navigation.getParam('questionId', 0);
-        const title = this.props.navigation.getParam('title', '');
-        const description = this.props.navigation.getParam('description', '');
-        const points = this.props.navigation.getParam('points', 0);
-        const isTrue = this.props.navigation.getParam('isTrue', true);
+        if (this.state.questionID !== undefined) {
+            const {navigation} = this.props;
+            const examId = navigation.getParam("examId");
+            const questionID = navigation.getParam("questionId");
+            const title = navigation.getParam("title");
+            const points = navigation.getParam("points");
+            const description = navigation.getParam("description");
+            const isTrue = navigation.getParam("isTrue");
+            this.setState({
+                questionId: questionID,
+                examId: examId,
+                title: title,
+                description: description,
+                points: points,
+                isTrue: isTrue
+            });
+        }
+    }
 
-        this.setState({questionId: questionId});
-        this.setState({examId: examId});
-        this.setState({title: title});
-        this.setState({description: description});
-        this.setState({points: points});
-        this.setState({isTrue: isTrue});
+    updateForm(newState) {
+        this.setState(newState)
     }
 
     componentWillUnmount() {
-        this.props.navigation.state.params.onGoBack();
+        this.props.navigation.state.params.refreshFunc(this.state.examId);
+    }
+
+    pointsTextOnChanged(text){
+        let newText = '';
+        let numbers = '0123456789';
+
+        for (var i=0; i < text.length; i++) {
+            if(numbers.indexOf(text[i]) > -1 ) {
+                newText = newText + text[i];
+            }
+        }
+        this.setState({ points: newText });
+    }
+
+    createTrueFalseQuestion(examId) {
+        let newTrueFalseQuestion = {
+            title: this.state.title,
+            points: this.state.points,
+            description: this.state.description,
+            isTrue: this.state.isTrue,
+            questionType: 'truefalse'
+        };
+        this.questionService.createTrueFalseQuestionForExam(examId, newTrueFalseQuestion);
+        this.props.navigation.goBack();
+    }
+
+    updateTrueFalseQuestion(questionId) {
+        let newTrueFalseQuestion = {
+            title: this.state.title,
+            points: this.state.points,
+            description: this.state.description,
+            isTrue: this.state.isTrue
+        };
+        this.questionService.updateTrueFalseQuestionForExam(
+            this.state.examId, questionId, newTrueFalseQuestion);
+        this.props.navigation.goBack();
+    }
+
+    deleteQuestion() {
+        this.questionService.deleteQuestionById(this.state.questionID);
+        this.props.navigation.goBack();
     }
 
     render() {
         return (
-            <ScrollView>
-                {!this.state.previewMode &&
-                <ScrollView>
-                    <FormLabel>Title</FormLabel>
-                    <FormInput onChangeText={(text) => this.setState({title: text})}>
-                        {this.state.title}
-                    </FormInput>
-                    <FormValidationMessage>
-                        {this.state.title === '' && 'Title is required'}
-                        {this.state.title !== '' && ''}
-                    </FormValidationMessage>
+            <View>
+                <FormLabel>Title</FormLabel>
+                {!this.state.preview &&
+                <FormInput
+                    value={this.state.title}
+                    onChangeText={text => this.updateForm({title: text})}/>}
+                {!this.state.preview && this.state.title === "" &&
+                <FormValidationMessage>Title is required</FormValidationMessage>}
+                {this.state.preview && <FormLabel h1> {this.state.title}</FormLabel>}
 
-                    <FormLabel>Description</FormLabel>
-                    <FormInput onChangeText={(text) => this.setState({description: text})}>
-                        {this.state.description}
-                    </FormInput>
-                    <FormValidationMessage>
-                        {this.state.description === '' && 'Description is required'}
-                        {this.state.description !== '' && ''}
-                    </FormValidationMessage>
+                <FormLabel>Points</FormLabel>
+                {!this.state.preview &&
+                <FormInput
+                    value={this.state.points.toString()}
+                    keyboardType='numeric'
+                    onChangeText={(text)=> this.pointsTextOnChanged(text)}
+                    maxLength={2}/>}
+                {!this.state.preview && this.state.points === 0 &&
+                <FormValidationMessage>Points is required</FormValidationMessage>}
+                {this.state.preview && <FormLabel h1> {this.state.points}</FormLabel>}
 
-                    <FormLabel>Points</FormLabel>
-                    <FormInput onChangeText={(text) => this.setState({points: text.valueOf()})}>
-                        {this.state.points}
-                    </FormInput>
-                    <FormValidationMessage>
-                        {this.state.points === 0 && 'Points is required'}
-                        {this.state.points !== 0 && ''}
-                    </FormValidationMessage>
+                <FormLabel>Description</FormLabel>
+                {!this.state.preview &&
+                <FormInput
+                    value={this.state.description}
+                    onChangeText={text => this.updateForm({description: text})}/>}
+                {!this.state.preview && this.state.description === "" &&
+                <FormValidationMessage>Description is required</FormValidationMessage>}
+                {this.state.preview && <FormLabel h1> {this.state.description}</FormLabel>}
 
-                    <CheckBox onPress={() => this.setState({isTrue: !this.state.isTrue})}
-                              checked={this.state.isTrue}
-                              title='The answer is true'/>
+                {!this.state.preview &&
+                <CheckBox
+                    onPress={() => this.updateForm({isTrue: !this.state.isTrue})}
+                    checked={this.state.isTrue}
+                    title='The answer is true'/>}
+                {this.state.preview && this.state.isTrue && <FormLabel h1>{"True"}</FormLabel>}
+                {this.state.preview && !this.state.isTrue && <FormLabel h1>{"False"}</FormLabel>}
 
-                    <Button buttonStyle={{
-                        width: 330,
-                        height: 40,
-                        marginTop: 1,
-                        margin: 10,
-                    }}
-                            backgroundColor='#4c73c4'
-                            color='white'
-                            title='Save'
-                            onPress={() => {
-                                if (this.state.questionId === 0) {
-                                    let question = {
-                                        'title': this.state.title,
-                                        'description': this.state.description,
-                                        'isTrue': this.state.isTrue,
-                                        'points': this.state.points,
-                                        'questionType': 'TrueFalse',
-                                        'icon': this.state.icon
-                                    };
-
-                                    this.questionServiceClient.createTrueFalseQuestion(this.state.examId, question)
-                                        .then(this.props.navigation.navigate('ExamWidget', {examId: this.state.examId}));
-                                }
-                                else {
-                                    let question = {
-                                        'title': this.state.title,
-                                        'description': this.state.description,
-                                        'isTrue': this.state.isTrue,
-                                        'points': this.state.points,
-                                    };
-
-                                    this.questionServiceClient.updateTrueFalseQuestion(this.state.questionId, question)
-                                        .then(this.props.navigation.navigate('ExamWidget', {examId: this.state.examId}));
-                                }
-                            }}/>
-                    <Button backgroundColor='#4682B4'
-                            color='white'
-                            title='Cancel'
-                            onPress={() => {
-                                this.props.navigation.goBack()
-                            }}
-                            buttonStyle={{
-                                width: 330,
-                                height: 40,
-                                marginTop: 1,
-                                margin: 10,
-                            }}/>
-                    {this.questionId !== 0 &&
-                    <Button backgroundColor='#FA8072'
-                            color='white'
-                            title='Delete'
-                            onPress={() => {
-                                this.questionServiceClient.deleteTrueFalseQuestion(this.state.questionId)
-                                    .then(this.props.navigation.navigate('ExamWidget', {examId: this.state.examId}));
-                            }}
-                            buttonStyle={{
-                                width: 330,
-                                height: 40,
-                                marginTop: 1,
-                                margin: 10,
-                            }}/>}
-                </ScrollView>}
-
-                <Button title="Preview"
-                        onPress={() => {
-                            this.setState({previewMode: !this.state.previewMode})
-                        }}
-                        buttonStyle={{
-                            width: 330,
-                            height: 40,
-                            marginTop: 1,
-                            margin: 10,
-                        }}/>
-
-                {this.state.previewMode &&
-                <ScrollView style={styles.textAreaContainer}>
-                    <Text h4>{this.state.description}</Text>
-                    <Text h5>{this.state.points} pts</Text>
-                    <CustomMultiPicker
-                        options={{
-                            "123": "True",
-                            "124": "False"
-                        }}
-                        multiple={false}
-                        placeholderTextColor={'#757575'}
-                        returnValue={"label"}
-                        callback={(res) => {
-                            console.log(res)
-                        }}
-                        rowBackgroundColor={"#eee"}
-                        rowHeight={40}
-                        rowRadius={5}
-                        iconColor={"#00a2dd"}
-                        iconSize={30}
-                        selectedIconName={"ios-checkmark-circle-outline"}
-                        unselectedIconName={"ios-radio-button-off-outline"}
-                        scrollViewHeight={130}
-                        selected={this.state.isTrue ? 'True' : 'False'} // list of options which are selected by default
-                    />
-                </ScrollView>
-                }
-            </ScrollView>
-        );
+                <Text>{"\n"}</Text>
+                <Button
+                    backgroundColor="cornflowerblue"
+                    onPress={() => this.setState({preview:!this.state.preview})}
+                    color="white"
+                    title="Preview"/>
+                <Text>{" "}</Text>
+                {this.state.questionId !== undefined &&
+                <Button
+                    onPress={() => this.updateTrueFalseQuestion(this.state.questionID)}
+                    backgroundColor="mediumseagreen"
+                    color="white"
+                    title="Update"/>}
+                {this.state.questionId === undefined &&
+                <Button
+                    onPress={() => this.createTrueFalseQuestion(this.state.examId)}
+                    backgroundColor="deepskyblue"
+                    color="white"
+                    title="Save"/>}
+                <Text>{"\n"}</Text><Text>{"\n"}</Text>
+                {this.state.questionId !== undefined &&
+                <Button
+                    backgroundColor="white"
+                    onPress={() => this.deleteQuestion()}
+                    color="red"
+                    title="Delete"/>}
+            </View>
+        )
     }
 }
 
-
-const styles = StyleSheet.create({
-    textAreaContainer: {
-        borderColor: 'lightgrey',
-        borderWidth: 1,
-        padding: 5,
-        margin: 10
-    },
-    textArea: {
-        height: 150,
-        justifyContent: "flex-start"
-    }
-});
+export default TrueFalseQuestionEditor

@@ -1,35 +1,29 @@
 import React from 'react'
-import {View, ScrollView} from 'react-native'
+import {ScrollView, View, TextInput} from 'react-native'
 import {Text, Button, CheckBox} from 'react-native-elements'
-import {FormLabel, FormInput, FormValidationMessage}
-    from 'react-native-elements'
+import {FormLabel, FormInput, FormValidationMessage} from 'react-native-elements'
 import QuestionServiceClient from "../services/QuestionService"
-import CustomMultiPicker from "react-native-multiple-select-list"
 
-class MultipleChoiceQuestionEditor extends React.Component {
-    static navigationOptions = {title: "Multiple Choice"}
+export default class FillInTheBlankQuestionEditor
+    extends React.Component {
+    static navigationOptions = {title: "Fill in the Blank"};
 
     constructor(props) {
         super(props);
         const {navigation} = this.props;
         this.questionService = QuestionServiceClient.instance;
-        this.createMultipleChoiceQuestion = this.createMultipleChoiceQuestion.bind(this);
-        this.updateMultipleChoiceQuestion = this.updateMultipleChoiceQuestion.bind(this);
-        this.renderChoices = this.renderChoices.bind(this);
+        this.createFillInTheBlankQuestionInEditor = this.createFillInTheBlankQuestionInEditor.bind(this);
         this.deleteQuestion = this.deleteQuestion.bind(this);
-
-        var choices = navigation.getParam("options");
+        this.updateFillInTheBlankQuestion = this.updateFillInTheBlankQuestion.bind(this);
         this.state = {
             examId: navigation.getParam("examId"),
             questionID: navigation.getParam("questionId"),
             title: '',
             description: '',
             points: 0,
-            options: navigation.getParam("options") === undefined ? "" : navigation.getParam("options"),
-            correctOption: navigation.getParam("correctOption"),
-            userList: this.renderChoices(choices)
+            variables: '',
+            preview: false
         }
-
     }
 
     componentDidMount() {
@@ -40,19 +34,14 @@ class MultipleChoiceQuestionEditor extends React.Component {
             const title = navigation.getParam("title");
             const points = navigation.getParam("points");
             const description = navigation.getParam("description");
-            const options = navigation.getParam("options");
-            const correctOption = navigation.getParam("correctOption");
-            const userList = Object.assign({}, this.renderChoices(options));
-
+            const variables = navigation.getParam("variables");
             this.setState({
                 questionId: questionID,
                 examId: examId,
                 title: title,
                 description: description,
                 points: points,
-                correctOption: correctOption,
-                options: options,
-                userList: Object.assign({},userList)
+                variables: variables
             });
         }
     }
@@ -77,30 +66,27 @@ class MultipleChoiceQuestionEditor extends React.Component {
         this.setState({points: newText});
     }
 
-    updateMultipleChoiceQuestion(questionId) {
-        let newMultipleChoiceQuestion = {
+    createFillInTheBlankQuestionInEditor(examId) {
+        let newFillInTheBlankQuestion = {
             title: this.state.title,
             points: this.state.points,
             description: this.state.description,
-            options: this.state.options,
-            correctOption: this.state.correctOption
+            variables: this.state.variables,
+            questionType: 'blanks'
         };
-        this.questionService.updateMultipleChoiceQuestionForExam(
-            this.state.examId, questionId, newMultipleChoiceQuestion);
+        this.questionService.createFillInTheBlankQuestion(examId, newFillInTheBlankQuestion);
         this.props.navigation.goBack();
     }
 
-
-    createMultipleChoiceQuestion(examId) {
-        let newMultipleChoiceQuestion = {
+    updateFillInTheBlankQuestion(questionId) {
+        let newFillInTheBlankQuestion = {
             title: this.state.title,
             points: this.state.points,
             description: this.state.description,
-            options: this.state.options,
-            correctOption: this.state.correctOption,
-            questionType: 'choice'
+            variables: this.state.variables
         };
-        this.questionService.createMultipleChoiceQuestionForExam(examId, newMultipleChoiceQuestion);
+        this.questionService.updateFillInTheBlankQuestionForExam(
+            this.state.examId, questionId, newFillInTheBlankQuestion);
         this.props.navigation.goBack();
     }
 
@@ -109,15 +95,37 @@ class MultipleChoiceQuestionEditor extends React.Component {
         this.props.navigation.goBack();
     }
 
-
-    renderChoices(choices) {
-        if (choices === undefined || choices === '') return {};
-        let res = {}; // create an empty array
-        let choicesSpliced = choices.split(',');
-        for (var i = 0; i < choicesSpliced.length; i++) {
-            res[i] = choicesSpliced[i];
+    renderVairables(variables) {
+        let parts = variables.split(/[[\]]{1,2}/);
+        parts.length--;
+        let res = [];
+        for (var i = 0; i < parts.length - 1; i += 2) {
+            res[i / 2] =
+                <View key={i / 2} style={{padding: 10}}>
+                    <Text h3
+                          className="match"
+                          key={i}
+                          style={{
+                              padding: 7
+                          }}>
+                        {parts[i]}
+                    </Text>
+                    <TextInput
+                        style={{
+                            fontSize: 30,
+                            flex: 1,
+                            borderColor: 'gray',
+                            borderWidth: 1,
+                            marginRight: 40,
+                            backgroundColor: "white",
+                            justifyContent: 'space-between'
+                        }}
+                        className="match" key={i + 1}/>
+                </View>
         }
-        return res;
+        return (
+            res
+        );
     }
 
     render() {
@@ -152,27 +160,20 @@ class MultipleChoiceQuestionEditor extends React.Component {
                 <FormValidationMessage>Description is required</FormValidationMessage>}
                 {this.state.preview && <FormLabel h1> {this.state.description}</FormLabel>}
 
-                <FormLabel>Choices{!this.state.preview && ", e.g. \'choice1, choice2, choice3\'"}</FormLabel>
+                {!this.state.preview &&
+                <FormLabel>Question Body, "e.g. 1+1=[2]"</FormLabel>}
+                {this.state.preview && <Text>{"\n"}</Text>}
                 {!this.state.preview &&
                 <FormInput
-                    value={this.state.options}
-                    onChangeText={text => this.updateForm({options: text})}/>}
-                {!this.state.preview && this.state.options === "" &&
-                <FormValidationMessage>Description is required</FormValidationMessage>}
-                <CustomMultiPicker
-                    options={this.renderChoices(this.state.options)}
-                    placeholderTextColor={'#757575'}
-                    returnValue={"label"} // label or value
-                    callback={(res) => this.setState({
-                        correctOption: (this.state.options.split(',')).indexOf(res.toString())
-                    })}
-                    rowHeight={40}
-                    iconColor={"#00a2dd"}
-                    iconSize={25}
-                    selectedIconName={"ios-checkmark-circle-outline"}
-                    unselectedIconName={"ios-radio-button-off-outline"}
-                    selected={this.state.userList[this.state.correctOption]}
-                />
+                    value={this.state.variables}
+                    onChangeText={text => this.updateForm({variables: text})}/>}
+                {!this.state.preview && this.state.variables === "" &&
+                <FormValidationMessage>Question Body is required</FormValidationMessage>}
+
+
+                {this.state.preview && this.renderVairables(this.state.variables)}
+                {this.state.preview && <Text>{" "}</Text>}
+
 
                 <Text>{"\n"}</Text>
                 <Button
@@ -183,13 +184,13 @@ class MultipleChoiceQuestionEditor extends React.Component {
                 <Text>{" "}</Text>
                 {this.state.questionId !== undefined &&
                 <Button
-                    onPress={() => this.updateMultipleChoiceQuestion(this.state.questionID)}
+                    onPress={() => this.updateFillInTheBlankQuestion(this.state.questionID)}
                     backgroundColor="mediumseagreen"
                     color="white"
                     title="Update"/>}
                 {this.state.questionId === undefined &&
                 <Button
-                    onPress={() => this.createMultipleChoiceQuestion(this.state.examId)}
+                    onPress={() => this.createFillInTheBlankQuestionInEditor(this.state.examId)}
                     backgroundColor="deepskyblue"
                     color="white"
                     title="Save"/>}
@@ -200,10 +201,7 @@ class MultipleChoiceQuestionEditor extends React.Component {
                     onPress={() => this.deleteQuestion()}
                     color="red"
                     title="Delete"/>}
-
             </ScrollView>
         )
     }
 }
-
-export default MultipleChoiceQuestionEditor

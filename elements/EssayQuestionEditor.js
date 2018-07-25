@@ -1,164 +1,181 @@
-import React from 'react';
-import {ScrollView, TextInput} from 'react-native';
-import {FormLabel, FormInput, FormValidationMessage} from 'react-native-elements';
-import {Button, Text} from 'react-native-elements';
-import QuestionServiceClient from "../services/QuestionServiceClient";
+import React from 'react'
+import {View, TextInput} from 'react-native'
+import {Text, Button, CheckBox} from 'react-native-elements'
+import {FormLabel, FormInput, FormValidationMessage} from 'react-native-elements'
+import QuestionServiceClient from '../services/QuestionService'
 
-
-export default class EssayQuestionEditor
-    extends React.Component {
-
-    static navigationOptions = {title: 'Essay'};
+class EssayQuestionEditor extends React.Component {
+    static navigationOptions = {title: "Essay"};
 
     constructor(props) {
         super(props);
-
+        const {navigation} = this.props;
+        this.questionService = QuestionServiceClient.instance;
+        this.createEssayQuestionInEditor = this.createEssayQuestionInEditor.bind(this);
+        this.updateEssayQuestion = this.updateEssayQuestion.bind(this);
         this.state = {
-            questionId: 0,
+            examId: navigation.getParam("examId"),
+            questionID: navigation.getParam("questionId"),
             title: '',
             description: '',
             points: 0,
-            examId: 0,
-            previewMode: false,
-            icon: 'subject'
-        };
-
-        this.questionServiceClient = QuestionServiceClient.instance();
+            essay: '',
+            preview: false
+        }
     }
 
     componentDidMount() {
-        const examId = this.props.navigation.getParam('examId', 0);
-        const questionId = this.props.navigation.getParam('questionId', 0);
-        const title = this.props.navigation.getParam('title', '');
-        const description = this.props.navigation.getParam('description', '');
-        const points = this.props.navigation.getParam('points', 0);
-
-        this.setState({questionId: questionId});
-        this.setState({examId: examId});
-        this.setState({title: title});
-        this.setState({description: description});
-        this.setState({points: points});
+        if (this.state.questionID !== undefined) {
+            const {navigation} = this.props;
+            const examId = navigation.getParam("examId");
+            const questionID = navigation.getParam("questionId");
+            const title = navigation.getParam("title");
+            const points = navigation.getParam("points");
+            const description = navigation.getParam("description");
+            const essay = navigation.getParam("essay");
+            this.setState({
+                questionId: questionID,
+                examId: examId,
+                title: title,
+                description: description,
+                points: points,
+                essay: essay
+            });
+        }
     }
 
     componentWillUnmount() {
-        this.props.navigation.state.params.onGoBack();
+        this.props.navigation.state.params.refreshFunc(this.state.examId);
+    }
+
+    updateForm(newState) {
+        this.setState(newState)
+    }
+
+    pointsTextOnChanged(text) {
+        let newText = '';
+        let numbers = '0123456789';
+
+        for (var i = 0; i < text.length; i++) {
+            if (numbers.indexOf(text[i]) > -1) {
+                newText = newText + text[i];
+            }
+        }
+        this.setState({points: newText});
+    }
+
+    deleteQuestion() {
+        this.questionService.deleteQuestionById(this.state.questionID);
+        this.props.navigation.goBack();
+    }
+
+    updateEssayQuestion(questionId) {
+        let newEssayQuestion = {
+            title: this.state.title,
+            points: this.state.points,
+            description: this.state.description,
+            essay: this.state.essay
+        };
+        this.questionService.updateEssayQuestionForExam(
+            this.state.examId, questionId, newEssayQuestion);
+        this.props.navigation.goBack();
+    }
+
+    createEssayQuestionInEditor(examId) {
+        let newEssayQuestion = {
+            title: this.state.title,
+            points: this.state.points,
+            description: this.state.description,
+            essay: this.state.essay,
+            questionType: 'essay'
+        };
+        this.questionService.createEssayQuestion(examId, newEssayQuestion);
+        this.props.navigation.goBack();
     }
 
     render() {
         return (
-            <ScrollView>
-                {!this.state.previewMode &&
-                <ScrollView>
-                    <FormLabel>Title</FormLabel>
-                    <FormInput onChangeText={(text) =>
-                        this.setState({title: text})}>{this.state.title}</FormInput>
-                    <FormValidationMessage>
-                        {this.state.title === '' && 'Title is required'}
-                        {this.state.title !== '' && ''}
-                    </FormValidationMessage>
+            <View>
+                <FormLabel>Title</FormLabel>
+                {!this.state.preview &&
+                <FormInput
+                    value={this.state.title}
+                    onChangeText={text => this.updateForm({title: text})}/>}
+                {!this.state.preview && this.state.title === "" &&
+                <FormValidationMessage>Title is required</FormValidationMessage>}
+                {this.state.preview && <FormLabel h1> {this.state.title}</FormLabel>}
 
-                    <FormLabel>Description</FormLabel>
-                    <FormInput
-                        onChangeText={(text) =>
-                            this.setState({description: text})}>{this.state.description}</FormInput>
-                    <FormValidationMessage>
-                        {this.state.description === '' && 'Description is required'}
-                        {this.state.description !== '' && ''}
-                    </FormValidationMessage>
+                <FormLabel>Points</FormLabel>
+                {!this.state.preview &&
+                <FormInput
+                    value={this.state.points.toString()}
+                    keyboardType='numeric'
+                    onChangeText={(text) => this.pointsTextOnChanged(text)}
+                    maxLength={2}/>}
+                {!this.state.preview && this.state.points === 0 &&
+                <FormValidationMessage>Points is required</FormValidationMessage>}
+                {this.state.preview && <FormLabel h1> {this.state.points}</FormLabel>}
 
-                    <FormLabel>Points</FormLabel>
-                    <FormInput
-                        onChangeText={(text) =>
-                            this.setState({points: text.valueOf()})}>{this.state.points}</FormInput>
-                    <FormValidationMessage>
-                        {this.state.points === 0 && 'Points is required'}
-                        {this.state.points !== 0 && ''}
-                    </FormValidationMessage>
+                <FormLabel>Description</FormLabel>
+                {!this.state.preview &&
+                <FormInput
+                    value={this.state.description}
+                    onChangeText={text => this.updateForm({description: text})}/>}
+                {!this.state.preview && this.state.description === "" &&
+                <FormValidationMessage>Description is required</FormValidationMessage>}
 
-                    <Button buttonStyle={{
-                        width: 330,
-                        height: 40,
-                        marginTop: 1,
-                        margin: 10,
-                    }}
-                            backgroundColor='#4c73c4'
-                            color='white'
-                            title='Save'
-                            onPress={() => {
-                                if (this.state.questionId === 0) {
-                                    let question = {
-                                        'title': this.state.title,
-                                        'description': this.state.description,
-                                        'points': this.state.points,
-                                        'questionType': 'Essay',
-                                        'icon': this.state.icon
-                                    };
 
-                                    this.questionServiceClient.createEssayQuestion(this.state.examId, question)
-                                        .then(this.props.navigation.navigate('ExamWidget', {examId: this.state.examId}));
-                                }
-                                else {
-                                    let question = {
-                                        'title': this.state.title,
-                                        'description': this.state.description,
-                                        'points': this.state.points,
-                                    };
+                {this.state.preview && <FormLabel h1> {this.state.description}</FormLabel>}
+                {this.state.preview && <Text>{" "}</Text>}
+                {this.state.preview &&
+                <TextInput
+                    value={this.state.essay}
+                    multiline={true}
+                    style={{
+                        height: 100,
+                        borderColor: 'gray',
+                        borderWidth: 1,
+                        padding: 7,
+                        marginTop: 5,
+                        marginLeft: 20,
+                        marginRight: 40,
+                        marginBottom: 5,
+                        backgroundColor: "white",
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                    }}/>}
 
-                                    this.questionServiceClient.updateEssayQuestion(this.state.questionId, question)
-                                        .then(this.props.navigation.navigate('ExamWidget', {examId: this.state.examId}));
-                                }
-                            }}/>
-                    <Button backgroundColor='#4682B4'
-                            color='white'
-                            title='Cancel'
-                            onPress={() => {
-                                this.props.navigation.goBack()
-                            }}
-                            buttonStyle={{
-                                width: 330,
-                                height: 40,
-                                marginTop: 1,
-                                margin: 10,
-                            }}/>
-                    {this.state.questionId !== 0 &&
-                    <Button backgroundColor='#FA8072'
-                            color='white'
-                            title='Delete'
-                            onPress={() => {
-                                this.questionServiceClient.deleteEssayQuestion(this.state.questionId)
-                                    .then(this.props.navigation.navigate('ExamWidget', {examId: this.state.examId}));
-                            }}
-                            buttonStyle={{
-                                width: 330,
-                                height: 40,
-                                marginTop: 1,
-                                margin: 10,
-                            }}/>}
-                </ScrollView>}
 
-                <Button title="Preview"
-                        onPress={() => {
-                            this.setState({previewMode: !this.state.previewMode})
-                        }}
-                        buttonStyle={{
-                            width: 330,
-                            height: 40,
-                            marginTop: 1,
-                            margin: 10,
-                        }}/>
-
-                {this.state.previewMode &&
-                <ScrollView style={{borderColor: 'lightgrey',borderWidth: 1,padding: 5,margin: 10}}>
-                    <Text h4>{this.state.description}</Text>
-                    <Text h5>{this.state.points} pts</Text>
-                    <TextInput
-                        style={{height: 150,justifyContent: "flex-start"}}
-                        placeholder={"Type your answer here."}
-                        placeholderTextColor={"grey"}
-                        numberOfLines={10}
-                        multiline={true}/>
-                </ScrollView>}
-            </ScrollView>
-        );
+                <Text>{"\n"}</Text>
+                <Button
+                    backgroundColor="cornflowerblue"
+                    onPress={() => this.setState({preview: !this.state.preview})}
+                    color="white"
+                    title="Preview"/>
+                <Text>{" "}</Text>
+                {this.state.questionId !== undefined &&
+                <Button
+                    onPress={() => this.updateEssayQuestion(this.state.questionID)}
+                    backgroundColor="mediumseagreen"
+                    color="white"
+                    title="Update"/>}
+                {this.state.questionId === undefined &&
+                <Button
+                    onPress={() => this.createEssayQuestionInEditor(this.state.examId)}
+                    backgroundColor="deepskyblue"
+                    color="white"
+                    title="Save"/>}
+                <Text>{"\n"}</Text><Text>{"\n"}</Text>
+                {this.state.questionId !== undefined &&
+                <Button
+                    backgroundColor="white"
+                    onPress={() => this.deleteQuestion()}
+                    color="red"
+                    title="Delete"/>}
+            </View>
+        )
     }
 }
+
+export default EssayQuestionEditor
