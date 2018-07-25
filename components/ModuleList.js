@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {View} from 'react-native'
 import {Text, ListItem} from 'react-native-elements'
-import CourseServiceClient from '../services/CourseService'
+import CourseServiceClient from '../services/CourseServiceClient'
 
 class ModuleList extends Component {
     static navigationOptions = {title: 'Modules'}

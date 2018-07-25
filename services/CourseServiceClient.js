@@ -1,9 +1,9 @@
 let _singleton = Symbol();
 
-const COURSE_API_URL = 'http://localhost:8080/api/course';
-const MODULE_API_URL = 'http://localhost:8080/api/course/CID/module';
-const LESSON_API_URL = 'http://localhost:8080/api/course/CID/module/MID/lesson';
-const TOPIC_API_URL = 'http://localhost:8080/api/course/CID/module/MID/lesson/LID/topic';
+const COURSE_API_URL = 'https://myapp-peiran.herokuapp.com/api/course';
+const MODULE_API_URL = 'https://myapp-peiran.herokuapp.com/api/course/CID/module';
+const LESSON_API_URL = 'https://myapp-peiran.herokuapp.com/api/course/CID/module/MID/lesson';
+const TOPIC_API_URL = 'https://myapp-peiran.herokuapp.com/api/course/CID/module/MID/lesson/LID/topic';
 
 export default class CourseServiceClient {
     constructor(singletonToken) {

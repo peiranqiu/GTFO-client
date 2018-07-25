@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {ScrollView, View, Alert} from 'react-native'
 import {Text, ListItem} from 'react-native-elements'
-import CourseServiceClient from '../services/CourseService'
+import CourseServiceClient from '../services/CourseServiceClient'
 
 class LessonList extends Component {
     static navigationOptions = {title: 'Lessons'}
@@ -19,8 +19,8 @@ class LessonList extends Component {
 
     componentDidMount() {
         const {navigation} = this.props;
-        const courseId = navigation.getParam("courseId")
-        const moduleId = navigation.getParam("moduleId")
+        const courseId = navigation.getParam("courseId", 1);
+        const moduleId = navigation.getParam("moduleId", 1);
         this.courseService.findAllLessonsForModule(courseId, moduleId)
             .then(lessons => this.setState({lessons: lessons}));
     }
@@ -29,7 +29,6 @@ class LessonList extends Component {
         return (
             <View style={{padding: 15}}>
                 {this.state.lessons.map((lesson, index) => (
-                    (lesson, index) => (
                         <ListItem
                             leftIcon={{name: 'label-outline'}}
                             onPress={() => this.props.navigation
@@ -40,7 +39,7 @@ class LessonList extends Component {
                                 })}
                             key={index}
                             title={lesson.title}/>
-                    )))}
+                    ))}
             </View>
         )
     }

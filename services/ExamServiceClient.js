@@ -1,7 +1,7 @@
 let _singleton = Symbol();
 
-const EXAM_API_URL = 'http://localhost:8080/api/exam';
-const EXAM_TOPIC_API_URL = 'http://localhost:8080/api/topic/TID/exam';
+const EXAM_API_URL = 'https://myapp-peiran.herokuapp.com/api/exam';
+const EXAM_TOPIC_API_URL = 'https://myapp-peiran.herokuapp.com/api/topic/TID/exam';
 
 export default class ExamServiceClient {
 

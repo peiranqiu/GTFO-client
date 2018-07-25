@@ -3,7 +3,7 @@ import {View, ScrollView} from 'react-native'
 import {Text, Button, CheckBox} from 'react-native-elements'
 import {FormLabel, FormInput, FormValidationMessage}
     from 'react-native-elements'
-import QuestionServiceClient from "../services/QuestionService"
+import QuestionServiceClient from "../services/QuestionServiceClient"
 import CustomMultiPicker from "react-native-multiple-select-list"
 
 class MultipleChoiceQuestionEditor extends React.Component {

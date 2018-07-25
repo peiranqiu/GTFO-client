@@ -4,8 +4,8 @@ import {View} from 'react-native'
 import {Divider, Button, Text, FormLabel} from 'react-native-elements'
 import {FormInput, FormValidationMessage} from 'react-native-elements'
 import {ScrollView, TextInput} from 'react-native'
-import AssignmentServiceClient from '../services/AssignmentService'
-import ExamServiceClient from "../services/ExamService";
+import AssignmentServiceClient from '../services/AssignmentServiceClient'
+import ExamServiceClient from "../services/ExamServiceClient";
 
 class Assignment extends Component {
     static navigationOptions = {title: 'Assignment'};

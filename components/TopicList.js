@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {ScrollView, View, Alert} from 'react-native'
 import {Text, ListItem} from 'react-native-elements'
-import CourseServiceClient from '../services/CourseService'
+import CourseServiceClient from '../services/CourseServiceClient'
 
 
 export default class TopicList
@@ -18,8 +18,8 @@ export default class TopicList
             lessonId: 1,
             topics: []
         };
-
-        this.courseService = CourseServiceClient.instance();
+        const {navigation} = this.props;
+        this.courseService = CourseServiceClient.instance;
     }
 
     componentDidMount() {
@@ -29,9 +29,9 @@ export default class TopicList
         const moduleId = this.props.navigation.getParam('moduleId', 1);
         const lessonId = this.props.navigation.getParam('lessonId', 1);
 
-        this.setState({courseId: courseId});
-        this.setState({moduleId: moduleId});
-        this.setState({lessonId: lessonId});
+        //this.setState({courseId: courseId});
+        //this.setState({moduleId: moduleId});
+        //this.setState({lessonId: lessonId});
 
         this.courseService.findAllTopicsForLesson(courseId, moduleId,lessonId)
             .then((topics) => {
@@ -48,9 +48,9 @@ export default class TopicList
                         leftIcon={{name: 'equalizer'}}
                         onPress={() =>
                             this.props.navigation.navigate("WidgetList", {
-                                courseId: this.state.courseId,
-                                moduleId: this.state.moduleId,
-                                lessonId: this.state.lessonId,
+                                //courseId: this.state.courseId,
+                                //moduleId: this.state.moduleId,
+                                //lessonId: this.state.lessonId,
                                 topicId: topic.id,
                             })}
                         title={topic.title}

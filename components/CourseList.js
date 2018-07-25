@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {StatusBar, ScrollView, View, Alert} from 'react-native'
 import {Text, ListItem} from 'react-native-elements'
-import CourseServiceClient from '../services/CourseService'
+import CourseServiceClient from '../services/CourseServiceClient'
 
 class CourseList extends Component {
     static navigationOptions = {title: 'Courses'}

@@ -4,12 +4,12 @@ import {ScrollView, View} from 'react-native'
 import {Button, ListItem, Text, ButtonGroup} from 'react-native-elements'
 import {FormLabel, FormValidationMessage, FormInput} from 'react-native-elements'
 import QuestionTypeButtonGroupChooser from './QuestionTypeButtonGroupChooser'
-import ExamServiceClient from "../services/ExamService";
+import ExamServiceClient from "../services/ExamServiceClient";
 import TrueFalseQuestionEditor from "./TrueFalseQuestionEditor";
 import MultipleChoiceQuestionEditor from "./MultipleChoiceQuestionEditor";
 import FillInTheBlankQuestionEditor from "./FillInTheBlankQuestionEditor";
 import EssayQuestionEditor from "./EssayQuestionEditor";
-import QuestionServiceClient from "../services/QuestionService";
+import QuestionServiceClient from "../services/QuestionServiceClient";
 
 export default class Exam extends Component {
     static navigationOptions = {title: 'Exam'};

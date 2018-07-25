@@ -1,35 +1,32 @@
-import React from 'react';import {createStackNavigator} from 'react-navigation'
+import React from 'react'
+import {createStackNavigator, StackNavigator} from 'react-navigation'
+
+import CourseList from './components/CourseList'
+import ModuleList from './components/ModuleList'
+import LessonList from './components/LessonList'
+import WidgetList from './components/WidgetList'
+
+import Assignment from './elements/Assignment'
 import Exam from './elements/Exam'
-import TrueFalseQuestionEditor from "./elements/TrueFalseQuestionEditor";
-import CourseList from "./components/CourseList";
-import ModuleList from "./components/ModuleList";
-import LessonList from "./components/LessonList";
-import WidgetList from "./components/WidgetList";
-import TopicList from "./components/WidgetList";
-import AddExamComponent from "./elements/AddExamComponent";
-import Assignment from "./elements/Assignment";
-import MultipleChoiceQuestionEditor from "./elements/MultipleChoiceQuestionEditor";
-import EssayQuestionEditor from "./elements/EssayQuestionEditor";
-import FillInBlankQuestionEditor from "./elements/FillInTheBlankQuestionEditor";
+
+import EssayQuestionEditor from './elements/EssayQuestionEditor'
+import FillInTheBlankQuestionEditor from './elements/FillInTheBlankQuestionEditor'
+import TrueFalseQuestionEditor from './elements/TrueFalseQuestionEditor'
+import MultipleChoiceQuestionEditor from './elements/MultipleChoiceQuestionEditor'
+import TopicList from "./components/TopicList";
 
 const App = createStackNavigator({
-    CourseList: {
-        screen: CourseList,
-        navigationOptions: {
-            header: null,
-        }
-    },
-    ModuleList: {screen: ModuleList},
-    LessonList: {screen: LessonList},
-    TopicList: {screen: TopicList},
-    WidgetList: {screen: WidgetList},
-    AddExamComponent,
-    ExamWidget: Exam,
-    AssignmentWidget: Assignment,
+    CourseList,
+    Assignment,
+    Exam,
+    ModuleList,
+    LessonList,
+    TopicList,
+    WidgetList,
     TrueFalseQuestionEditor,
     MultipleChoiceQuestionEditor,
     EssayQuestionEditor,
-    FillInBlankQuestionEditor
+    FillInTheBlankQuestionEditor,
 });
 
 export default App;

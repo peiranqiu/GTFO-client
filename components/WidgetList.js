@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import {ScrollView, Alert, Picker} from 'react-native'
 import {Button, Text, ListItem} from 'react-native-elements'
-import AssignmentService from "../services/AssignmentService";
-import ExamService from "../services/ExamService";
+import AssignmentService from "../services/AssignmentServiceClient";
+import ExamService from "../services/ExamServiceClient";
 
 class WidgetList extends Component {
     static navigationOptions = {title: 'Widgets'}

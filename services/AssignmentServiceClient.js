@@ -1,9 +1,9 @@
 let _singleton = Symbol();
 
 
-const ASSIGNMENT_API_URL = 'http://localhost:8080/api/assignment';
+const ASSIGNMENT_API_URL = 'https://myapp-peiran.herokuapp.com/api/assignment';
 
-const ASSIGNMENT_TOPIC_API_URL = 'http://localhost:8080/api/topic/TID/assignment';
+const ASSIGNMENT_TOPIC_API_URL = 'https://myapp-peiran.herokuapp.com/api/topic/TID/assignment';
 
 export default class AssignmentServiceClient {
 

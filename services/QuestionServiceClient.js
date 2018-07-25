@@ -1,11 +1,8 @@
 let _singleton = Symbol();
 
-import {QUESTION_API_URL, DELETE_QUESTION_API_URL, ALL_QUESTION_API_URL} from '../constants'
-
-
-const QUESTION_API_URL = 'http://localhost:8080/api/exam/EID/QTYPE';
-const DELETE_QUESTION_API_URL = 'http://localhost:8080/api/question/QID';
-const ALL_QUESTION_API_URL = 'http://localhost:8080/api/exam/EID/question';
+const QUESTION_API_URL = 'https://myapp-peiran.herokuapp.com/api/exam/EID/QTYPE';
+const DELETE_QUESTION_API_URL = 'https://myapp-peiran.herokuapp.com/api/question/QID';
+const ALL_QUESTION_API_URL = 'https://myapp-peiran.herokuapp.com/api/exam/EID/question';
 
 export default class QuestionServiceClient {
     constructor(singletonToken) {
