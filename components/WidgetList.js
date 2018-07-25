@@ -1,101 +1,126 @@
-import React from 'react';
-import {ScrollView} from 'react-native';
-import {ListItem} from 'react-native-elements';
-import WidgetTypePicker from '../elements/WidgetTypePicker';
-import ExamServiceClient from "../services/ExamServiceClient";
+import React, {Component} from 'react'
+import {ScrollView, Alert, Picker} from 'react-native'
+import {Button, Text, ListItem} from 'react-native-elements'
+import AssignmentService from "../services/AssignmentService";
+import ExamService from "../services/ExamService";
 
-
-export default class WidgetList
-    extends React.Component {
-
-    static navigationOptions = {title: 'Widgets'};
+class WidgetList extends Component {
+    static navigationOptions = {title: 'Widgets'}
 
     constructor(props) {
         super(props);
+        const {navigation} = this.props;
+        this.assignmentService = AssignmentService.instance;
+        this.examService = ExamService.instance;
 
         this.state = {
-            courseId: 0,
-            moduleId: 0,
-            lessonId: 0,
-            widgets: []
-        };
-
-        this.widgetServiceClient = ExamServiceClient.instance();
+            questionType: 'ASSIGNMENT',
+            assignments: [],
+            exams: [],
+            courseId: 1,
+            moduleId: 1,
+            lessonId: 1,
+            topicId: navigation.getParam("topicId")
+        }
     }
 
     componentDidMount() {
-        const courseId = this.props.navigation.getParam('courseId', 0);
-        const moduleId = this.props.navigation.getParam('moduleId', 0);
-        const lessonId = this.props.navigation.getParam('lessonId', 0);
+        const {navigation} = this.props;
+        const topicId = navigation.getParam("topicId");
+        this.setState({topicId: topicId});
 
-        this.setState({courseId: courseId});
-        this.setState({moduleId: moduleId});
-        this.setState({lessonId: lessonId});
-
-        this.widgetServiceClient.findAllWidgetsForLesson(lessonId)
-            .then((widgets) => {
-                this.setState({widgets: widgets});
-            });
+        this.examService.findAllExamsForTopic(topicId)
+            .then(exams => this.setState({exams: exams}));
+        this.assignmentService.findAllAssignmentsForTopic(topicId)
+            .then(assignments => this.setState({assignments: assignments}));
     }
 
     componentWillReceiveProps(newProps) {
-        const lessonId = this.props.navigation.getParam('lessonId', 0);
-
-        this.setState({lessonId: lessonId});
-
-        this.widgetServiceClient.findAllWidgetsForLesson(lessonId)
-            .then((widgets) => {
-                this.setState({widgets: widgets});
-            });
+        const {navigation} = this.props;
+        const topicId = navigation.getParam("topicId");
+        this.setState({topicId: topicId});
+        this.examService.findAllExamsForTopic(topicId)
+            .then(exams => this.setState({exams: exams}));
+        this.assignmentService.findAllAssignmentsForTopic(topicId)
+            .then(assignments => this.setState({assignments: assignments}));
     }
 
+    refreshFunction(topicId) {
+        this.examService.findAllExamsForTopic(topicId)
+            .then(exams => this.setState({exams: exams}));
+        this.assignmentService.findAllAssignmentsForTopic(topicId)
+            .then(assignments => this.setState({assignments: assignments}));
+    }
 
-    refresh = () => {
-        this.widgetServiceClient.findAllWidgetsForLesson(this.state.lessonId)
-            .then((widgets) => {
-                this.setState({widgets: widgets});
-            });
-    };
+    addWidget() {
+        switch (this.state.questionType) {
+            case "ASSIGNMENT":
+                this.props.navigation.navigate("Assignment", {
+                    topicId: this.state.topicId,
+                    refreshFunc: () => this.refreshFunction(this.state.topicId)
+                });
+                return;
+            case "EXAM":
+                this.props.navigation.navigate("Exam", {
+                    topicId: this.state.topicId,
+                    refreshFunc: () => this.refreshFunction(this.state.topicId)
+                });
+                return;
+            default:
+                return;
+        }
+    }
 
 
     render() {
         return (
-            <ScrollView>
-                {this.state.widgets.map((widget) => {
-                    return (
-                        <ListItem title={widget.title}
-                                  key={widget.id}
-                                  subtitle={widget.widgetType}
-                                  onPress={() => {
-                                      if (widget.widgetType === 'ExamWidget') {
-                                          this.props.navigation.navigate('ExamWidget', {
-                                              courseId: this.state.courseId,
-                                              moduleId: this.state.moduleId,
-                                              lessonId: this.state.lessonId,
-                                              examId: widget.id,
-                                              title: widget.title,
-                                              description: widget.description,
-                                              onGoBack: () => this.refresh()
-                                          });
-                                      }
-                                      if (widget.widgetType === 'Assignment') {
-                                          this.props.navigation.navigate('AssignmentWidget', {
-                                              courseId: this.state.courseId,
-                                              moduleId: this.state.moduleId,
-                                              lessonId: this.state.lessonId,
-                                              assignmentId: widget.id,
-                                              title: widget.title,
-                                              description: widget.description,
-                                              points: widget.points,
-                                              onGoBack: () => this.refresh()
-                                          });
-                                      }
-                                  }}/>
+            <ScrollView style={{padding: 15}}>
+                {this.state.assignments.map(
+                    (assignment, index) => (
+                        <ListItem
+                            onPress={() => this.props.navigation.navigate("Assignment", {
+                                assignmentId: assignment.id,
+                                topicId: this.state.topicId,
+                                title: assignment.title,
+                                points: assignment.points,
+                                description: assignment.description,
+                                refreshFunc: () => this.refreshFunction(this.state.topicId)
+                            })}
+                            key={index}
+                            leftIcon={{name: 'event-note'}}
+                            subtitle={assignment.description + " - " + assignment.points + " pts"}
+                            title={assignment.title}/>))}
+                {this.state.exams.map(
+                    (exam, index) => (
+                        <ListItem
+                            onPress={() => this.props.navigation.navigate("Exam", {
+                                examId: exam.id,
+                                topicId: this.state.topicId,
+                                title: exam.title,
+                                description: exam.description,
+                                refreshFunc: () => this.refreshFunction(this.state.topicId)
+                            })}
+                            key={index}
+                            leftIcon={{name: 'alarm'}}
+                            title={exam.title}/>))}
+                <Picker
+                    style={{height: 120}}
+                    itemStyle={{height: 100}}
+                    onValueChange={(itemValue, itemIndex) => this.setState({questionType: itemValue})}
+                    selectedValue={this.state.questionType}>
+                    <Picker.Item value="ASSIGNMENT" label="Assignment"/>
+                    <Picker.Item value="EXAM" label="Exam"/>
+                </Picker>
+                <Button
+                    backgroundColor="cornflowerblue"
+                    onPress={() => this.addWidget()}
+                    color="white"
+                    title="Add Widget"/>
+                <Text>{"\n"}</Text>
 
-                    );
-                })}
-                <WidgetTypePicker navigation={this.props.navigation} lessonId={this.state.lessonId}/>
             </ScrollView>
-        );
+        )
     }
 }
+
+export default WidgetList

@@ -1,7 +1,7 @@
-import React from 'react';
-import TopicServiceClient from "../services/TopicServiceClient";
-import {ScrollView} from 'react-native';
-import {ListItem} from "react-native-elements";
+import React, {Component} from 'react'
+import {ScrollView, View, Alert} from 'react-native'
+import {Text, ListItem} from 'react-native-elements'
+import CourseServiceClient from '../services/CourseService'
 
 
 export default class TopicList
@@ -13,25 +13,27 @@ export default class TopicList
         super(props);
 
         this.state = {
-            courseId: 0,
-            moduleId: 0,
-            lessonId: 0,
+            courseId: 1,
+            moduleId: 1,
+            lessonId: 1,
             topics: []
         };
 
-        this.topicServiceClient = TopicServiceClient.instance();
+        this.courseService = CourseServiceClient.instance();
     }
 
     componentDidMount() {
-        const courseId = this.props.navigation.getParam('courseId', 0);
-        const moduleId = this.props.navigation.getParam('moduleId', 0);
-        const lessonId = this.props.navigation.getParam('lessonId', 0);
+
+        const {navigation} = this.props;
+        const courseId = this.props.navigation.getParam('courseId', 1);
+        const moduleId = this.props.navigation.getParam('moduleId', 1);
+        const lessonId = this.props.navigation.getParam('lessonId', 1);
 
         this.setState({courseId: courseId});
         this.setState({moduleId: moduleId});
         this.setState({lessonId: lessonId});
 
-        this.topicServiceClient.findAllTopicsForLesson(courseId, moduleId,lessonId)
+        this.courseService.findAllTopicsForLesson(courseId, moduleId,lessonId)
             .then((topics) => {
                 this.setState({topics: topics});
             });
@@ -39,9 +41,11 @@ export default class TopicList
 
     render() {
         return (
-            <ScrollView>
-                {this.state.topics.map((topic) =>
+            <ScrollView style={{padding: 15}}>
+                {this.state.topics.map(
+                    (topic, index) => (
                     <ListItem
+                        leftIcon={{name: 'equalizer'}}
                         onPress={() =>
                             this.props.navigation.navigate("WidgetList", {
                                 courseId: this.state.courseId,
@@ -50,7 +54,7 @@ export default class TopicList
                                 topicId: topic.id,
                             })}
                         title={topic.title}
-                        key={topic.id}/>)}
+                        key={index}/>))}
             </ScrollView>
         );
     }

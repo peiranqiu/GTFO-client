@@ -1,44 +1,41 @@
-import React from 'react';
-import {ListItem} from 'react-native-elements';
-import CourseServiceClient from "../services/CourseServiceClient";
-import {StatusBar, ScrollView} from 'react-native';
-import FixedHeader from "../elements/FixedHeader";
+import React, {Component} from 'react'
+import {StatusBar, ScrollView, View, Alert} from 'react-native'
+import {Text, ListItem} from 'react-native-elements'
+import CourseServiceClient from '../services/CourseService'
 
-
-export default class CourseList
-    extends React.Component {
-    static navigationOptions = {title: 'Courses'};
+class CourseList extends Component {
+    static navigationOptions = {title: 'Courses'}
 
     constructor(props) {
         super(props);
+        this.courseService = CourseServiceClient.instance;
 
+        this.courseService.findAllCourses()
+            .then(courses => {
+                this.setState({courses: courses})
+            });
         this.state = {
             courses: []
-        };
-
-        this.courseServiceClient = CourseServiceClient.instance();
-    }
-
-    componentDidMount() {
-        this.courseServiceClient.findAllCourses()
-            .then((courses) => {
-                this.setState({courses: courses})
-            })
+        }
     }
 
     render() {
         return (
             <ScrollView>
-                <StatusBar barStyle='light-content'/>
-                <FixedHeader/>
-                {this.state.courses.map((course) =>
-                    (<ListItem
-                        onPress={() => {
-                            this.props.navigation.navigate("ModuleList", {courseId: course.id})
-                        }}
-                        title={course.title}
-                        key={course.id}/>))}
+                <StatusBar barStyle="dark-content"/>
+                <View style={{padding: 15}}>
+                    {this.state.courses.map((course, index) => (
+                        <ListItem
+                            onPress={() => this.props.navigation.navigate("ModuleList",
+                                {courseId: course.id})}
+                            title={course.title}
+                            leftIcon={{name: 'label'}}
+                            key={index}/>
+                    ))}
+                </View>
             </ScrollView>
-        );
+        )
     }
 }
+
+export default CourseList

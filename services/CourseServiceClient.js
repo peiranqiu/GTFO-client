@@ -17,7 +17,7 @@ export default class CourseServiceClient {
         return this[_singleton]
     }
 
-    finaAllTopicsForLesson(courseId, moduleId, lessonId) {
+    findAllTopicsForLesson(courseId, moduleId, lessonId) {
         return fetch(TOPIC_API_URL
             .replace('CID', courseId)
             .replace('MID', moduleId)
@@ -25,7 +25,7 @@ export default class CourseServiceClient {
             .then(response => (response.json()));
     }
 
-    finaAllLessonsForModule(courseId, moduleId) {
+    findAllLessonsForModule(courseId, moduleId) {
         return fetch(LESSON_API_URL
             .replace('CID', courseId)
             .replace('MID', moduleId))
