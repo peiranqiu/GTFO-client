@@ -4,7 +4,7 @@ import {Text, ListItem} from 'react-native-elements'
 import CourseServiceClient from '../services/CourseServiceClient'
 
 class CourseList extends Component {
-    static navigationOptions = {title: 'Courses'}
+    //static navigationOptions = {title: 'Courses'}
 
     constructor(props) {
         super(props);

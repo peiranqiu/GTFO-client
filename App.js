@@ -1,32 +1,40 @@
-import React from 'react'
-import {createStackNavigator, StackNavigator} from 'react-navigation'
+import React, {Component} from 'react';
+import {AsyncStorage} from 'react-native';
+import Storage from 'react-native-storage';
+import PostServiceClient from "./services/PostServiceClient.js";
+import {createAppContainer, createStackNavigator} from "react-navigation";
+import Home from "./components/Home";
+import Welcome from "./components/Welcome";
+import Explore from "./components/Explore";
 
-import CourseList from './components/CourseList'
-import ModuleList from './components/ModuleList'
-import LessonList from './components/LessonList'
-import WidgetList from './components/WidgetList'
-
-import Assignment from './elements/Assignment'
-import Exam from './elements/Exam'
-
-import EssayQuestionEditor from './elements/EssayQuestionEditor'
-import FillInTheBlankQuestionEditor from './elements/FillInTheBlankQuestionEditor'
-import TrueFalseQuestionEditor from './elements/TrueFalseQuestionEditor'
-import MultipleChoiceQuestionEditor from './elements/MultipleChoiceQuestionEditor'
-import TopicList from "./components/TopicList";
-
-const App = createStackNavigator({
-    CourseList,
-    Assignment,
-    Exam,
-    ModuleList,
-    LessonList,
-    TopicList,
-    WidgetList,
-    TrueFalseQuestionEditor,
-    MultipleChoiceQuestionEditor,
-    EssayQuestionEditor,
-    FillInTheBlankQuestionEditor,
+const storage = new Storage({
+    size: 1000,
+    storageBackend: AsyncStorage,
+    defaultExpires: 1000 * 3600 * 24 * 30,
+    enableCache: true
 });
 
-export default App;
+const AppNavigator = createStackNavigator({
+        Welcome: Welcome,
+        Home: Home,
+        Explore: Explore
+    },
+    {
+        initialRouteName: "Explore",
+        headerMode: 'none',
+        navigationOptions: {
+            headerVisible: false,
+        }
+    });
+const AppContainer = createAppContainer(AppNavigator);
+
+export default class App extends Component {
+
+    render() {
+        global.storage = storage;
+        global.activeNav = "explore";
+        this.interval = setInterval(() => PostServiceClient.instance.updateAll(), 1000 * 60 * 10);
+        return <AppContainer/>;
+    }
+}
+
