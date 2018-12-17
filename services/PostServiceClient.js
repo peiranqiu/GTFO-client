@@ -19,10 +19,10 @@ export default class PostServiceClient {
     }
 
     findAllPosts() {
-        return fetch(constants.SERVER + 'instagram/post').then(response => (response.json()));
+        return fetch(constants.SERVER + 'post').then(response => (response.json()));
     }
 
     findAllBusinesses() {
-        return fetch(constants.SERVER + 'instagram/business').then(response => (response.json()));
+        return fetch(constants.SERVER + 'business').then(response => (response.json()));
     }
 }

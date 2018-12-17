@@ -1,9 +1,10 @@
 import React, {Component} from 'react'
-import {View} from 'react-native'
+import {SafeAreaView, View} from 'react-native'
 import PostServiceClient from '../services/PostServiceClient'
 import AppBottomNav from './AppBottomNav'
-import MapView from 'react-native-maps';
+import {MapView} from "expo"
 import Geolocation from 'react-native-geolocation-service';
+import * as constants from "../constants/constant";
 
 export default class Explore extends Component {
 
@@ -12,6 +13,7 @@ export default class Explore extends Component {
         this.postService = PostServiceClient.instance;
         this.state = {
             businesses: [],
+            posts: [],
             user: null,
             region: null
         }
@@ -28,7 +30,12 @@ export default class Explore extends Component {
             });
         this.postService.findAllBusinesses()
             .then(businesses => {
-                this.setState({businesses: businesses})
+                this.setState({businesses: businesses});
+                // let posts = [];
+                // businesses.map(business => {
+                //     posts.concat(business.posts)
+                // });
+                // this.setState({posts: posts});
             });
         Geolocation.getCurrentPosition(
             (position) => {
@@ -36,8 +43,8 @@ export default class Explore extends Component {
                     region: {
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
+                        latitudeDelta: 0.08,
+                        longitudeDelta: 0.08,
                     }
                 });
             },
@@ -49,14 +56,25 @@ export default class Explore extends Component {
 
     render() {
         return (
-            <View style={{flex: 1, justifyContent: 'flex-end'}}>
+            <View style={{flex: 1}}>
                 {this.state.region !== null &&
                 <MapView
-                    //provider={PROVIDER_GOOGLE}
+                    style={{flex: 1}}
+                    provider="google"
                     region={this.state.region}
-                    onRegionChange={(region) => this.setState({region: region})}
-                />}
-                <AppBottomNav/>
+                    customMapStyle={constants.MAP_STYLE}
+                >
+                    {this.state.businesses !== undefined &&
+                    this.state.businesses.map(business => (
+                        <MapView.Marker
+                            key={business.id}
+                            coordinate={{latitude: business.latitude, longitude: business.longitude}}
+                        />))}
+                </MapView>
+                }
+                <SafeAreaView style={{justifyContent: 'flex-end'}}>
+                    <AppBottomNav/>
+                </SafeAreaView>
             </View>
         )
     }

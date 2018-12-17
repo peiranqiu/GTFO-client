@@ -2,9 +2,7 @@ import React, {Component} from 'react'
 import {BottomNavigation} from 'react-native-material-ui';
 import {withNavigation} from 'react-navigation';
 
-
 class AppBottomNav extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -14,7 +12,14 @@ class AppBottomNav extends Component {
 
     render() {
         return (
-            <BottomNavigation active={activeNav} hidden={false}>
+            <BottomNavigation
+                style={{
+                    container: {
+                        borderWidth: 0,
+                        shadowOpacity: 0
+                    }
+                }}
+                active={activeNav} hidden={false}>
                 <BottomNavigation.Action
                     key="home"
                     icon="home"
@@ -31,13 +36,14 @@ class AppBottomNav extends Component {
                     key="chats"
                     icon="chat"
                     label="Chats"
-                    onPress={() => alert(this.state.active)}
+                    onPress={() => {
+                    }}
                 />
                 <BottomNavigation.Action
                     key="me"
                     icon="account-circle"
                     label="Me"
-                    onPress={() => alert(this.state.active)}
+                    onPress={() => this.props.navigation.navigate("Me")}
                 />
             </BottomNavigation>
         )

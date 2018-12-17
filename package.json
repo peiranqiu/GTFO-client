@@ -22,6 +22,7 @@
     "@material-ui/core": "^3.6.2",
     "@material-ui/icons": "^3.0.1",
     "babel-preset-es2015": "^6.24.1",
+    "babel-preset-expo": "^5.0.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "cross-cookie": "0.0.9",
@@ -29,10 +30,10 @@
     "expo": "^27.1.1",
     "expo-cli": "^2.6.13",
     "prop-types": "^15.6.2",
-    "react": "16.3.1",
+    "react": "^16.3.1",
     "react-dom": "^16.6.3",
     "react-iframe": "^1.3.3",
-    "react-native": "~0.55.2",
+    "react-native": "^0.55.4",
     "react-native-bottom-navigation": "^0.7.6",
     "react-native-cookie": "^0.2.0",
     "react-native-cookiemanager": "^0.2.0",
@@ -47,7 +48,8 @@
     "react-native-vector-icons": "^6.1.0",
     "react-navigation": "^3.0.8",
     "react-redux": "^5.0.7",
-    "redux": "^4.0.0"
+    "redux": "^4.0.0",
+    "styled-components": "^4.1.2"
   },
   "babel": {
     "presets": [

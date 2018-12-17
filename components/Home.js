@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
-import {ScrollView, View} from 'react-native'
-import {ListItem} from 'react-native-elements'
+import {Image, SafeAreaView, ScrollView, Text, View} from 'react-native'
+import {Card} from 'react-native-elements'
 import PostServiceClient from '../services/PostServiceClient'
 import AppBottomNav from './AppBottomNav'
 
@@ -32,18 +32,22 @@ export default class Home extends Component {
 
     render() {
         return (
-            <View style={{flex: 1, justifyContent: 'flex-end'}}>
-                <ScrollView style={{marginTop: 30}}>
-                    <View style={{padding: 15}}>
+            <SafeAreaView style={{flex: 1, justifyContent: 'flex-end'}}>
+                <ScrollView>
+                    <View style={{marginTop: 100}}>
                         {this.state.posts.map((post, i) => (
-                            <ListItem
-                                title={post.content}
-                                key={i}/>
+                            <Card key={i}>
+                                <Image
+                                    style={{height: 200}}
+                                    source={{uri: post.photo}}
+                                />
+                                <Text>{post.content}</Text>
+                            </Card>
                         ))}
                     </View>
                 </ScrollView>
                 <AppBottomNav/>
-            </View>
+            </SafeAreaView>
         )
     }
 }

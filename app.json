@@ -1,5 +1,18 @@
 {
   "expo": {
-    "sdkVersion": "27.0.0"
+    "name": "GTFO",
+    "icon": "./resources/logos/gtfo-logo.png",
+    "version": "1.0.0",
+    "slug": "gtfo",
+    "sdkVersion": "27.0.0",
+    "ios": {
+      "bundleIdentifier": "com.gtfo.demo",
+      "config": {
+        "googleMapsApiKey": "AIzaSyD8Gpn93BQCNz2U-hi_6XYGY8gAbcHkSaU"
+      }
+    },
+    "android": {
+      "package": "com.gtfo.demo"
+    }
   }
 }
