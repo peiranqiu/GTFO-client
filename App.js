@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {AsyncStorage, YellowBox} from 'react-native';
+import {AsyncStorage, YellowBox, Animated, Easing} from 'react-native';
 import Storage from 'react-native-storage';
 import PostServiceClient from "./services/PostServiceClient.js";
 import {createAppContainer, createStackNavigator} from "react-navigation";
@@ -30,7 +30,14 @@ const AppNavigator = createStackNavigator({
         headerMode: 'none',
         navigationOptions: {
             headerVisible: false,
-        }
+        },
+        transitionConfig : () => ({
+            transitionSpec: {
+                duration: 0,
+                timing: Animated.timing,
+                easing: Easing.step0,
+            },
+        }),
     });
 const AppContainer = createAppContainer(AppNavigator);
 

@@ -16,7 +16,8 @@ class AppBottomNav extends Component {
                 style={{
                     container: {
                         borderWidth: 0,
-                        shadowOpacity: 0
+                        shadowOpacity: 0,
+                        paddingTop: 10
                     }
                 }}
                 active={activeNav} hidden={false}>

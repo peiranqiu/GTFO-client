@@ -32,9 +32,9 @@ export default class Home extends Component {
 
     render() {
         return (
-            <SafeAreaView style={{flex: 1, justifyContent: 'flex-end'}}>
+            <SafeAreaView style={{flex: 1}}>
                 <ScrollView>
-                    <View style={{marginTop: 100}}>
+                    <View style={{marginTop: 124}}>
                         {this.state.posts.map((post, i) => (
                             <Card key={i}>
                                 <Image
@@ -46,7 +46,7 @@ export default class Home extends Component {
                         ))}
                     </View>
                 </ScrollView>
-                <AppBottomNav/>
+                <AppBottomNav style={{alignSelf: 'flex-end'}}/>
             </SafeAreaView>
         )
     }
