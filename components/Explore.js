@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
-import {SafeAreaView, View, Image, Text, StyleSheet} from 'react-native'
-import {Card} from 'react-native-elements'
+import {SafeAreaView, View, Image, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native'
 import PostServiceClient from '../services/PostServiceClient'
 import AppBottomNav from './AppBottomNav'
 import {MapView} from "expo"
@@ -94,7 +93,7 @@ export default class Explore extends Component {
             <View style={{flex: 1}}>
                 {this.state.region !== null &&
                 <MapView
-                    style={{flex: 1, justifyContent: 'flex-end'}}
+                    style={{position: 'absolute', left: 0, right: 0, top: 0, bottom: 0}}
                     provider="google"
                     region={this.state.region}
                     customMapStyle={constants.MAP_STYLE}>
@@ -106,39 +105,54 @@ export default class Explore extends Component {
                             image={this.getCategory(business.category)}
                             coordinate={{latitude: business.latitude, longitude: business.longitude}}
                         />))}
+                </MapView>
+                }
+
+                <View style={{position: 'absolute', bottom: 0, left: 0, right: 0}}>
                     {this.state.businesses !== undefined && this.state.businesses[this.state.selected] !== undefined &&
-                    <View style={{
-                        height: 175,
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        borderRadius: 12,
-                        borderWidth: 0,
-                        backgroundColor: 'white',
-                        margin: 10,
-                        shadowOpacity: 0.15,
-                        shadowRadius: 15,
-                    }}>
-                        <Image style={{
-                            height: 115,
-                            width: 115,
-                            margin:20
-                        }}
+                    <TouchableOpacity style={styles.card}>
+                        <Image style={styles.image}
                                source={{uri: this.state.businesses[this.state.selected].posts[0].photo}}
                         />
-                        <View>
+                        <View style={styles.text}>
                             <Text>{this.state.businesses[this.state.selected].name}</Text>
                             <Text>{this.state.businesses[this.state.selected].posts[0].content}</Text>
 
                         </View>
-                    </View>}
-                </MapView>
-                }
-                <SafeAreaView>
-                    <AppBottomNav style={{alignSelf: 'flex-end'}}/>
-                </SafeAreaView>
+                    </TouchableOpacity>}
+                    <View style={{backgroundColor: 'white', bottom: 0}}>
+                        <SafeAreaView>
+                            <AppBottomNav/></SafeAreaView>
+                    </View>
+                </View>
             </View>
         )
 
-
     }
 }
+
+const styles = StyleSheet.create({
+    card: {
+        height: 175,
+        alignSelf: 'center',
+        flexDirection: 'row',
+        borderRadius: 12,
+        borderWidth: 0,
+        backgroundColor: 'white',
+        shadowOpacity: 0.15,
+        shadowRadius: 15,
+        margin: 10,
+        padding: 20
+    },
+    image: {
+        height: 115,
+        width: 115,
+        resizeMode: 'cover',
+        borderRadius: 10
+    },
+    text: {
+        width: Dimensions.get('window').width - 175,
+        flexWrap: 'wrap',
+        paddingHorizontal: 20
+    }
+});

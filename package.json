@@ -37,6 +37,7 @@
     "react-native-bottom-navigation": "^0.7.6",
     "react-native-cookie": "^0.2.0",
     "react-native-cookiemanager": "^0.2.0",
+    "react-native-easy-grid": "^0.2.0",
     "react-native-elements": "^0.19.1",
     "react-native-geolocation-service": "^2.0.0",
     "react-native-instagram-login": "^1.0.8",
