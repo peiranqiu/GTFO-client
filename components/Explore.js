@@ -11,6 +11,7 @@ import empty from '../resources/icons/empty.png';
 import movie from '../resources/icons/movie.png';
 import food from '../resources/icons/food.png';
 import music from '../resources/icons/music.png';
+import {SearchBar} from 'react-native-elements'
 
 
 export default class Explore extends Component {
@@ -108,6 +109,14 @@ export default class Explore extends Component {
                 </MapView>
                 }
 
+                <SafeAreaView style={{position: 'absolute', top: 0, left: 0, right: 0}}>
+                    <SearchBar
+                        noIcon
+                        inputStyle = {styles.searchInput}
+                        containerStyle={styles.searchContainer}
+                        onFocus={() => this.props.navigation.navigate("Search")}
+                        placeholder='Search Places'/>
+                </SafeAreaView>
                 <View style={{position: 'absolute', bottom: 0, left: 0, right: 0}}>
                     {this.state.businesses !== undefined && this.state.businesses[this.state.selected] !== undefined &&
                     <TouchableOpacity style={styles.card}>
@@ -154,5 +163,26 @@ const styles = StyleSheet.create({
         width: Dimensions.get('window').width - 175,
         flexWrap: 'wrap',
         paddingHorizontal: 20
+    },
+    searchContainer: {
+        backgroundColor: 'white',
+        borderTopWidth: 0,
+        borderBottomWidth: 0,
+        borderRadius: 30,
+        shadowOpacity: 0.06,
+        shadowOffset: {width: 0, height: 0},
+        shadowRadius: 10,
+        width: 237,
+        alignSelf: 'center',
+        marginTop: 10
+    },
+    searchInput: {
+        height: 24,
+        backgroundColor: 'white',
+        borderColor: 'white',
+        borderRadius: 30,
+        borderWidth: 1,
+        fontSize: 14,
+        textAlign: 'center'
     }
 });

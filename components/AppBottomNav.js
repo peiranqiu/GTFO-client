@@ -37,8 +37,7 @@ class AppBottomNav extends Component {
                     key="chats"
                     icon="chat"
                     label="Chats"
-                    onPress={() => {
-                    }}
+                    onPress={() => {this.props.navigation.navigate("Chats")}}
                 />
                 <BottomNavigation.Action
                     key="me"
