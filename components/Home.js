@@ -1,17 +1,25 @@
 import React, {Component} from 'react'
-import {StyleSheet, Dimensions, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native'
+import {Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import PostServiceClient from '../services/PostServiceClient'
 import AppBottomNav from './AppBottomNav'
-import {SearchBar} from 'react-native-elements'
+import {Icon, SearchBar} from 'react-native-elements'
+import Modal from "react-native-modal";
+import UserServiceClient from "../services/UserServiceClient";
+import Business from './Business'
+
 
 export default class Home extends Component {
 
     constructor(props) {
         super(props);
         this.postService = PostServiceClient.instance;
+        this.userService = UserServiceClient.instance;
         this.state = {
-            posts: [],
+            businesses: [],
             user: null,
+            visible: false,
+            selected: null,
+            appReady: false
         }
         activeNav = "home";
     }
@@ -24,29 +32,48 @@ export default class Home extends Component {
             .catch(err => {
                 this.props.navigation.navigate("Welcome");
             });
-        this.postService.findAllPosts()
-            .then(posts => {
-                this.setState({posts: posts})
+        this.postService.findAllBusinesses()
+            .then(businesses => {
+                this.setState({businesses: businesses, appReady: true});
             });
     }
 
     render() {
+        if (!this.state.appReady) {
+            return null;
+        }
         return (
             <SafeAreaView style={{flex: 1}}>
-                <SearchBar
-                    noIcon
-                    inputStyle = {styles.searchInput}
-                    containerStyle={styles.searchContainer}
-                    onFocus={() => this.props.navigation.navigate("Search")}
-                    placeholder='Search Places'/>
-                <ScrollView style={{marginTop: 60}}>
-                    {this.state.posts.map((post, i) => (
-                        <TouchableOpacity key={i} style={styles.card}>
+                <Modal isVisible={this.state.visible}>
+                    <ScrollView style={styles.modal}>
+                        <Icon name='close'
+                              containerStyle={{position: 'absolute', right: 0, top: -30}}
+                              iconStyle={{color: 'grey'}}
+                              onPress={() => this.setState({visible: false})}
+                        />
+                        <Business business={this.state.businesses[this.state.selected]}/>
+                    </ScrollView>
+                </Modal>
+
+                <ScrollView>
+                    <SearchBar
+                        noIcon
+                        inputStyle={styles.searchInput}
+                        containerStyle={styles.searchContainer}
+                        onFocus={() => this.props.navigation.navigate("Search")}
+                        placeholder='Search Places'/>
+                    {this.state.businesses.map((business, i) => (
+                        <TouchableOpacity key={i}
+                                          style={styles.card}
+                                          onPress={() => this.setState({selected: i, visible: true})}>
                             <Image style={styles.image}
-                                   source={{uri: post.photo}}
+                                   source={{uri: business.posts[0].photo}}
                             />
                             <View style={styles.text}>
-                                <Text>{post.content}</Text>
+                                <Text>{business.posts[0].user.name}</Text>
+                                <Text>{business.posts[0].content}</Text>
+                                <Text>{business.name}</Text>
+                                <Text>{business.address}</Text>
 
                             </View>
                         </TouchableOpacity>
@@ -65,7 +92,8 @@ const styles = StyleSheet.create({
         left: 10,
         right: 10,
         backgroundColor: 'white',
-        shadowOpacity: 0.15,
+        shadowRadius: 20,
+        shadowOpacity: 0.3,
         shadowOffset: {width: 0, height: 0},
         marginVertical: 10,
         padding: 5
@@ -74,7 +102,8 @@ const styles = StyleSheet.create({
         height: 294,
         width: '100%',
         resizeMode: 'cover',
-        borderRadius: 10
+        borderRadius: 10,
+        marginBottom: 20
     },
     text: {
         flexWrap: 'wrap',
@@ -85,12 +114,13 @@ const styles = StyleSheet.create({
         borderTopWidth: 0,
         borderBottomWidth: 0,
         borderRadius: 30,
-        shadowOpacity: 0.06,
+        shadowOpacity: 0.1,
         shadowOffset: {width: 0, height: 0},
         shadowRadius: 10,
         width: 237,
         alignSelf: 'center',
-        marginTop: 10
+        marginTop: 10,
+        marginBottom: 50
     },
     searchInput: {
         height: 24,
@@ -100,5 +130,15 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         fontSize: 14,
         textAlign: 'center'
-    }
+    },
+    modal: {
+        flex: 1,
+        backgroundColor: 'white',
+        shadowRadius: 20,
+        shadowOpacity: 0.3,
+        shadowOffset: {width: 0, height: 0},
+        paddingHorizontal: 5,
+        paddingTop: 40,
+        marginVertical: 30
+    },
 });

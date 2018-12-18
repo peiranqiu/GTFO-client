@@ -34,11 +34,14 @@ export default class Me extends Component {
     }
 
     render() {
+
+        if(this.state.user === null) {
+            return null;
+        }
         return (
             <SafeAreaView style={{flex: 1}}>
 
                 <View style={{marginTop: 50, flex: 1}}>
-                    {this.state.user !== null &&
                     <View style={{
                         justifyContent: 'center',
                         alignContent: 'center',
@@ -47,11 +50,12 @@ export default class Me extends Component {
                         <Avatar medium rounded source={{uri: this.state.user.picture}}/>
                         <Text style={{marginTop: 10}}>@{this.state.user.username}</Text>
                     </View>
-                    }
+
                     <List containerStyle={{borderColor: 'white', marginTop: 80, paddingBottom: 40}}>
                         <ListItem containerStyle={styles.listItem}
                                   leftIcon={<Image style={styles.listImage}
                                                    source={friends}/>}
+                                  onPress={() => this.props.navigation.navigate("Friend")}
                                   title="Friends"
                                   hideChevron/>
                         <ListItem containerStyle={styles.listItem}

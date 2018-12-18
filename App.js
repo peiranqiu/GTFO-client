@@ -9,6 +9,7 @@ import Explore from "./components/Explore";
 import Me from "./components/Me";
 import Search from "./components/Search";
 import Chats from "./components/Chats";
+import Friend from "./components/Friend";
 import {Font} from 'expo'
 
 YellowBox.ignoreWarnings(['Remote debugger']);
@@ -27,15 +28,16 @@ const AppNavigator = createStackNavigator({
         Explore: Explore,
         Me: Me,
         Search: Search,
-        Chats: Chats
+        Chats: Chats,
+        Friend: Friend
     },
     {
-        initialRouteName: "Chats",
+        initialRouteName: "Home",
         headerMode: 'none',
         navigationOptions: {
             headerVisible: false,
         },
-        transitionConfig : () => ({
+        transitionConfig: () => ({
             transitionSpec: {
                 duration: 0,
                 timing: Animated.timing,
@@ -51,19 +53,20 @@ export default class App extends Component {
         fontLoaded: false,
     };
 
+
     async componentDidMount() {
         await Font.loadAsync({
             'Material Icons': require('@expo/vector-icons/fonts/MaterialIcons.ttf'),
         });
 
-        this.setState({ fontLoaded: true });
+        this.setState({fontLoaded: true});
     }
 
     render() {
         global.storage = storage;
         global.activeNav = "explore";
         this.interval = setInterval(() => PostServiceClient.instance.updateAll(), 1000 * 60 * 10);
-        if(!this.state.fontLoaded) {
+        if (!this.state.fontLoaded) {
             return null;
         }
         return <AppContainer/>;

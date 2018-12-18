@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {SafeAreaView, View, Image, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native'
+import {Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import PostServiceClient from '../services/PostServiceClient'
 import AppBottomNav from './AppBottomNav'
 import {MapView} from "expo"
@@ -11,7 +11,9 @@ import empty from '../resources/icons/empty.png';
 import movie from '../resources/icons/movie.png';
 import food from '../resources/icons/food.png';
 import music from '../resources/icons/music.png';
-import {SearchBar} from 'react-native-elements'
+import {Icon, SearchBar} from 'react-native-elements'
+import Modal from "react-native-modal";
+import Business from "./Business";
 
 
 export default class Explore extends Component {
@@ -21,10 +23,11 @@ export default class Explore extends Component {
         this.postService = PostServiceClient.instance;
         this.state = {
             businesses: [],
-            posts: [],
             user: null,
             region: null,
-            selected: 2
+            selected: 0,
+            visible: false,
+            appReady: false
         }
         activeNav = "explore";
     }
@@ -36,15 +39,6 @@ export default class Explore extends Component {
             })
             .catch(err => {
                 this.props.navigation.navigate("Welcome");
-            });
-        this.postService.findAllBusinesses()
-            .then(businesses => {
-                this.setState({businesses: businesses});
-                // let posts = [];
-                // businesses.map(business => {
-                //     posts.concat(business.posts)
-                // });
-                // this.setState({posts: posts});
             });
         Geolocation.getCurrentPosition(
             (position) => {
@@ -61,6 +55,15 @@ export default class Explore extends Component {
             },
             {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000}
         );
+
+        this.postService.findAllBusinesses()
+            .then(businesses => {
+                this.setState({businesses: businesses, appReady: true});
+            });
+    }
+
+    markerSelected(index) {
+        this.setState({selected: index});
     }
 
     getCategory(category) {
@@ -85,11 +88,11 @@ export default class Explore extends Component {
         }
     }
 
-    markerSelected(index) {
-        this.setState({selected: index});
-    }
-
     render() {
+
+        if (!this.state.appReady) {
+            return null;
+        }
         return (
             <View style={{flex: 1}}>
                 {this.state.region !== null &&
@@ -98,28 +101,40 @@ export default class Explore extends Component {
                     provider="google"
                     region={this.state.region}
                     customMapStyle={constants.MAP_STYLE}>
-                    {this.state.businesses !== undefined &&
-                    this.state.businesses.map((business, index) => (
+                    {this.state.businesses.map((business, index) => (
                         <MapView.Marker
                             key={index}
-                            onPress={(e) => this.markerSelected(e._targetInst.return.key)}
+                            onPress={(e) => {
+                                this.markerSelected(e._targetInst.return.key)
+                            }}
                             image={this.getCategory(business.category)}
                             coordinate={{latitude: business.latitude, longitude: business.longitude}}
                         />))}
                 </MapView>
                 }
 
+                <Modal isVisible={this.state.visible}>
+                    <ScrollView style={styles.modal}>
+                        <Icon name='close'
+                              containerStyle={{position: 'absolute', right: 0, top: -30}}
+                              iconStyle={{color: 'grey'}}
+                              onPress={() => this.setState({visible: false})}
+                        />
+                        <Business business={this.state.businesses[this.state.selected]}/>
+                    </ScrollView>
+                </Modal>
+
                 <SafeAreaView style={{position: 'absolute', top: 0, left: 0, right: 0}}>
                     <SearchBar
                         noIcon
-                        inputStyle = {styles.searchInput}
+                        inputStyle={styles.searchInput}
                         containerStyle={styles.searchContainer}
                         onFocus={() => this.props.navigation.navigate("Search")}
                         placeholder='Search Places'/>
                 </SafeAreaView>
                 <View style={{position: 'absolute', bottom: 0, left: 0, right: 0}}>
-                    {this.state.businesses !== undefined && this.state.businesses[this.state.selected] !== undefined &&
-                    <TouchableOpacity style={styles.card}>
+                    <TouchableOpacity style={styles.card}
+                                      onPress={() => this.setState({visible: true})}>
                         <Image style={styles.image}
                                source={{uri: this.state.businesses[this.state.selected].posts[0].photo}}
                         />
@@ -128,10 +143,11 @@ export default class Explore extends Component {
                             <Text>{this.state.businesses[this.state.selected].posts[0].content}</Text>
 
                         </View>
-                    </TouchableOpacity>}
+                    </TouchableOpacity>
                     <View style={{backgroundColor: 'white', bottom: 0}}>
                         <SafeAreaView>
-                            <AppBottomNav/></SafeAreaView>
+                            <AppBottomNav/>
+                        </SafeAreaView>
                     </View>
                 </View>
             </View>
@@ -169,7 +185,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 0,
         borderBottomWidth: 0,
         borderRadius: 30,
-        shadowOpacity: 0.06,
+        shadowOpacity: 0.1,
         shadowOffset: {width: 0, height: 0},
         shadowRadius: 10,
         width: 237,
@@ -184,5 +200,15 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         fontSize: 14,
         textAlign: 'center'
-    }
+    },
+    modal: {
+        flex: 1,
+        backgroundColor: 'white',
+        shadowRadius: 20,
+        shadowOpacity: 0.3,
+        shadowOffset: {width: 0, height: 0},
+        paddingHorizontal: 5,
+        paddingTop: 40,
+        marginVertical: 30
+    },
 });

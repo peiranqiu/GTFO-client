@@ -15,9 +15,24 @@ export default class UserServiceClient {
     }
 
     createUser(token) {
-        // alert("creating");
         return fetch(constants.SERVER + 'instagram/user/' + token, {
             method: 'post'
         }).then(response => (response.json()));
+    }
+
+    findUserById(userId) {
+        return fetch(constants.SERVER + 'user/' + userId).then(response => (response.json()));
+    }
+
+    findAllUsers() {
+        return fetch(constants.SERVER + 'user').then(response => (response.json()));
+    }
+
+    findFriendList(userId) {
+        return fetch(constants.SERVER + 'friend/user/' + userId).then(response => (response.json()));
+
+    }
+    findFriendRequests(userId) {
+        return fetch(constants.SERVER + 'friend/request/' + userId).then(response => (response.json()));
     }
 }

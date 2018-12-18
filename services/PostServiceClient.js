@@ -25,4 +25,8 @@ export default class PostServiceClient {
     findAllBusinesses() {
         return fetch(constants.SERVER + 'business').then(response => (response.json()));
     }
+
+    findBusinessforPost(postId) {
+        return fetch(constants.SERVER + 'post/' + postId + '/business').then(response => (response.json()));
+    }
 }
