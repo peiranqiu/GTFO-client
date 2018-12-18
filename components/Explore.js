@@ -140,6 +140,7 @@ export default class Explore extends Component {
                         />
                         <View style={styles.text}>
                             <Text>{this.state.businesses[this.state.selected].name}</Text>
+                            <Text>{this.state.businesses[this.state.selected].posts[0].user.name}</Text>
                             <Text>{this.state.businesses[this.state.selected].posts[0].content}</Text>
 
                         </View>

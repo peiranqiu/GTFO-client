@@ -1,5 +1,16 @@
 import React, {Component} from 'react'
-import {Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
+import {
+    ButtonGroup,
+    FlatList,
+    Dimensions,
+    Image,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native'
 import PostServiceClient from '../services/PostServiceClient'
 import AppBottomNav from './AppBottomNav'
 import {Icon, SearchBar} from 'react-native-elements'
@@ -17,9 +28,11 @@ export default class Home extends Component {
         this.state = {
             businesses: [],
             user: null,
+            filter: "",
             visible: false,
             selected: null,
-            appReady: false
+            appReady: false,
+            selectedIndex: 0
         }
         activeNav = "home";
     }
@@ -39,9 +52,20 @@ export default class Home extends Component {
     }
 
     render() {
+        const data = [
+            {key: "All", category: ""},
+            {key: "Restaurant", category: "food"},
+            {key: "Coffee", category: "coffee"},
+            {key: "Music", category: "music"},
+            {key: "Shopping", category: "shopping"},
+            {key: "Movie", category: "movie"},
+            {key: "Art", category: "art"},
+
+        ];
         if (!this.state.appReady) {
             return null;
         }
+
         return (
             <SafeAreaView style={{flex: 1}}>
                 <Modal isVisible={this.state.visible}>
@@ -62,6 +86,16 @@ export default class Home extends Component {
                         containerStyle={styles.searchContainer}
                         onFocus={() => this.props.navigation.navigate("Search")}
                         placeholder='Search Places'/>
+                    <FlatList horizontal={true}
+                              style={styles.tabGroup}
+                              data={data}
+                              renderItem={({item}) =>
+                                  <Text style={styles.tab}
+                                  onPress={() => {
+                                      this.setState({filter:item.category})
+                                  }}>
+                                      {item.key}
+                                  </Text>}/>
                     {this.state.businesses.map((business, i) => (
                         <TouchableOpacity key={i}
                                           style={styles.card}
@@ -70,6 +104,7 @@ export default class Home extends Component {
                                    source={{uri: business.posts[0].photo}}
                             />
                             <View style={styles.text}>
+
                                 <Text>{business.posts[0].user.name}</Text>
                                 <Text>{business.posts[0].content}</Text>
                                 <Text>{business.name}</Text>
@@ -120,7 +155,6 @@ const styles = StyleSheet.create({
         width: 237,
         alignSelf: 'center',
         marginTop: 10,
-        marginBottom: 50
     },
     searchInput: {
         height: 24,
@@ -141,4 +175,15 @@ const styles = StyleSheet.create({
         paddingTop: 40,
         marginVertical: 30
     },
+    tab: {
+        paddingHorizontal: 20,
+        textAlign: 'center',
+        color: 'grey'
+    },
+    tabGroup: {
+        paddingTop: 40,
+        paddingBottom: 20,
+        height: 80,
+        flex: 1
+    }
 });

@@ -67,6 +67,7 @@ export default class Business extends Component {
                 <View style={styles.text}>
                     <Text>{this.props.business.name}</Text>
                     <Text>{this.props.business.address}</Text>
+                    <Text>{this.props.business.posts[0].user.name}</Text>
                     <Text>{this.props.business.posts[0].content}</Text>
 
                 </View>
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
     },
     text: {
         flexWrap: 'wrap',
-        paddingHorizontal: 20
+        marginBottom: 20
     },
 
     iconOuter: {
