@@ -45,7 +45,7 @@ export default class Search extends Component {
                     <Icon name='chevron-left'
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
                           iconStyle={{color: 'grey'}}
-                          onPress={() => this.props.navigation.navigate("Home")}
+                          onPress={() => this.props.navigation.goBack()}
                     />
                 </View>
                 <Text style={{marginHorizontal: 20, marginVertical: 30}}>Places</Text>

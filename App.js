@@ -32,7 +32,7 @@ const AppNavigator = createStackNavigator({
         Friend: Friend
     },
     {
-        initialRouteName: "Home",
+        initialRouteName: "Explore",
         headerMode: 'none',
         navigationOptions: {
             headerVisible: false,

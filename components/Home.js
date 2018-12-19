@@ -18,6 +18,15 @@ import Modal from "react-native-modal";
 import UserServiceClient from "../services/UserServiceClient";
 import Business from './Business'
 
+const data = [
+    {title: "All", key: ""},
+    {title: "Restaurant", key: "food"},
+    {title: "Coffee", key: "coffee"},
+    {title: "Music", key: "music"},
+    {title: "Shopping", key: "shopping"},
+    {title: "Movie", key: "movie"},
+    {title: "Art", key: "art"},
+];
 
 export default class Home extends Component {
 
@@ -52,19 +61,13 @@ export default class Home extends Component {
     }
 
     render() {
-        const data = [
-            {key: "All", category: ""},
-            {key: "Restaurant", category: "food"},
-            {key: "Coffee", category: "coffee"},
-            {key: "Music", category: "music"},
-            {key: "Shopping", category: "shopping"},
-            {key: "Movie", category: "movie"},
-            {key: "Art", category: "art"},
 
-        ];
-        if (!this.state.appReady) {
-            return null;
-        }
+
+
+        const filteredResults = this.state.businesses.filter(businesses => {
+            return businesses.category.includes(this.state.filter);
+        });
+
 
         return (
             <SafeAreaView style={{flex: 1}}>
@@ -87,16 +90,25 @@ export default class Home extends Component {
                         onFocus={() => this.props.navigation.navigate("Search")}
                         placeholder='Search Places'/>
                     <FlatList horizontal={true}
+                              showsHorizontalScrollIndicator={false}
                               style={styles.tabGroup}
                               data={data}
-                              renderItem={({item}) =>
-                                  <Text style={styles.tab}
-                                  onPress={() => {
-                                      this.setState({filter:item.category})
-                                  }}>
-                                      {item.key}
-                                  </Text>}/>
-                    {this.state.businesses.map((business, i) => (
+                              renderItem={({item}) => (
+                                  item.key === this.state.filter ?
+                                      <Text style={styles.activeTab}
+                                            onPress={() => {
+                                                this.setState({filter: item.key})
+                                            }}>
+                                          {item.title}
+                                      </Text>
+                                      :
+                                      <Text style={styles.tab}
+                                            onPress={() => {
+                                                this.setState({filter: item.key})
+                                            }}>
+                                          {item.title}
+                                      </Text>)}/>
+                    {filteredResults.map((business, i) => (
                         <TouchableOpacity key={i}
                                           style={styles.card}
                                           onPress={() => this.setState({selected: i, visible: true})}>
@@ -176,14 +188,19 @@ const styles = StyleSheet.create({
         marginVertical: 30
     },
     tab: {
-        paddingHorizontal: 20,
+        paddingHorizontal: 25,
         textAlign: 'center',
-        color: 'grey'
+        color: '#cccccc'
+    },
+    activeTab: {
+        paddingHorizontal: 25,
+        textAlign: 'center',
+        color: 'black'
     },
     tabGroup: {
         paddingTop: 40,
         paddingBottom: 20,
         height: 80,
-        flex: 1
+        flex: 1,
     }
 });

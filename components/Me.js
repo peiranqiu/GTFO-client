@@ -100,6 +100,9 @@ const styles = StyleSheet.create({
     listImage: {
         marginLeft: 20,
         marginRight: 20,
+        width:20,
+        height: 20,
+        resizeMode: 'contain'
 
     }
 });

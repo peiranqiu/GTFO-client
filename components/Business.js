@@ -49,6 +49,9 @@ export default class Business extends Component {
             case "food":
                 return food;
                 break;
+            case "shopping":
+                return shopping;
+                break;
             default:
                 return empty;
         }
