@@ -14,6 +14,10 @@ export default class UserServiceClient {
         return this[_singleton]
     }
 
+    updateAvatar() {
+        return fetch(constants.SERVER + 'instagram/user/update').then(response => (response.json()));
+    }
+
     createUser(token) {
         return fetch(constants.SERVER + 'instagram/user/' + token, {
             method: 'post'

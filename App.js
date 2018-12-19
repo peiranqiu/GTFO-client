@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {AsyncStorage, YellowBox, Animated, Easing} from 'react-native';
 import Storage from 'react-native-storage';
 import PostServiceClient from "./services/PostServiceClient.js";
+import UserServiceClient from "./services/UserServiceClient.js";
 import {createAppContainer, createStackNavigator} from "react-navigation";
 import Home from "./components/Home";
 import Welcome from "./components/Welcome";
@@ -10,6 +11,7 @@ import Me from "./components/Me";
 import Search from "./components/Search";
 import Chats from "./components/Chats";
 import Friend from "./components/Friend";
+import Message from "./components/Message";
 import {Font} from 'expo'
 
 YellowBox.ignoreWarnings(['Remote debugger']);
@@ -29,10 +31,11 @@ const AppNavigator = createStackNavigator({
         Me: Me,
         Search: Search,
         Chats: Chats,
-        Friend: Friend
+        Friend: Friend,
+        Message: Message
     },
     {
-        initialRouteName: "Explore",
+        initialRouteName: "Home",
         headerMode: 'none',
         navigationOptions: {
             headerVisible: false,
@@ -62,10 +65,16 @@ export default class App extends Component {
         this.setState({fontLoaded: true});
     }
 
+    autoUpdate() {
+        PostServiceClient.instance.updateAll();
+        UserServiceClient.instance.updateAvatar();
+
+    }
+
     render() {
         global.storage = storage;
         global.activeNav = "explore";
-        this.interval = setInterval(() => PostServiceClient.instance.updateAll(), 1000 * 60 * 10);
+        this.interval = setInterval(() => this.autoUpdate(), 1000 * 60 * 10);
         if (!this.state.fontLoaded) {
             return null;
         }

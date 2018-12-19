@@ -25,13 +25,13 @@ import Modal from "react-native-modal";
 import Business from "./Business";
 
 
-const icons = [{uri: all_sm, filter:""},
-    {uri: food_sm, filter:"food"},
-    {uri: coffee_sm, filter:"coffee"},
-    {uri: shopping_sm, filter:"shopping"},
-    {uri: music_sm, filter:"music"},
-    {uri: art_sm, filter:"art"},
-    {uri: movie_sm, filter:"movie"}];
+const icons = [{uri: all_sm, filter: ""},
+    {uri: food_sm, filter: "food"},
+    {uri: coffee_sm, filter: "coffee"},
+    {uri: shopping_sm, filter: "shopping"},
+    {uri: music_sm, filter: "music"},
+    {uri: art_sm, filter: "art"},
+    {uri: movie_sm, filter: "movie"}];
 
 
 export default class Explore extends Component {
@@ -167,10 +167,10 @@ export default class Explore extends Component {
                     {this.state.dropdown ?
                         <TouchableOpacity style={styles.dropdown}>
                             {icons.map((icon, i) =>
-                                <TouchableOpacity key={i * 10}
+                                <TouchableOpacity key={i}
                                                   onPress={() =>
-                                                      this.setState({icon: i,dropdown: false})}>
-                                    <Image style={styles.icon} source={icon.uri} key={i}/>
+                                                      this.setState({icon: i, dropdown: false})}>
+                                    <Image style={styles.icon} source={icon.uri}/>
                                 </TouchableOpacity>)}
                         </TouchableOpacity> :
                         <TouchableOpacity style={styles.rightCircle}

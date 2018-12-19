@@ -18,9 +18,9 @@ export default class Welcome extends Component {
                 key: 'user',
                 data: {
                     token: token,
-                    id: user.id,
-                    username: user.username,
-                    picture: user.picture
+                    _id: user._id,
+                    name: user.name,
+                    avatar: user.avatar
                 }
             });
             this.props.navigation.navigate("Home");

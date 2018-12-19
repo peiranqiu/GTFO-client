@@ -22,11 +22,11 @@ export default class Friend extends Component {
         storage.load({key: 'user'})
             .then(user => {
                 this.setState({user: user});
-                this.userService.findFriendList(user.id)
+                this.userService.findFriendList(user._id)
                     .then((users) => {
                         this.setState({friends: users})
                     });
-                this.userService.findFriendRequests(user.id)
+                this.userService.findFriendRequests(user._id)
                     .then((friends) => {
                         this.setState({requests: friends});
                     });

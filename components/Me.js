@@ -34,7 +34,6 @@ export default class Me extends Component {
     }
 
     render() {
-
         if(this.state.user === null) {
             return null;
         }
@@ -47,8 +46,8 @@ export default class Me extends Component {
                         alignContent: 'center',
                         alignSelf: 'center'
                     }}>
-                        <Avatar medium rounded source={{uri: this.state.user.picture}}/>
-                        <Text style={{marginTop: 10}}>@{this.state.user.username}</Text>
+                        <Avatar medium rounded source={{uri: this.state.user.avatar}}/>
+                        <Text style={{marginTop: 10}}>@{this.state.user.name}</Text>
                     </View>
 
                     <List containerStyle={{borderColor: 'white', marginTop: 80, paddingBottom: 40}}>
