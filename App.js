@@ -12,6 +12,8 @@ import Search from "./components/Search";
 import Chats from "./components/Chats";
 import Friend from "./components/Friend";
 import Message from "./components/Message";
+import Share from "./components/Share";
+import Notification from "./components/Notification";
 import {Font} from 'expo'
 
 YellowBox.ignoreWarnings(['Remote debugger']);
@@ -32,10 +34,12 @@ const AppNavigator = createStackNavigator({
         Search: Search,
         Chats: Chats,
         Friend: Friend,
-        Message: Message
+        Message: Message,
+        Share: Share,
+    Notification: Notification
     },
     {
-        initialRouteName: "Home",
+        initialRouteName: "Explore",
         headerMode: 'none',
         navigationOptions: {
             headerVisible: false,

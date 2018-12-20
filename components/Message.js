@@ -72,9 +72,7 @@ export default class Message extends Component {
                 <GiftedChat
                     messages={this.state.messages}
                     onSend={this.onSend}
-                    user={{
-                        _id: 7,
-                    }}
+                    user={this.state.user}
                 />
             </SafeAreaView>
         );

@@ -18,4 +18,13 @@ export default class ChatServiceClient {
         return fetch(constants.SERVER + 'user/' + userId + '/chat').then(response => (response.json()));
 
     }
+    createChat(users) {
+        return fetch(constants.SERVER + 'chat', {
+            method: 'post',
+            body: JSON.stringify(users),
+            headers: {
+                'content-type': 'application/json'
+            }
+        }).then(response => response.json());
+    }
 }

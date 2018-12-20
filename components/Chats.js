@@ -42,7 +42,7 @@ export default class Chats extends Component {
                         <TouchableOpacity key={i} style={styles.card}
                         onPress={() => this.props.navigation.navigate("Message", {chat: chat})}>
                             <View>
-                                <Text style={styles.text}>{chat.users.map(user => user.name+',')}({chat.size})</Text>
+                                <Text style={styles.text}>{chat.name}({chat.size})</Text>
                             </View>
                         </TouchableOpacity>
                     ))}

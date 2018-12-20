@@ -20,7 +20,7 @@ import music_sm from '../resources/icons/music-sm.png';
 import shopping_sm from '../resources/icons/shopping-sm.png';
 import notification from '../resources/icons/notification.png';
 import all_sm from '../resources/icons/all.png';
-import {Icon, SearchBar} from 'react-native-elements'
+import {Avatar, Icon, SearchBar} from 'react-native-elements'
 import Modal from "react-native-modal";
 import Business from "./Business";
 
@@ -78,7 +78,16 @@ export default class Explore extends Component {
 
         this.postService.findAllBusinesses()
             .then(businesses => {
-                this.setState({businesses: businesses, appReady: true});
+                businesses.map(business => {
+                    this.postService.findFollowersForBusiness(business.id)
+                        .then(response => {
+                            business.followers = response;
+                            this.setState({appReady: true});
+                        });
+                    this.postService.findIfInterested(business.id, this.state.user._id)
+                        .then(response => business.interested = response);
+                });
+                this.setState({businesses: businesses});
             });
     }
 
@@ -111,14 +120,33 @@ export default class Explore extends Component {
         }
     }
 
+    userLikesBusiness() {
+        this.postService.userLikesBusiness(this.state.businesses[this.state.selected].id, this.state.user)
+            .then(() => {
+                var businesses = this.state.businesses;
+                businesses[this.state.selected].interested = !businesses[this.state.selected].interested;
+                if (businesses[this.state.selected].interested) {
+                    businesses[this.state.selected].followers.push(this.state.user);
+                }
+                else {
+                    businesses[this.state.selected].followers = businesses[this.state.selected].followers.filter(users =>
+                        users._id !== this.state.user._id);
+                }
+                this.setState({businesses: businesses});
+            })
+    }
+
     render() {
 
         if (!this.state.appReady) {
             return null;
         }
-        const filteredResults = this.state.businesses.filter(businesses => {
-            return businesses.category.includes(icons[this.state.icon].filter);
-        });
+
+        let data = this.state.businesses[this.state.selected].followers;
+        const interested = this.state.businesses[this.state.selected].interested;
+        const size = data.length;
+        const followers = size > 3 ? data.slice(0, 3) : data;
+
 
         return (
             <View style={{flex: 1}}>
@@ -129,7 +157,8 @@ export default class Explore extends Component {
                     onPress={() => this.setState({dropdown: false})}
                     region={this.state.region}
                     customMapStyle={constants.MAP_STYLE}>
-                    {filteredResults.map((business, index) => (
+                    {this.state.businesses.map((business, index) => (
+                        business.category.includes(icons[this.state.icon].filter) &&
                         <MapView.Marker
                             key={index}
                             onPress={(e) => {
@@ -137,7 +166,9 @@ export default class Explore extends Component {
                             }}
                             image={this.getCategory(business.category)}
                             coordinate={{latitude: business.latitude, longitude: business.longitude}}
-                        />))}
+                        />
+                    ))}
+
                 </MapView>
                 }
 
@@ -154,7 +185,7 @@ export default class Explore extends Component {
 
                 <SafeAreaView style={styles.topBar}>
                     <TouchableOpacity style={styles.leftCircle}
-                                      onPress={() => this.props.navigation.navigate("Me")}>
+                                      onPress={() => this.props.navigation.navigate("Notification")}>
                         <Image style={styles.icon} source={notification}/>
                     </TouchableOpacity>
                     <SearchBar
@@ -166,6 +197,7 @@ export default class Explore extends Component {
 
                     {this.state.dropdown ?
                         <TouchableOpacity style={styles.dropdown}>
+
                             {icons.map((icon, i) =>
                                 <TouchableOpacity key={i}
                                                   onPress={() =>
@@ -182,14 +214,33 @@ export default class Explore extends Component {
                 <View style={{position: 'absolute', bottom: 0, left: 0, right: 0}}>
                     <TouchableOpacity style={styles.card}
                                       onPress={() => this.setState({visible: true})}>
-                        <Image style={styles.image}
-                               source={{uri: this.state.businesses[this.state.selected].posts[0].photo}}
-                        />
-                        <View style={styles.text}>
-                            <Text>{this.state.businesses[this.state.selected].name}</Text>
-                            <Text>{this.state.businesses[this.state.selected].posts[0].user.name}</Text>
-                            <Text>{this.state.businesses[this.state.selected].posts[0].content}</Text>
-
+                        <View style={{flexDirection: 'row'}}>
+                            <Image style={styles.image}
+                                   source={{uri: this.state.businesses[this.state.selected].posts[0].photo}}
+                            />
+                            <View style={styles.text}>
+                                <Text>{this.state.businesses[this.state.selected].name}</Text>
+                                <Text>{this.state.businesses[this.state.selected].posts[0].user.name}</Text>
+                                <Text>{this.state.businesses[this.state.selected].posts[0].content}</Text>
+                            </View>
+                        </View>
+                        <View style={{flexDirection: 'row', margin: 4}}>
+                            {followers.map((user, i) =>
+                                <Avatar small rounded key={i} source={{uri: user.avatar}}/>)}
+                            {size > 3 && <Text style={{marginVertical: 10, marginLeft: 10}}>+ {size - 3}</Text>}
+                            {size > 0 && <Text style={{margin: 10}}>Interested</Text>}
+                            <View style={{position: 'absolute', right: 5, bottom: 10, flexDirection: 'row'}}>
+                                <Icon
+                                    name={this.state.businesses[this.state.selected].interested ? 'star' : 'star-border'}
+                                    iconStyle={{color: 'grey'}}
+                                    onPress={() => this.userLikesBusiness()}
+                                />
+                                <Icon name='share'
+                                      iconStyle={{color: 'grey'}}
+                                      onPress={() =>
+                                          this.props.navigation.navigate("Share", {business: this.state.businesses[this.state.selected]})}
+                                />
+                            </View>
                         </View>
                     </TouchableOpacity>
                     <View style={{backgroundColor: 'white', bottom: 0}}>
@@ -208,14 +259,14 @@ const styles = StyleSheet.create({
     card: {
         height: 175,
         alignSelf: 'center',
-        flexDirection: 'row',
+        //flexDirection: 'row',
         borderRadius: 12,
         borderWidth: 0,
         backgroundColor: 'white',
         shadowOpacity: 0.15,
         shadowRadius: 15,
         margin: 10,
-        padding: 20
+        padding: 15
     },
     image: {
         height: 115,
