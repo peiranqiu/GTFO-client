@@ -5,6 +5,7 @@ import CustomView from "./CustomView";
 import {Icon} from 'react-native-elements'
 import ChatServiceClient from "../services/ChatServiceClient";
 import PostServiceClient from "../services/PostServiceClient";
+console.disableYellowBox = true;
 
 export default class Message extends Component {
     constructor(props) {
@@ -30,12 +31,22 @@ export default class Message extends Component {
                     this.chatService.createMessage(chat.id, initialMessage)
                         .then(() => {
                             this.chatService.findMessagesForChat(chat.id)
-                                .then(messages => this.setState({messages: messages.reverse()}));
+                                .then(messages =>
+                                    this.setState({
+                                        messages: messages.sort(function (a, b) {
+                                            return new Date(b.createdAt) - new Date(a.createdAt);
+                                        })
+                                    }));
                         })
                 }
                 else {
                     this.chatService.findMessagesForChat(chat.id)
-                        .then(messages => this.setState({messages: messages.reverse()}));
+                        .then(messages =>
+                            this.setState({
+                                messages: messages.sort(function (a, b) {
+                                    return new Date(b.createdAt) - new Date(a.createdAt);
+                                })
+                            }));
                 }
             })
             .catch(err => {
@@ -45,27 +56,29 @@ export default class Message extends Component {
     }
 
     onSend(messages = []) {
-        if(messages.length > 0) {
+        if (messages.length > 0) {
             const chat = this.props.navigation.getParam('chat', {});
             const currentMessage = {text: messages[0].text, user: this.state.user};
             this.chatService.createMessage(chat.id, currentMessage);
             this.setState((previousState) => {
                 return {
-                    messages: GiftedChat.append(previousState.messages, messages),
+                    messages: GiftedChat.append(previousState.messages, messages)
                 };
             });
         }
 
     }
+
     renderCustomView(props) {
-        if(props.currentMessage.businessId > 0) {
-            return(<CustomView {...props}/>);
+        if (props.currentMessage.businessId > 0) {
+            return (<CustomView {...props}/>);
         }
         return null;
     }
 
     render() {
         const chat = this.props.navigation.getParam('chat', {});
+
         return (
             <SafeAreaView style={{flex: 1}}>
                 <View style={styles.container}>

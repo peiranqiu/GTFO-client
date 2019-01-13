@@ -29,7 +29,7 @@ export default class Search extends Component {
                     return business.name.includes(this.state.searchTerm)
                         || business.category.includes(this.state.searchTerm)
                         || business.address.includes(this.state.searchTerm);
-                }));
+                }).reverse());
         return (
             <SafeAreaView style={{flex: 1}}>
                 <View style={styles.container}>

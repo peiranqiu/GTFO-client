@@ -2,14 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e820de49-8161-4083-9d7b-1a5d8cf90dd7" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/components/CustomView.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.expo/packager-info.json" beforeDir="false" afterPath="$PROJECT_DIR$/.expo/packager-info.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/Explore.js" beforeDir="false" afterPath="$PROJECT_DIR$/components/Explore.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/Home.js" beforeDir="false" afterPath="$PROJECT_DIR$/components/Home.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/Message.js" beforeDir="false" afterPath="$PROJECT_DIR$/components/Message.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Share.js" beforeDir="false" afterPath="$PROJECT_DIR$/components/Share.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/ChatServiceClient.js" beforeDir="false" afterPath="$PROJECT_DIR$/services/ChatServiceClient.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/PostServiceClient.js" beforeDir="false" afterPath="$PROJECT_DIR$/services/PostServiceClient.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/Search.js" beforeDir="false" afterPath="$PROJECT_DIR$/components/Search.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -26,8 +24,8 @@
       <file leaf-file-name="Explore.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/components/Explore.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="24" column="34" lean-forward="true" selection-start-line="24" selection-start-column="21" selection-end-line="24" selection-end-column="34" />
+            <state relative-caret-position="279">
+              <caret line="141" column="12" selection-start-line="141" selection-start-column="12" selection-end-line="141" selection-end-column="12" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
@@ -80,11 +78,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Message.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Message.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/components/Message.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="427">
-              <caret line="49" column="83" selection-start-line="49" selection-start-column="83" selection-end-line="49" selection-end-column="83" />
+            <state relative-caret-position="120">
+              <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
               <folding>
                 <element signature="e#0#52#0" expanded="true" />
               </folding>
@@ -116,13 +114,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Home.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Home.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/components/Home.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="125">
-              <caret line="33" column="21" lean-forward="true" selection-start-line="33" selection-start-column="21" selection-end-line="34" selection-end-column="54" />
+            <state relative-caret-position="234">
+              <caret line="91" column="52" selection-start-line="91" selection-start-column="52" selection-end-line="91" selection-end-column="52" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Search.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/components/Search.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="239">
+              <caret line="31" column="30" lean-forward="true" selection-start-line="31" selection-start-column="30" selection-end-line="31" selection-end-column="30" />
+              <folding>
+                <element signature="e#0#39#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -152,7 +162,9 @@
       <find>consol</find>
       <find>AVATAR</find>
       <find>createchat</find>
+      <find>key</find>
       <find>getp</find>
+      <find>length</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -161,7 +173,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/elements/QuestionTypeChooser.js" />
         <option value="$PROJECT_DIR$/elements/FillInBlankQuestionEditor.js" />
         <option value="$PROJECT_DIR$/elements/AssignmentWidget.js" />
         <option value="$PROJECT_DIR$/elements/AddExamComponent.js" />
@@ -196,22 +207,23 @@
         <option value="$PROJECT_DIR$/components/AppBottomNav.js" />
         <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/components/Business.js" />
-        <option value="$PROJECT_DIR$/components/Search.js" />
-        <option value="$PROJECT_DIR$/components/Home.js" />
         <option value="$PROJECT_DIR$/components/Welcome.js" />
         <option value="$PROJECT_DIR$/services/UserServiceClient.js" />
         <option value="$PROJECT_DIR$/components/Friend.js" />
         <option value="$PROJECT_DIR$/components/Me.js" />
         <option value="$PROJECT_DIR$/components/Notification.js" />
         <option value="$PROJECT_DIR$/components/Chats.js" />
-        <option value="$PROJECT_DIR$/components/Explore.js" />
         <option value="$PROJECT_DIR$/services/ChatServiceClient.js" />
         <option value="$PROJECT_DIR$/services/PostServiceClient.js" />
         <option value="$PROJECT_DIR$/App.js" />
         <option value="$PROJECT_DIR$/components/BusinessLink.js" />
         <option value="$PROJECT_DIR$/components/Share.js" />
         <option value="$PROJECT_DIR$/components/CustomView.js" />
+        <option value="$PROJECT_DIR$/node_modules/react-native-gifted-chat/src/GiftedChat.js" />
         <option value="$PROJECT_DIR$/components/Message.js" />
+        <option value="$PROJECT_DIR$/components/Search.js" />
+        <option value="$PROJECT_DIR$/components/Explore.js" />
+        <option value="$PROJECT_DIR$/components/Home.js" />
       </list>
     </option>
   </component>
@@ -1635,11 +1647,6 @@
             <path>
               <item name="client" type="b2602c69:ProjectViewProjectNode" />
               <item name="client" type="462c0819:PsiDirectoryNode" />
-              <item name="constants" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="client" type="b2602c69:ProjectViewProjectNode" />
-              <item name="client" type="462c0819:PsiDirectoryNode" />
               <item name="services" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -1709,12 +1716,12 @@
       <workItem from="1545159442578" duration="11444000" />
       <workItem from="1545206809659" duration="3551000" />
       <workItem from="1545265753611" duration="23259000" />
-      <workItem from="1545445988934" duration="13097000" />
+      <workItem from="1545445988934" duration="17182000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="200134000" />
+    <option name="totallyTimeSpent" value="204219000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="24" width="1053" height="877" extended-state="0" />
@@ -1747,7 +1754,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/elements/FixedHeader.js" />
     <entry file="file://$PROJECT_DIR$/elements/AddExamComponent.js" />
     <entry file="file://$PROJECT_DIR$/components/QuestionList.js" />
     <entry file="file://$PROJECT_DIR$/node_modules/react-native/Libraries/StyleSheet/StyleSheetValidation.js">
@@ -1817,16 +1823,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/components/Search.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="34" column="16" selection-start-line="34" selection-start-column="16" selection-end-line="49" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/components/Friend.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
@@ -1884,26 +1880,6 @@
           <caret line="48" column="87" selection-start-line="48" selection-start-column="24" selection-end-line="48" selection-end-column="87" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/Explore.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="24" column="34" lean-forward="true" selection-start-line="24" selection-start-column="21" selection-end-line="24" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#38#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/components/Home.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="125">
-          <caret line="33" column="21" lean-forward="true" selection-start-line="33" selection-start-column="21" selection-end-line="34" selection-end-column="54" />
-          <folding>
-            <element signature="e#0#38#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1972,12 +1948,52 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/react-native-gifted-chat/src/GiftedChat.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="173">
+          <caret line="505" column="27" selection-start-line="505" selection-start-column="27" selection-end-line="505" selection-end-column="27" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/components/Message.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="427">
-          <caret line="49" column="83" selection-start-line="49" selection-start-column="83" selection-end-line="49" selection-end-column="83" />
+        <state relative-caret-position="120">
+          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
           <folding>
             <element signature="e#0#52#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/Search.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="239">
+          <caret line="31" column="30" lean-forward="true" selection-start-line="31" selection-start-column="30" selection-end-line="31" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/Explore.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="279">
+          <caret line="141" column="12" selection-start-line="141" selection-start-column="12" selection-end-line="141" selection-end-column="12" />
+          <folding>
+            <element signature="e#0#38#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/components/Home.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="91" column="52" selection-start-line="91" selection-start-column="52" selection-end-line="91" selection-end-column="52" />
+          <folding>
+            <element signature="e#0#38#0" expanded="true" />
           </folding>
         </state>
       </provider>

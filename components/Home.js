@@ -56,18 +56,14 @@ export default class Home extends Component {
             });
         this.postService.findAllBusinesses()
             .then(businesses => {
-                this.setState({businesses: businesses, appReady: true});
+                this.setState({businesses: businesses.reverse(), appReady: true});
             });
     }
 
     render() {
-
-
-
         const filteredResults = this.state.businesses.filter(businesses => {
             return businesses.category.includes(this.state.filter);
         });
-
 
         return (
             <SafeAreaView style={{flex: 1}}>
@@ -93,19 +89,16 @@ export default class Home extends Component {
                               showsHorizontalScrollIndicator={false}
                               style={styles.tabGroup}
                               data={data}
+                              extraData={this.state}
                               renderItem={({item}) => (
                                   item.key === this.state.filter ?
                                       <Text style={styles.activeTab}
-                                            onPress={() => {
-                                                this.setState({filter: item.key})
-                                            }}>
+                                            onPress={() => this.setState({filter: item.key})}>
                                           {item.title}
                                       </Text>
                                       :
                                       <Text style={styles.tab}
-                                            onPress={() => {
-                                                this.setState({filter: item.key})
-                                            }}>
+                                            onPress={() => this.setState({filter: item.key})}>
                                           {item.title}
                                       </Text>)}/>
                     {filteredResults.map((business, i) => (

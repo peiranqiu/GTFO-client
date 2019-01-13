@@ -87,7 +87,7 @@ export default class Explore extends Component {
                     this.postService.findIfInterested(business.id, this.state.user._id)
                         .then(response => business.interested = response);
                 });
-                this.setState({businesses: businesses});
+                this.setState({businesses: businesses.reverse()});
             });
     }
 
@@ -138,7 +138,8 @@ export default class Explore extends Component {
 
     render() {
 
-        if (!this.state.appReady) {
+        if (this.state.businesses === [] || this.state.businesses[this.state.selected] === undefined
+            || this.state.businesses[this.state.selected].followers === undefined) {
             return null;
         }
 
