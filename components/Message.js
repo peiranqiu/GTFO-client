@@ -1,60 +1,67 @@
 import {GiftedChat} from 'react-native-gifted-chat';
 import React, {Component} from 'react';
 import {Dimensions, SafeAreaView, StyleSheet, Text, View} from "react-native";
-
+import CustomView from "./CustomView";
 import {Icon} from 'react-native-elements'
+import ChatServiceClient from "../services/ChatServiceClient";
+import PostServiceClient from "../services/PostServiceClient";
 
 export default class Message extends Component {
     constructor(props) {
         super(props);
-        this.state = {messages: []};
+        this.chatService = ChatServiceClient.instance;
+        this.postService = PostServiceClient.instance;
+        this.state = {
+            messages: [],
+            user: null
+        };
         this.onSend = this.onSend.bind(this);
     }
 
-    componentWillMount() {
-        this.setState({
-            messages: [
-                {
-                    _id: '1',
-                    text: 'Hello developer',
-                    createdAt: new Date(),
-                    user: {
-                        _id: '2',
-                        name: 'React Native',
-                        avatar: 'https://facebook.github.io/react/img/logo_og.png',
-                    },
-                },
-                {
-                    _id: '2',
-                    text: 'Hello developer',
-                    createdAt: new Date(),
-                    user: {
-                        _id: '7',
-                        name: 'React Native',
-                        avatar: 'https://facebook.github.io/react/img/logo_og.png',
-                    },
-                },
-                {
-                    _id: '3',
-                    text: 'Hello developer',
-                    createdAt: new Date(),
-                    user: {
-                        _id: '4',
-                        name: 'React Native',
-                        avatar: 'https://facebook.github.io/react/img/logo_og.png',
-                    },
-                },
-            ],
-        });
+    componentDidMount() {
+        const business = this.props.navigation.getParam('business', {});
+        const chat = this.props.navigation.getParam('chat', {});
+
+        storage.load({key: 'user'})
+            .then(user => {
+                this.setState({user: user});
+                if (business !== undefined && business.id !== undefined) {
+                    const initialMessage = {businessId: business.id, user: user};
+                    this.chatService.createMessage(chat.id, initialMessage)
+                        .then(() => {
+                            this.chatService.findMessagesForChat(chat.id)
+                                .then(messages => this.setState({messages: messages.reverse()}));
+                        })
+                }
+                else {
+                    this.chatService.findMessagesForChat(chat.id)
+                        .then(messages => this.setState({messages: messages.reverse()}));
+                }
+            })
+            .catch(err => {
+                this.props.navigation.navigate("Welcome");
+            });
 
     }
 
     onSend(messages = []) {
-        this.setState((previousState) => {
-            return {
-                messages: GiftedChat.append(previousState.messages, messages),
-            };
-        });
+        if(messages.length > 0) {
+            const chat = this.props.navigation.getParam('chat', {});
+            const currentMessage = {text: messages[0].text, user: this.state.user};
+            this.chatService.createMessage(chat.id, currentMessage);
+            this.setState((previousState) => {
+                return {
+                    messages: GiftedChat.append(previousState.messages, messages),
+                };
+            });
+        }
+
+    }
+    renderCustomView(props) {
+        if(props.currentMessage.businessId > 0) {
+            return(<CustomView {...props}/>);
+        }
+        return null;
     }
 
     render() {
@@ -73,6 +80,7 @@ export default class Message extends Component {
                     messages={this.state.messages}
                     onSend={this.onSend}
                     user={this.state.user}
+                    renderCustomView={this.renderCustomView}
                 />
             </SafeAreaView>
         );

@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import {FlatList, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import UserServiceClient from "../services/UserServiceClient";
-import ChatServiceClient from '../services/ChatServiceClient'
 import {Icon} from 'react-native-elements'
 
 import RadioButton from 'react-native-radio-button'
+import ChatServiceClient from "../services/ChatServiceClient";
 
 export default class Share extends Component {
     constructor(props) {
@@ -38,15 +38,17 @@ export default class Share extends Component {
     }
 
     createGroup() {
+        const business = this.props.navigation.getParam('business', {});
         let users = this.state.friends.filter(users => users.selected);
         users.push(this.state.user);
         this.chatService.createChat(users)
-            .then(chat => this.props.navigation.navigate("Message", {chat: chat}));
+            .then(chat => this.props.navigation.navigate("Message", {chat: chat, business: business}));
     }
 
     sendToGroup() {
+        const business = this.props.navigation.getParam('business', {});
         if(this.state.selectedChat !== null) {
-            this.props.navigation.navigate("Message", {chat: this.state.chats[this.state.selectedChat]});
+            this.props.navigation.navigate("Message", {chat: this.state.chats[this.state.selectedChat], business: business});
         }
 
     }

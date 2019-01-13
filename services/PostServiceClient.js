@@ -47,4 +47,8 @@ export default class PostServiceClient {
     findFollowersForBusiness(businessId) {
         return fetch(constants.SERVER + 'interested/business/' + businessId).then(response => (response.json()));
     }
+
+    findBusinessById(businessId) {
+        return fetch(constants.SERVER + 'business/' + businessId).then(response => (response.json()));
+    }
 }

@@ -27,4 +27,20 @@ export default class ChatServiceClient {
             }
         }).then(response => response.json());
     }
+
+    createMessage(chatId, message) {
+        return fetch(constants.SERVER + 'chat/' + chatId + '/message', {
+            method: 'post',
+            body: JSON.stringify(message),
+            headers: {
+                'content-type': 'application/json'
+            }
+        }).then(response => response.json());
+
+    }
+
+    findMessagesForChat(chatId) {
+        return fetch(constants.SERVER + 'chat/' + chatId + '/message').then(response => (response.json()));
+
+    }
 }
