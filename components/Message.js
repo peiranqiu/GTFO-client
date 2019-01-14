@@ -1,4 +1,4 @@
-import {GiftedChat} from 'react-native-gifted-chat';
+import {Bubble, GiftedChat} from 'react-native-gifted-chat';
 import React, {Component} from 'react';
 import {Dimensions, SafeAreaView, StyleSheet, Text, View} from "react-native";
 import CustomView from "./CustomView";
@@ -76,6 +76,47 @@ export default class Message extends Component {
         return null;
     }
 
+    renderBubble (props) {
+        if(props.currentMessage.businessId > 0) {
+            return (
+                <Bubble
+                    {...props}
+                    wrapperStyle={{
+                        right: {
+                            backgroundColor: '#ffffff'
+                        },
+                        left: {
+                            backgroundColor: '#ffffff'
+                        },
+                    }}
+                    timeTextStyle={{
+                        right: { color: 'grey' },
+                        left: { color: 'grey' }
+                    }}
+                />
+            )
+        }
+        return (
+            <Bubble
+                {...props}
+                wrapperStyle={{
+                    right: {
+                        backgroundColor: '#464646',
+                        shadowOpacity: 0.1,
+                        shadowOffset: {width: 0, height: 0},
+                        shadowRadius: 10,
+                    },
+                    left: {
+                        backgroundColor: '#ffffff',
+                        shadowOpacity: 0.1,
+                        shadowOffset: {width: 0, height: 0},
+                        shadowRadius: 10,
+                    },
+                }}
+            />
+        )
+    }
+
     render() {
         const chat = this.props.navigation.getParam('chat', {});
 
@@ -94,6 +135,7 @@ export default class Message extends Component {
                     onSend={this.onSend}
                     user={this.state.user}
                     renderCustomView={this.renderCustomView}
+                    renderBubble={this.renderBubble}
                 />
             </SafeAreaView>
         );

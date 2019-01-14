@@ -19,9 +19,7 @@ export default class Chats extends Component {
             .then(user => {
                 this.setState({user: user});
                 this.chatService.findChatsForUser(user._id)
-                    .then(chats => {
-                        this.setState({chats: chats})
-                    })
+                    .then(chats => this.setState({chats: chats}))
             })
             .catch(err => {
                 this.props.navigation.navigate("Welcome");
@@ -40,7 +38,7 @@ export default class Chats extends Component {
                 <ScrollView>
                     {this.state.chats.map((chat, i) => (
                         <TouchableOpacity key={i} style={styles.card}
-                        onPress={() => this.props.navigation.navigate("Message", {chat: chat})}>
+                                          onPress={() => this.props.navigation.navigate("Message", {chat: chat})}>
                             <View>
                                 <Text style={styles.text}>{chat.name}({chat.size})</Text>
                             </View>
