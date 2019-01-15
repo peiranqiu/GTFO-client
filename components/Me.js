@@ -13,7 +13,6 @@ export default class Me extends Component {
         this.state = {
             user: null
         }
-        activeNav = "me";
     }
 
     componentDidMount() {
@@ -34,6 +33,7 @@ export default class Me extends Component {
     }
 
     render() {
+        activeNav = "me";
         if(this.state.user === null) {
             return null;
         }

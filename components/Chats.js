@@ -11,7 +11,6 @@ export default class Chats extends Component {
             chats: [],
             refresh: false
         };
-        activeNav = "chats";
         this.chatService = ChatServiceClient.instance;
     }
 
@@ -28,6 +27,7 @@ export default class Chats extends Component {
     }
 
     render() {
+        activeNav = "chats";
         if (this.state.chats === undefined) {
             return null;
         }

@@ -13,7 +13,7 @@ import {
 } from 'react-native'
 import PostServiceClient from '../services/PostServiceClient'
 import AppBottomNav from './AppBottomNav'
-import {Icon, SearchBar} from 'react-native-elements'
+import {Avatar, Icon, SearchBar} from 'react-native-elements'
 import Modal from "react-native-modal";
 import UserServiceClient from "../services/UserServiceClient";
 import Business from './Business'
@@ -43,7 +43,6 @@ export default class Home extends Component {
             appReady: false,
             selectedIndex: 0
         }
-        activeNav = "home";
     }
 
     componentDidMount() {
@@ -56,11 +55,47 @@ export default class Home extends Component {
             });
         this.postService.findAllBusinesses()
             .then(businesses => {
+                businesses.map(business => {
+                    business.interested = false;
+                    business.followers = [];
+                    this.postService.findFollowersForBusiness(business.id)
+                        .then(response => {
+                            if(response.length > 0) {
+                                business.followers = response;
+                                this.setState({appReady: true});
+                            }
+                        });
+                    this.postService.findIfInterested(business.id, this.state.user._id)
+                        .then(response => {
+                            if(response) {
+                                business.interested = response;
+                                this.setState({appReady: true});
+                            }
+                        });
+                });
                 this.setState({businesses: businesses.reverse(), appReady: true});
             });
     }
 
+    userLikesBusiness(business) {
+        this.postService.userLikesBusiness(business.id, this.state.user)
+            .then(() => {
+                let businesses = this.state.businesses;
+                let index = businesses.findIndex(b => b.id === business.id);
+                businesses[index].interested = !businesses[index].interested;
+                if (businesses[index].interested) {
+                    businesses[index].followers.push(this.state.user);
+                }
+                else {
+                    businesses[index].followers = businesses[index].followers.filter(users =>
+                        users._id !== this.state.user._id);
+                }
+                this.setState({businesses: businesses});
+            })
+    }
+
     render() {
+        activeNav = "home";
         const filteredResults = this.state.businesses.filter(businesses => {
             return businesses.category.includes(this.state.filter);
         });
@@ -74,7 +109,11 @@ export default class Home extends Component {
                               iconStyle={{color: 'grey'}}
                               onPress={() => this.setState({visible: false})}
                         />
-                        <Business business={this.state.businesses[this.state.selected]}/>
+                        <Business business={this.state.businesses[this.state.selected]}
+                                  refresh={(business) => {
+                                      let businesses = this.state.businesses;
+                                      businesses[this.state.selected] = business;
+                                      this.setState({businesses: businesses})}}/>
                     </ScrollView>
                 </Modal>
 
@@ -101,23 +140,61 @@ export default class Home extends Component {
                                             onPress={() => this.setState({filter: item.key})}>
                                           {item.title}
                                       </Text>)}/>
-                    {filteredResults.map((business, i) => (
-                        <TouchableOpacity key={i}
-                                          style={styles.card}
-                                          onPress={() => this.setState({selected: i, visible: true})}>
-                            <Image style={styles.image}
-                                   source={{uri: business.posts[0].photo}}
-                            />
-                            <View style={styles.text}>
-
-                                <Text>{business.posts[0].user.name}</Text>
-                                <Text>{business.posts[0].content}</Text>
-                                <Text>{business.name}</Text>
-                                <Text>{business.address}</Text>
-
-                            </View>
-                        </TouchableOpacity>
-                    ))}
+                    {filteredResults.map((business, i) => {
+                        let ready = false;
+                        let followers = [];
+                        let size = 0;
+                        let data = business.followers;
+                        if (data !== undefined) {
+                            size = data.length;
+                            followers = size > 3 ? data.slice(0, 3) : data;
+                            ready = true;
+                        }
+                        return (
+                            <TouchableOpacity key={i}
+                                              style={styles.card}
+                                              onPress={() => this.setState({selected: i, visible: true})}>
+                                <Image style={styles.image}
+                                       source={{uri: business.posts[0].photo}}
+                                />
+                                <View style={styles.text}>
+                                    <View>
+                                        <Text
+                                            style={{
+                                                fontSize: 14,
+                                                fontWeight: "700",
+                                                marginBottom: 3
+                                            }}>{business.name}</Text>
+                                        <Text style={{fontSize: 12}}>
+                                            {business.address.slice(-7).includes("Canada") ?
+                                                business.address.slice(0, -7) : business.address}
+                                        </Text>
+                                    </View>
+                                    <View style={{position: 'absolute', right: 20, top: 0, flexDirection: 'row'}}>
+                                        <Icon
+                                            size={20}
+                                            name={business.interested ? 'star' : 'star-border'}
+                                            iconStyle={{color: 'grey'}}
+                                            onPress={() => this.userLikesBusiness(business)}
+                                        />
+                                        <Icon name='share'
+                                              size={20}
+                                              iconStyle={{color: 'grey', marginLeft: 5}}
+                                              onPress={() =>
+                                                  this.props.navigation.navigate("Share", {business: business})}
+                                        />
+                                    </View>
+                                </View>
+                                {ready &&
+                                <View style={{flexDirection: 'row', marginTop: 5, marginHorizontal: 20}}>
+                                    {followers.map((user, i) =>
+                                        <Avatar size={20} rounded key={i} source={{uri: user.avatar}}/>)}
+                                    {size > 3 && <Text style={{marginVertical: 10, marginLeft: 10}}>+ {size - 3}</Text>}
+                                    {size > 0 && <Text style={{margin: 10, fontSize: 12}}>Interested</Text>}
+                                </View>}
+                            </TouchableOpacity>
+                        )
+                    })}
                 </ScrollView>
                 <AppBottomNav style={{alignSelf: 'flex-end'}}/>
             </SafeAreaView>
@@ -143,11 +220,13 @@ const styles = StyleSheet.create({
         width: '100%',
         resizeMode: 'cover',
         borderRadius: 10,
-        marginBottom: 20
+        marginBottom: 15
     },
     text: {
         flexWrap: 'wrap',
-        paddingHorizontal: 20
+        marginBottom: 5,
+        marginLeft: 20,
+        flexDirection: 'row'
     },
     searchContainer: {
         backgroundColor: 'white',

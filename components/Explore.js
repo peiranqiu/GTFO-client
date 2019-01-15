@@ -12,6 +12,13 @@ import movie from '../resources/icons/movie.png';
 import shopping from '../resources/icons/shopping.png';
 import food from '../resources/icons/food.png';
 import music from '../resources/icons/music.png';
+import art_lg from '../resources/icons/art_lg.png';
+import coffee_lg from '../resources/icons/coffee_lg.png';
+import movie_lg from '../resources/icons/movie_lg.png';
+import food_lg from '../resources/icons/food_lg.png';
+import music_lg from '../resources/icons/music_lg.png';
+import shopping_lg from '../resources/icons/shopping_lg.png';
+import empty_lg from '../resources/icons/empty_lg.png';
 import art_sm from '../resources/icons/art-sm.png';
 import coffee_sm from '../resources/icons/coffee-sm.png';
 import movie_sm from '../resources/icons/movie-sm.png';
@@ -20,6 +27,7 @@ import music_sm from '../resources/icons/music-sm.png';
 import shopping_sm from '../resources/icons/shopping-sm.png';
 import notification from '../resources/icons/notification.png';
 import all_sm from '../resources/icons/all.png';
+import mylocation from '../resources/icons/mylocation.png';
 import {Avatar, Icon, SearchBar} from 'react-native-elements'
 import Modal from "react-native-modal";
 import Business from "./Business";
@@ -49,7 +57,6 @@ export default class Explore extends Component {
             icon: 0,
             dropdown: false
         }
-        activeNav = "explore";
     }
 
     componentDidMount() {
@@ -70,25 +77,42 @@ export default class Explore extends Component {
                         longitudeDelta: 0.08,
                     }
                 });
+                this.postService.findAllBusinesses()
+                    .then(businesses => {
+                        businesses.map(business => {
+                            business.interested = false;
+                            business.followers = [];
+                            this.postService.findFollowersForBusiness(business.id)
+                                .then(response => {
+                                    if (response.length > 0) {
+                                        business.followers = response;
+                                        this.setState({appReady: true});
+                                    }
+                                });
+                            this.postService.findIfInterested(business.id, this.state.user._id)
+                                .then(response => {
+                                    if (response) {
+                                        business.interested = response;
+                                        this.setState({appReady: true});
+                                    }
+                                });
+                        });
+                        this.setState({
+                            businesses: businesses.sort(function (b, a) {
+                                return Math.sqrt(Math.pow(b.latitude - position.coords.latitude, 2)
+                                    + Math.pow(b.longitude - position.coords.longitude, 2))
+                                    - Math.sqrt(Math.pow(a.latitude - position.coords.latitude, 2)
+                                        + Math.pow(a.longitude - position.coords.longitude, 2));
+                            }), appReady: true
+                        });
+                    });
             },
             (error) => {
             },
             {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000}
         );
 
-        this.postService.findAllBusinesses()
-            .then(businesses => {
-                businesses.map(business => {
-                    this.postService.findFollowersForBusiness(business.id)
-                        .then(response => {
-                            business.followers = response;
-                            this.setState({appReady: true});
-                        });
-                    this.postService.findIfInterested(business.id, this.state.user._id)
-                        .then(response => business.interested = response);
-                });
-                this.setState({businesses: businesses.reverse()});
-            });
+
     }
 
     markerSelected(index) {
@@ -120,6 +144,31 @@ export default class Explore extends Component {
         }
     }
 
+    getLargeCategory(category) {
+        switch (category) {
+            case "coffee":
+                return coffee_lg;
+                break;
+            case "music":
+                return music_lg;
+                break;
+            case "movie":
+                return movie_lg;
+                break;
+            case "art":
+                return art_lg;
+                break;
+            case "food":
+                return food_lg;
+                break;
+            case "shopping":
+                return shopping_lg;
+                break;
+            default:
+                return empty_lg;
+        }
+    }
+
     userLikesBusiness() {
         this.postService.userLikesBusiness(this.state.businesses[this.state.selected].id, this.state.user)
             .then(() => {
@@ -137,13 +186,18 @@ export default class Explore extends Component {
     }
 
     render() {
+        activeNav = "explore";
         let ready = false;
         let size = 0;
         let followers = [];
-        if (this.state.businesses !== [] && this.state.businesses[this.state.selected] !== undefined
-            && this.state.businesses[this.state.selected].followers !== undefined) {
-            let data = this.state.businesses[this.state.selected].followers;
-            const interested = this.state.businesses[this.state.selected].interested;
+        let businesses = this.state.businesses;
+        if (businesses !== [] && businesses[this.state.selected] !== undefined && businesses[this.state.selected].followers !== undefined) {
+            let firstIndex = businesses.findIndex(b => b.category.includes(icons[this.state.icon].filter));
+            if (firstIndex >= 0 && !businesses[this.state.selected].category.includes(icons[this.state.icon].filter)) {
+                this.setState({selected: firstIndex});
+            }
+            let data = businesses[this.state.selected].followers;
+            const interested = businesses[this.state.selected].interested;
             size = data.length;
             followers = size > 3 ? data.slice(0, 3) : data;
             ready = true;
@@ -159,17 +213,35 @@ export default class Explore extends Component {
                     onPress={() => this.setState({dropdown: false})}
                     region={this.state.region}
                     customMapStyle={constants.MAP_STYLE}>
+                    <MapView.Marker
+                        zIndex={5000}
+                        image={mylocation}
+                        coordinate={{
+                            latitude: this.state.region.latitude,
+                            longitude: this.state.region.longitude
+                        }}
+                    />
                     {this.state.businesses.map((business, index) => (
                         business.category.includes(icons[this.state.icon].filter) &&
+                        this.state.selected !== index &&
                         <MapView.Marker
                             key={index}
-                            onPress={(e) => {
-                                this.markerSelected(e._targetInst.return.key)
-                            }}
+                            zIndex={index}
+                            onPress={e=> this.markerSelected(e._targetInst.return.key)}
                             image={this.getCategory(business.category)}
                             coordinate={{latitude: business.latitude, longitude: business.longitude}}
                         />
                     ))}
+                    {businesses[this.state.selected] !== undefined &&
+                    <MapView.Marker
+                        zIndex={5000}
+                        anchor={{x: 0.5, y: 0.81}}
+                        image={this.getLargeCategory(businesses[this.state.selected].category)}
+                        coordinate={{
+                            latitude: businesses[this.state.selected].latitude,
+                            longitude: businesses[this.state.selected].longitude
+                        }}
+                    />}
 
                 </MapView>
                 }
@@ -181,7 +253,12 @@ export default class Explore extends Component {
                               iconStyle={{color: 'grey'}}
                               onPress={() => this.setState({visible: false})}
                         />
-                        <Business business={this.state.businesses[this.state.selected]}/>
+                        <Business business={this.state.businesses[this.state.selected]}
+                                  refresh={(business) => {
+                                      let businesses = this.state.businesses;
+                                      businesses[this.state.selected] = business;
+                                      this.setState({businesses: businesses})
+                                  }}/>
                     </ScrollView>
                 </Modal>
 
@@ -231,17 +308,20 @@ export default class Explore extends Component {
                         </View>
                         <View style={{flexDirection: 'row', margin: 4}}>
                             {followers.map((user, i) =>
-                                <Avatar small rounded key={i} source={{uri: user.avatar}}/>)}
+                                <Avatar size={20} rounded key={i} source={{uri: user.avatar}}/>)}
                             {size > 3 && <Text style={{marginVertical: 10, marginLeft: 10}}>+ {size - 3}</Text>}
                             {size > 0 && <Text style={{margin: 10}}>Interested</Text>}
+                            {size === 0 && <Text style={{margin: 10, color: 'white'}}>Interested</Text>}
                             <View style={{position: 'absolute', right: 5, bottom: 10, flexDirection: 'row'}}>
                                 <Icon
+                                    size={20}
                                     name={this.state.businesses[this.state.selected].interested ? 'star' : 'star-border'}
                                     iconStyle={{color: 'grey'}}
                                     onPress={() => this.userLikesBusiness()}
                                 />
                                 <Icon name='share'
-                                      iconStyle={{color: 'grey'}}
+                                      size={20}
+                                      iconStyle={{color: 'grey', marginLeft: 5}}
                                       onPress={() =>
                                           this.props.navigation.navigate("Share", {business: this.state.businesses[this.state.selected]})}
                                 />
