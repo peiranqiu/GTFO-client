@@ -52,6 +52,7 @@
     "react-native-multiple-select-list": "^1.0.4",
     "react-native-open-maps": "^0.3.2",
     "react-native-paper": "^2.4.0",
+    "react-native-permissions": "^1.1.1",
     "react-native-phone-call": "^1.0.9",
     "react-native-radio-button": "^2.0.1",
     "react-native-search-filter": "^0.1.4",

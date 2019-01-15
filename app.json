@@ -13,6 +13,10 @@
     },
     "android": {
       "package": "com.gtfo.demo"
+    },
+    "splash": {
+      "image": "./resources/logos/splash.png",
+      "resizeMode": "cover"
     }
   }
 }

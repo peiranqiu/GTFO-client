@@ -14,7 +14,7 @@ import Friend from "./components/Friend";
 import Message from "./components/Message";
 import Share from "./components/Share";
 import Notification from "./components/Notification";
-import {Font} from 'expo'
+import {Font, Asset, AppLoading} from 'expo'
 
 YellowBox.ignoreWarnings(['Remote debugger']);
 
@@ -39,7 +39,7 @@ const AppNavigator = createStackNavigator({
     Notification: Notification
     },
     {
-        initialRouteName: "Explore",
+        initialRouteName: "Home",
         headerMode: 'none',
         navigationOptions: {
             headerVisible: false,
@@ -80,7 +80,11 @@ export default class App extends Component {
         global.activeNav = "explore";
         this.interval = setInterval(() => this.autoUpdate(), 1000 * 60 * 10);
         if (!this.state.fontLoaded) {
-            return null;
+            return (
+                <AppLoading
+                    autoHideSplash = {true}
+                />
+            );
         }
         return <AppContainer/>;
     }
