@@ -1,10 +1,12 @@
-import {Bubble, GiftedChat} from 'react-native-gifted-chat';
+import {Bubble, GiftedChat, InputToolbar} from 'react-native-gifted-chat';
 import React, {Component} from 'react';
-import {Dimensions, SafeAreaView, StyleSheet, Text, View} from "react-native";
+import {DatePickerIOS, Dimensions, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import CustomView from "./CustomView";
-import {Icon} from 'react-native-elements'
+import {Icon, FormInput} from 'react-native-elements'
 import ChatServiceClient from "../services/ChatServiceClient";
 import PostServiceClient from "../services/PostServiceClient";
+import Modal from "react-native-modal";
+
 console.disableYellowBox = true;
 
 export default class Message extends Component {
@@ -14,7 +16,12 @@ export default class Message extends Component {
         this.postService = PostServiceClient.instance;
         this.state = {
             messages: [],
-            user: null
+            visible: false,
+            user: null,
+            chat: null,
+            formTitle: "",
+            formTime: null,
+            formLocation: ""
         };
         this.onSend = this.onSend.bind(this);
     }
@@ -22,6 +29,14 @@ export default class Message extends Component {
     componentDidMount() {
         const business = this.props.navigation.getParam('business', {});
         const chat = this.props.navigation.getParam('chat', {});
+
+        this.setState({chat: chat});
+        if (chat.address.length > 0) {
+            this.setState({
+                formTime: chat.time,
+                formTitle: chat.name, formLocation: chat.address
+            })
+        }
 
         storage.load({key: 'user'})
             .then(user => {
@@ -76,8 +91,8 @@ export default class Message extends Component {
         return null;
     }
 
-    renderBubble (props) {
-        if(props.currentMessage.businessId > 0) {
+    renderBubble(props) {
+        if (props.currentMessage.businessId > 0) {
             return (
                 <Bubble
                     {...props}
@@ -90,8 +105,8 @@ export default class Message extends Component {
                         },
                     }}
                     timeTextStyle={{
-                        right: { color: 'grey' },
-                        left: { color: 'grey' }
+                        right: {color: 'grey'},
+                        left: {color: 'grey'}
                     }}
                 />
             )
@@ -117,13 +132,51 @@ export default class Message extends Component {
         )
     }
 
-    render() {
-        const chat = this.props.navigation.getParam('chat', {});
+    renderInputToolbar(props) {
+        return <View style={{flexDirection: 'row'}}>
+            <Icon name='date-range'
+                  iconStyle={{color: 'grey', margin: 15}}
+                  onPress={() => this.extraData.setState({visible: true})}
+            />
+            <InputToolbar {...props}
+                          containerStyle={{
+                              backgroundColor: '#f1f1f2',
+                              borderRadius: 50,
+                              borderTopColor: '#ffffff',
+                              marginRight: 10,
+                              marginLeft: 50,
+                              marginBottom: 5
+                          }}/>
+        </View>
+    }
 
+    submit() {
+        if (this.state.formTitle.length === 0 || this.state.formLocation.length === 0) {
+            alert("All fields are required.");
+            return;
+        }
+        let chat = this.state.chat;
+        chat.name = this.state.formTitle;
+        chat.time = this.state.formTime;
+        chat.address = this.state.formLocation;
+        this.setState({chat: chat});
+        this.chatService.updateChat(chat.id, chat)
+            .then(() => {
+                this.setState({visible: false});
+                const refresh = this.props.navigation.state.params.refresh;
+                if (typeof refresh === 'function') {
+                    refresh();
+                }
+            })
+    }
+
+
+    render() {
         return (
+            this.state.chat !== null &&
             <SafeAreaView style={{flex: 1}}>
                 <View style={styles.container}>
-                    <Text style={styles.searchContainer}>{chat.name}({chat.size})</Text>
+                    <Text style={styles.searchContainer}>{this.state.chat.name}({this.state.chat.size})</Text>
                     <Icon name='chevron-left'
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
                           iconStyle={{color: 'grey'}}
@@ -136,7 +189,57 @@ export default class Message extends Component {
                     user={this.state.user}
                     renderCustomView={this.renderCustomView}
                     renderBubble={this.renderBubble}
+                    renderInputToolbar={this.renderInputToolbar}
+                    extraData={this}
                 />
+                <Modal isVisible={this.state.visible} style={styles.modal}>
+                    <View style={{flexDirection: 'row'}}>
+                        <Text style={styles.searchContainer}>Set Reminder</Text>
+                        <Icon name='close'
+                              containerStyle={{marginRight: 20}}
+                              iconStyle={{color: 'grey'}}
+                              onPress={() => this.setState({formTime: this.state.chat.time, visible: false})}
+                        />
+                    </View>
+                    <FormInput containerStyle={styles.formInput}
+                               value={this.state.chat.address.length > 0 ? this.state.chat.name : ""}
+                               placeholder="Reminder Title..."
+                               onChangeText={text => this.setState({formTitle: text})}/>
+                    <View style={{flexDirection: 'row'}}>
+                        <Icon name='date-range'
+                              iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 10}}
+                        />
+                        <FormInput containerStyle={styles.formInput}
+                                   value={new Date(this.state.formTime).toString().slice(0, 21)}
+                                   placeholder="Select Date and Time..."
+                                   onFocus={() => {
+                                       if (this.state.formTime === null) {
+                                           this.setState({formTime: new Date()})
+                                       }
+                                   }}/>
+                    </View>
+                    {this.state.formTime !== null &&
+                    <DatePickerIOS
+                        date={new Date(this.state.formTime)}
+                        onDateChange={date => this.setState({formTime: date})
+                        }
+                    />}
+                    <View style={{flexDirection: 'row'}}>
+                        <Icon name='place'
+                              iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 10}}
+                        />
+                        <FormInput containerStyle={styles.formInput}
+                                   placeholder="Location"
+                                   value={this.state.chat.address}
+                                   onChangeText={text => this.setState({formLocation: text})}/>
+                    </View>
+
+                    <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                        <TouchableOpacity style={styles.button}
+                                          onPress={() => this.submit()}>
+                            <Text style={{color: 'white'}}>Create</Text>
+                        </TouchableOpacity></View>
+                </Modal>
             </SafeAreaView>
         );
     }
@@ -155,10 +258,34 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderTopWidth: 0,
         borderBottomWidth: 0,
-        width: Dimensions.get('window').width,
-        justifyContent: 'center',
         height: 70,
         textAlign: 'center',
-        paddingTop: 25
+        fontSize: 18,
+        paddingTop: 25,
+        paddingLeft: 40,
+        width: Dimensions.get('window').width - 40,
+    },
+    modal: {
+        justifyContent: 'flex-start',
+        backgroundColor: 'white',
+        width: Dimensions.get('window').width,
+        borderRadius: 10,
+        position: 'absolute',
+        bottom: 0,
+        left: -20,
+        right: 0
+    },
+    formInput: {
+        borderBottomWidth: 0,
+        marginBottom: 20
+    },
+    button: {
+        borderRadius: 20,
+        backgroundColor: 'grey',
+        height: 42,
+        width: 139,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20
     },
 });

@@ -72,7 +72,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         shadowOpacity: 0.15,
         shadowRadius: 15,
-        padding: 10
+        padding: 10,
+        marginBottom: 5
     },
     image: {
         height: 115,

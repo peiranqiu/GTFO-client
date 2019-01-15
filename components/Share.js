@@ -102,7 +102,7 @@ export default class Share extends Component {
                     }
                 </ScrollView>
 
-
+                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                 {this.state.tab === 'Friend' ?
                     <TouchableOpacity style={styles.button} onPress={() => this.createGroup()}>
                         <Text style={{color: 'white'}}>Create a Group</Text>
@@ -110,7 +110,7 @@ export default class Share extends Component {
                     <TouchableOpacity style={styles.button} onPress={() => this.sendToGroup()}>
                         <Text style={{color: 'white'}}>Share</Text>
                     </TouchableOpacity>
-                }
+                }</View>
             </SafeAreaView>
         );
     }
@@ -147,12 +147,11 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     button: {
-        borderRadius: 5,
+        borderRadius: 20,
         backgroundColor: 'grey',
-        height: 50,
-        width: 200,
+        height: 42,
+        width: 139,
         marginBottom: 200,
-        marginLeft: 100,
         justifyContent: 'center',
         alignItems: 'center'
     }

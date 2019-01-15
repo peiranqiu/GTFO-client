@@ -3,6 +3,8 @@ import {Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity
 import PostServiceClient from "../services/PostServiceClient";
 import {SearchBar} from 'react-native-elements'
 import {Icon} from 'react-native-elements'
+import Modal from "react-native-modal";
+import Business from "./Business";
 
 export default class Search extends Component {
     constructor(props) {
@@ -10,7 +12,9 @@ export default class Search extends Component {
         this.postService = PostServiceClient.instance;
         this.state = {
             businesses: [],
-            searchTerm: ''
+            searchTerm: '',
+            visible: false,
+            selected: null
         }
     }
 
@@ -51,7 +55,8 @@ export default class Search extends Component {
                 <Text style={{marginHorizontal: 20, marginVertical: 30}}>Places</Text>
                 <ScrollView>
                     {filteredResults.map((business, i) => (
-                        <TouchableOpacity key={i} style={styles.resultItem}>
+                        <TouchableOpacity key={i} style={styles.resultItem}
+                                          onPress={() => this.setState({visible: true, selected: business})}>
                             <View>
                                 <Text>{business.name}</Text>
                                 <Text>{business.address}</Text>
@@ -59,6 +64,16 @@ export default class Search extends Component {
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
+                <Modal isVisible={this.state.visible}>
+                    <ScrollView style={styles.modal}>
+                        <Icon name='close'
+                              containerStyle={{position: 'absolute', right: 0, top: -30}}
+                              iconStyle={{color: 'grey'}}
+                              onPress={() => this.setState({visible: false})}
+                        />
+                        <Business business={this.state.selected}/>
+                    </ScrollView>
+                </Modal>
             </SafeAreaView>
 
 
@@ -103,5 +118,15 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         fontSize: 14,
         textAlign: 'center'
-    }
+    },
+    modal: {
+        flex: 1,
+        backgroundColor: 'white',
+        shadowRadius: 20,
+        shadowOpacity: 0.3,
+        shadowOffset: {width: 0, height: 0},
+        paddingHorizontal: 5,
+        paddingTop: 40,
+        marginVertical: 30
+    },
 });

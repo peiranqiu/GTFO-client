@@ -28,6 +28,16 @@ export default class ChatServiceClient {
         }).then(response => response.json());
     }
 
+    updateChat(chatId, chat) {
+        return fetch(constants.SERVER + 'chat/' + chatId, {
+            method: 'put',
+            body: JSON.stringify(chat),
+            headers: {
+                'content-type': 'application/json'
+            }
+        }).then(response => response.json());
+    }
+
     createMessage(chatId, message) {
         return fetch(constants.SERVER + 'chat/' + chatId + '/message', {
             method: 'post',

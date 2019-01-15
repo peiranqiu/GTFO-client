@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Image, SafeAreaView, View, StyleSheet, Text, Dimensions, ScrollView, TouchableOpacity} from "react-native";
+import {SafeAreaView, View, StyleSheet, Text, Dimensions, ScrollView, TouchableOpacity} from "react-native";
 import AppBottomNav from "./AppBottomNav";
 import ChatServiceClient from '../services/ChatServiceClient'
 
@@ -8,7 +8,8 @@ export default class Chats extends Component {
         super(props);
         this.state = {
             user: null,
-            chats: []
+            chats: [],
+            refresh: false
         };
         activeNav = "chats";
         this.chatService = ChatServiceClient.instance;
@@ -38,7 +39,11 @@ export default class Chats extends Component {
                 <ScrollView>
                     {this.state.chats.map((chat, i) => (
                         <TouchableOpacity key={i} style={styles.card}
-                                          onPress={() => this.props.navigation.navigate("Message", {chat: chat})}>
+                                          onPress={() =>
+                                              this.props.navigation.navigate("Message", {
+                                                  chat: chat,
+                                                  refresh: () => this.setState({refresh: true})
+                                              })}>
                             <View>
                                 <Text style={styles.text}>{chat.name}({chat.size})</Text>
                             </View>

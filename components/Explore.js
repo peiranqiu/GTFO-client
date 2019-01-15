@@ -137,22 +137,23 @@ export default class Explore extends Component {
     }
 
     render() {
-
-        if (this.state.businesses === [] || this.state.businesses[this.state.selected] === undefined
-            || this.state.businesses[this.state.selected].followers === undefined) {
-            return null;
+        let ready = false;
+        let size = 0;
+        let followers = [];
+        if (this.state.businesses !== [] && this.state.businesses[this.state.selected] !== undefined
+            && this.state.businesses[this.state.selected].followers !== undefined) {
+            let data = this.state.businesses[this.state.selected].followers;
+            const interested = this.state.businesses[this.state.selected].interested;
+            size = data.length;
+            followers = size > 3 ? data.slice(0, 3) : data;
+            ready = true;
         }
-
-        let data = this.state.businesses[this.state.selected].followers;
-        const interested = this.state.businesses[this.state.selected].interested;
-        const size = data.length;
-        const followers = size > 3 ? data.slice(0, 3) : data;
-
 
         return (
             <View style={{flex: 1}}>
                 {this.state.region !== null &&
                 <MapView
+                    ref={ref => this.map = ref}
                     style={{position: 'absolute', left: 0, right: 0, top: 0, bottom: 0}}
                     provider="google"
                     onPress={() => this.setState({dropdown: false})}
@@ -195,10 +196,8 @@ export default class Explore extends Component {
                         containerStyle={styles.searchContainer}
                         onFocus={() => this.props.navigation.navigate("Search")}
                         placeholder='Search Places'/>
-
                     {this.state.dropdown ?
                         <TouchableOpacity style={styles.dropdown}>
-
                             {icons.map((icon, i) =>
                                 <TouchableOpacity key={i}
                                                   onPress={() =>
@@ -212,7 +211,12 @@ export default class Explore extends Component {
                         </TouchableOpacity>
                     }
                 </SafeAreaView>
+                {ready &&
                 <View style={{position: 'absolute', bottom: 0, left: 0, right: 0}}>
+
+                    <Icon name='gps-not-fixed'
+                          containerStyle={{position: 'absolute', top: -40, right: 20}}
+                          onPress={() => this.map.animateToCoordinate(this.state.region, 31)}/>
                     <TouchableOpacity style={styles.card}
                                       onPress={() => this.setState({visible: true})}>
                         <View style={{flexDirection: 'row'}}>
@@ -249,7 +253,7 @@ export default class Explore extends Component {
                             <AppBottomNav/>
                         </SafeAreaView>
                     </View>
-                </View>
+                </View>}
             </View>
         )
 
