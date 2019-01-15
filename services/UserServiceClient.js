@@ -34,8 +34,8 @@ export default class UserServiceClient {
 
     findFriendList(userId) {
         return fetch(constants.SERVER + 'friend/user/' + userId).then(response => (response.json()));
-
     }
+
     findFriendRequests(userId) {
         return fetch(constants.SERVER + 'friend/request/' + userId).then(response => (response.json()));
     }

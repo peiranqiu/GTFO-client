@@ -25,23 +25,27 @@ export default class Welcome extends Component {
                     avatar: user.avatar
                 }
             });
-            this.props.navigation.navigate("Home");
+            this.userService.findFriendList(user._id)
+                .then((users) => {
+                    if(users.length > 0) {
+                        this.props.navigation.navigate("Home");
+                    }
+                    else {
+                        this.props.navigation.navigate("Permission");
+                    }
+                });
         });
     }
 
     render() {
         return (
             <View style={styles.background}>
-                <Image style={styles.image}
-                       source={background}
-                />
-
+                <Image style={styles.image} source={background}/>
                 <View style={styles.card}>
                     <Text style={{marginLeft: 20, marginTop: 90, fontSize: 32, fontWeight: '400', color: '#4c4c4c'}}>Let’s GTFO</Text>
                     <Text style={{marginLeft: 20, marginTop: 10, fontSize: 12, color: 'grey'}}>
                         Discover places and things to do with your friends, wherever you are.
                     </Text>
-
                     <View style={{justifyContent: 'center', flexDirection: 'row', marginTop: 90}}>
                         <TouchableOpacity style={styles.button} onPress={() => this.refs.ins.show()}>
                             <Text style={{color: 'white'}}>Sign In With Instagram</Text>
@@ -110,4 +114,4 @@ const styles = StyleSheet.create({
         margin: 10
     }
 
-})
+});

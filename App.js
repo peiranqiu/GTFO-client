@@ -14,6 +14,7 @@ import Friend from "./components/Friend";
 import Message from "./components/Message";
 import Share from "./components/Share";
 import Notification from "./components/Notification";
+import Permission from "./components/Permission";
 import {Font, Asset, AppLoading} from 'expo'
 
 YellowBox.ignoreWarnings(['Remote debugger']);
@@ -36,10 +37,11 @@ const AppNavigator = createStackNavigator({
         Friend: Friend,
         Message: Message,
         Share: Share,
-    Notification: Notification
+        Permission: Permission,
+        Notification: Notification
     },
     {
-        initialRouteName: "Home",
+        initialRouteName: "Welcome",
         headerMode: 'none',
         navigationOptions: {
             headerVisible: false,
@@ -77,12 +79,12 @@ export default class App extends Component {
 
     render() {
         global.storage = storage;
-        global.activeNav = "explore";
+        global.activeNav = "home";
         this.interval = setInterval(() => this.autoUpdate(), 1000 * 60 * 10);
         if (!this.state.fontLoaded) {
             return (
                 <AppLoading
-                    autoHideSplash = {true}
+                    autoHideSplash={true}
                 />
             );
         }

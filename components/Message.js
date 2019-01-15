@@ -237,7 +237,9 @@ export default class Message extends Component {
                     <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                         <TouchableOpacity style={styles.button}
                                           onPress={() => this.submit()}>
-                            <Text style={{color: 'white'}}>Create</Text>
+                            {this.state.chat.address.length > 0 ?
+                                <Text style={{color: 'white'}}>Save</Text> :
+                                <Text style={{color: 'white'}}>Create</Text>}
                         </TouchableOpacity></View>
                 </Modal>
             </SafeAreaView>
