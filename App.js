@@ -43,7 +43,7 @@ const AppNavigator = createStackNavigator({
         FeedBack: FeedBack
     },
     {
-        initialRouteName: "Explore",
+        initialRouteName: "Chats",
         headerMode: 'none',
         navigationOptions: {
             headerVisible: false,

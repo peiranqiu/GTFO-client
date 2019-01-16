@@ -64,8 +64,8 @@ export default class Share extends Component {
                 <View style={styles.container}>
                     <Text style={styles.searchContainer}>Share to...</Text>
                     <Icon name='chevron-left'
+                          size={30}
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
-                          iconStyle={{color: 'grey'}}
                           onPress={() => this.props.navigation.goBack()}
                     />
                 </View>
@@ -106,6 +106,7 @@ export default class Share extends Component {
                                     />
                                 </View>
                             </View>
+
                         )) :
                         this.state.chats.map((chat, i) => (
                             <View key={i} style={styles.resultItem}>
@@ -122,6 +123,7 @@ export default class Share extends Component {
                             </View>
                         ))
                     }
+
                 </ScrollView>
 
                 <View style={{
@@ -193,7 +195,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'grey',
         height: 42,
         width: 139,
-        marginBottom: 100,
+        marginBottom: 40,
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'center'

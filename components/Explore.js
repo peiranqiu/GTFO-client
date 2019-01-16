@@ -32,7 +32,7 @@ import {Avatar, Icon, SearchBar} from 'react-native-elements'
 import Modal from "react-native-modal";
 import Business from "./Business";
 import UserServiceClient from "../services/UserServiceClient";
-
+import Carousel from 'react-native-snap-carousel';
 
 const icons = [{uri: all_sm, filter: ""},
     {uri: food_sm, filter: "food"},
@@ -312,12 +312,16 @@ export default class Explore extends Component {
                                       onPress={() => this.props.navigation.navigate("Notification")}>
                         <Image style={styles.icon} source={notification}/>
                     </TouchableOpacity>
-                    <SearchBar
-                        noIcon
-                        inputStyle={styles.searchInput}
-                        containerStyle={styles.searchContainer}
-                        onFocus={() => this.props.navigation.navigate("Search")}
-                        placeholder='Search Places'/>
+                    <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                        <TouchableOpacity style={styles.search}
+                                          onPress={() => this.props.navigation.navigate("Search")}>
+                            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                                <Icon name='search'
+                                      size={16}
+                                      iconStyle={{color: 'grey'}}
+                                />
+                                <Text style={{color: 'grey'}}>{' '}Search Places</Text></View>
+                        </TouchableOpacity></View>
                     {this.state.dropdown ?
                         <TouchableOpacity style={styles.dropdown}>
                             {icons.map((icon, i) =>
@@ -360,9 +364,8 @@ export default class Explore extends Component {
                         <View style={{flexDirection: 'row', margin: 4}}>
                             {followers.map((user, i) =>
                                 <Avatar size={20} rounded key={i} source={{uri: user.avatar}}/>)}
-                            {size > 3 && <Text style={{marginVertical: 10, marginLeft: 10}}>+ {size - 3}</Text>}
-                            {size > 0 && <Text style={{margin: 10}}>Interested</Text>}
-                            {size === 0 && <Text style={{margin: 10, color: 'white'}}>Interested</Text>}
+                            {size > 3 && <Text style={{marginVertical: 10, fontSize: 12}}>{' '}+{size - 3}</Text>}
+                            <Text style={{marginVertical: 10, fontSize: 12}}>{' '}Interested</Text>
                             <View style={{position: 'absolute', right: 5, bottom: 10, flexDirection: 'row'}}>
                                 <Icon
                                     size={20}
@@ -416,25 +419,16 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         height: 90
     },
-    searchContainer: {
+    search: {
+        borderRadius: 30,
         backgroundColor: 'white',
         height: 40,
-        borderTopWidth: 0,
-        borderBottomWidth: 0,
-        borderRadius: 30,
+        width: 237,
+        justifyContent: 'center',
+        alignItems: 'center',
         shadowOpacity: 0.1,
         shadowOffset: {width: 0, height: 0},
         shadowRadius: 10,
-        width: 237,
-    },
-    searchInput: {
-        height: 24,
-        backgroundColor: 'white',
-        borderColor: 'white',
-        borderRadius: 30,
-        borderWidth: 1,
-        fontSize: 14,
-        textAlign: 'center',
     },
     modal: {
         flex: 1,

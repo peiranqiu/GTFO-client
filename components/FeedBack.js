@@ -31,7 +31,7 @@ export default class FeedBack extends Component {
                     <Text style={styles.searchContainer}>Feedback</Text>
                     <Icon name='chevron-left'
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
-                          iconStyle={{color: 'grey'}}
+                          size={30}
                           onPress={() => this.props.navigation.navigate("Me")}
                     />
                 </View>

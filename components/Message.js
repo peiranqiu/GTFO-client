@@ -179,7 +179,7 @@ export default class Message extends Component {
                     <Text style={styles.searchContainer}>{this.state.chat.name}({this.state.chat.size})</Text>
                     <Icon name='chevron-left'
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
-                          iconStyle={{color: 'grey'}}
+                          size={30}
                           onPress={() => this.props.navigation.navigate("Chats")}
                     />
                 </View>
@@ -194,9 +194,9 @@ export default class Message extends Component {
                 />
                 <Modal isVisible={this.state.visible} style={styles.modal}>
                     <View style={{flexDirection: 'row'}}>
-                        <Text style={styles.searchContainer}>Set Reminder</Text>
+                        <Text style={styles.title}>Set Reminder</Text>
                         <Icon name='close'
-                              containerStyle={{marginRight: 20}}
+                              containerStyle={{position: 'absolute', top: 20, right: 20}}
                               iconStyle={{color: 'grey'}}
                               onPress={() => this.setState({formTime: this.state.chat.time, visible: false})}
                         />
@@ -207,7 +207,7 @@ export default class Message extends Component {
                                onChangeText={text => this.setState({formTitle: text})}/>
                     <View style={{flexDirection: 'row'}}>
                         <Icon name='date-range'
-                              iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 10}}
+                              iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 20}}
                         />
                         <FormInput containerStyle={styles.formInput}
                                    value={new Date(this.state.formTime).toString().slice(0, 21)}
@@ -226,7 +226,7 @@ export default class Message extends Component {
                     />}
                     <View style={{flexDirection: 'row'}}>
                         <Icon name='place'
-                              iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 10}}
+                              iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 20}}
                         />
                         <FormInput containerStyle={styles.formInput}
                                    placeholder="Location"
@@ -260,6 +260,14 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderTopWidth: 0,
         borderBottomWidth: 0,
+        height: 70,
+        textAlign: 'center',
+        alignSelf: 'center',
+        fontSize: 16,
+        paddingTop: 25,
+        width: Dimensions.get('window').width,
+    },
+    title: {
         height: 70,
         textAlign: 'center',
         alignSelf: 'center',

@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import UserServiceClient from "../services/UserServiceClient";
-import {Icon} from 'react-native-elements'
+import {Avatar, Icon} from 'react-native-elements'
+import friend_request from '../resources/icons/friend_request.svg';
+import SvgUri from 'react-native-svg-uri';
 
 export default class Notification extends Component {
     constructor(props) {
@@ -32,20 +34,25 @@ export default class Notification extends Component {
         return (
             <SafeAreaView style={{flex: 1}}>
                 <View style={styles.container}>
-                    <Text style={{marginTop: 30, alignSelf: 'center'}}>Notification</Text>
+                    <Text style={styles.searchContainer}>Notification</Text>
                     <Icon name='chevron-left'
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
-                          iconStyle={{color: 'grey'}}
+                          size={30}
                           onPress={() => this.props.navigation.goBack()}
                     />
                 </View>
                 <ScrollView>
                     {this.state.requests.map((request, i) => (
-                        <TouchableOpacity key={i} style={styles.resultItem}>
-                            <View>
-                                <Text>{request.firstUser.name} sent you a friend request</Text>
+                        <View key={i} style={styles.resultItem}>
+                            <View style={{flexDirection: 'row'}}>
+                                <Avatar size={20} rounded source={{uri: request.firstUser.avatar}}/>
+                                <Text style={{margin: 6}}>{request.firstUser.name} wants to be friend with you</Text>
+                                <TouchableOpacity style={{position: 'absolute', right: 30, top: 5}}
+                                                  onPress={() => this.acceptRequest(i)}>
+                                    <SvgUri width="20" height="20" source={friend_request} />
+                                </TouchableOpacity>
                             </View>
-                        </TouchableOpacity>
+                        </View>
                     ))}
                 </ScrollView>
             </SafeAreaView>
@@ -57,7 +64,8 @@ const styles = StyleSheet.create({
     resultItem: {
         borderBottomWidth: 0,
         borderColor: 'white',
-        padding: 20
+        marginLeft: 20,
+        marginTop: 25,
     },
     container: {
         width: '100%',
@@ -66,5 +74,16 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.06,
         shadowOffset: {width: 0, height: 14},
         shadowRadius: 10,
+    },
+    searchContainer: {
+        backgroundColor: 'white',
+        borderTopWidth: 0,
+        borderBottomWidth: 0,
+        height: 70,
+        textAlign: 'center',
+        alignSelf: 'center',
+        fontSize: 16,
+        paddingTop: 25,
+        width: Dimensions.get('window').width,
     },
 });

@@ -185,8 +185,8 @@ export default class Business extends Component {
                 <View style={{flexDirection: 'row', marginTop: 5, marginHorizontal: 20}}>
                     {followers.map((user, i) =>
                         <Avatar size={20} rounded key={i} source={{uri: user.avatar}}/>)}
-                    {size > 3 && <Text style={{marginVertical: 10, marginLeft: 10}}>+ {size - 3}</Text>}
-                    {size > 0 && <Text style={{margin: 10, fontSize: 12}}>Interested</Text>}
+                    {size > 3 && <Text style={{marginVertical: 10, fontSize: 12}}>{' '}+{size - 3}</Text>}
+                    <Text style={{marginVertical: 10, fontSize: 12}}>{' '}Interested</Text>
                 </View>
                 <MapView
                     style={styles.map}

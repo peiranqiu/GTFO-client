@@ -13,7 +13,7 @@ import {
 } from 'react-native'
 import PostServiceClient from '../services/PostServiceClient'
 import AppBottomNav from './AppBottomNav'
-import {Avatar, Icon, SearchBar} from 'react-native-elements'
+import {Divider, Avatar, Icon, SearchBar} from 'react-native-elements'
 import Modal from "react-native-modal";
 import UserServiceClient from "../services/UserServiceClient";
 import Business from './Business'
@@ -147,12 +147,18 @@ export default class Home extends Component {
                 </Modal>
 
                 <ScrollView>
-                    <SearchBar
-                        noIcon
-                        inputStyle={styles.searchInput}
-                        containerStyle={styles.searchContainer}
-                        onFocus={() => this.props.navigation.navigate("Search")}
-                        placeholder='Search Places'/>
+
+                    <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                        <TouchableOpacity style={styles.search}
+                                          onPress={() => this.props.navigation.navigate("Search")}>
+                            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                                <Icon name='search'
+                                      size={16}
+                                      iconStyle={{color: 'grey'}}
+                                />
+                                <Text style={{color: 'grey'}}>{' '}Search Places</Text></View>
+                        </TouchableOpacity></View>
+
                     <FlatList horizontal={true}
                               showsHorizontalScrollIndicator={false}
                               style={styles.tabGroup}
@@ -160,10 +166,11 @@ export default class Home extends Component {
                               extraData={this.state}
                               renderItem={({item}) => (
                                   item.key === this.state.filter ?
-                                      <Text style={styles.activeTab}
+                                      <View><Text style={styles.activeTab}
                                             onPress={() => this.setState({filter: item.key})}>
                                           {item.title}
-                                      </Text>
+                                      </Text><View style={{marginTop: 2, width: 30, alignSelf: 'center'}}>
+                                          <Divider style={{backgroundColor: 'black', height: 4}}/></View></View>
                                       :
                                       <Text style={styles.tab}
                                             onPress={() => this.setState({filter: item.key})}>
@@ -218,8 +225,8 @@ export default class Home extends Component {
                                 <View style={{flexDirection: 'row', marginTop: 5, marginHorizontal: 20}}>
                                     {followers.map((user, i) =>
                                         <Avatar size={20} rounded key={i} source={{uri: user.avatar}}/>)}
-                                    {size > 3 && <Text style={{marginVertical: 10, marginLeft: 10}}>+ {size - 3}</Text>}
-                                    {size > 0 && <Text style={{margin: 10, fontSize: 12}}>Interested</Text>}
+                                    {size > 3 && <Text style={{marginVertical: 10, fontSize: 12}}>{' '}+{size - 3}</Text>}
+                                    <Text style={{marginVertical: 10, fontSize: 12}}>{' '}Interested</Text>
                                 </View>}
                             </TouchableOpacity>
                         )
@@ -257,27 +264,6 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         flexDirection: 'row'
     },
-    searchContainer: {
-        backgroundColor: 'white',
-        borderTopWidth: 0,
-        borderBottomWidth: 0,
-        borderRadius: 30,
-        shadowOpacity: 0.1,
-        shadowOffset: {width: 0, height: 0},
-        shadowRadius: 10,
-        width: 237,
-        alignSelf: 'center',
-        marginTop: 10,
-    },
-    searchInput: {
-        height: 24,
-        backgroundColor: 'white',
-        borderColor: 'white',
-        borderRadius: 30,
-        borderWidth: 1,
-        fontSize: 14,
-        textAlign: 'center'
-    },
     modal: {
         flex: 1,
         backgroundColor: 'white',
@@ -291,7 +277,7 @@ const styles = StyleSheet.create({
     tab: {
         paddingHorizontal: 25,
         textAlign: 'center',
-        color: '#cccccc'
+        color: '#7f7f7f'
     },
     activeTab: {
         paddingHorizontal: 25,
@@ -299,9 +285,21 @@ const styles = StyleSheet.create({
         color: 'black'
     },
     tabGroup: {
-        paddingTop: 40,
+        paddingTop: 30,
         paddingBottom: 20,
         height: 80,
         flex: 1,
-    }
+    },
+    search: {
+        borderRadius: 30,
+        backgroundColor: 'white',
+        height: 42,
+        width: 237,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+        shadowOpacity: 0.1,
+        shadowOffset: {width: 0, height: 0},
+        shadowRadius: 10,
+    },
 });

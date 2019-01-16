@@ -3,8 +3,9 @@ import {Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, Touchable
 import UserServiceClient from "../services/UserServiceClient";
 import {Avatar, SearchBar} from 'react-native-elements'
 import {Icon} from 'react-native-elements'
-import friend_request from '../resources/icons/friend_request.png';
+import friend_request from '../resources/icons/friend_request.svg';
 import add_friend from '../resources/icons/add_friend.png';
+import SvgUri from 'react-native-svg-uri';
 
 export default class Friend extends Component {
     constructor(props) {
@@ -115,8 +116,8 @@ export default class Friend extends Component {
                         containerStyle={styles.searchContainer}
                         placeholder='Search friends by Instagram ID'/>
                     <Icon name='chevron-left'
-                          containerStyle={{position: 'absolute', left: 10, top: 20}}
-                          iconStyle={{color: 'grey'}}
+                          containerStyle={{position: 'absolute', left: 10, top: 15}}
+                          size={30}
                           onPress={() => this.props.navigation.navigate("Me")}
                     />
                 </View>
@@ -142,10 +143,8 @@ export default class Friend extends Component {
                                         source={add_friend}
                                     />}
                                     {this.isInRequest(u) &&
-                                    <Image
-                                        style={{position: 'absolute', right: 30, top: 5, width: 20, height: 20, opacity: 0.3}}
-                                        source={friend_request}
-                                    />}
+                                    <View style={{position: 'absolute', right: 30, top: 5, opacity: 0.3}}>
+                                        <SvgUri width="20" height="20" source={friend_request} /></View>}
                                 </View>
                             </View>
                         ))}
@@ -159,9 +158,7 @@ export default class Friend extends Component {
                                     <Text style={{margin: 6}}>{request.firstUser.name}</Text>
                                     <TouchableOpacity style={{position: 'absolute', right: 30, top: 5}}
                                                       onPress={() => this.acceptRequest(i)}>
-                                        <Image style={{width: 20, height: 20,}}
-                                               source={friend_request}
-                                        />
+                                        <SvgUri width="20" height="20" source={friend_request} />
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -221,7 +218,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         fontSize: 14,
         textAlign: 'left',
-        paddingBottom: 12,
-        paddingLeft: 30
+        paddingBottom: 10,
+        paddingLeft: 40
     }
 });

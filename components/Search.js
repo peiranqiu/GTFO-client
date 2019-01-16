@@ -50,7 +50,7 @@ export default class Search extends Component {
                         placeholder='Search Places'/>
                     <Icon name='chevron-left'
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
-                          iconStyle={{color: 'grey'}}
+                          size={30}
                           onPress={() => this.props.navigation.goBack()}
                     />
                 </View>
