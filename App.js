@@ -15,6 +15,7 @@ import Message from "./components/Message";
 import Share from "./components/Share";
 import Notification from "./components/Notification";
 import Permission from "./components/Permission";
+import FeedBack from "./components/FeedBack";
 import {Font, Asset, AppLoading} from 'expo'
 
 YellowBox.ignoreWarnings(['Remote debugger']);
@@ -38,10 +39,11 @@ const AppNavigator = createStackNavigator({
         Message: Message,
         Share: Share,
         Permission: Permission,
-        Notification: Notification
+        Notification: Notification,
+        FeedBack: FeedBack
     },
     {
-        initialRouteName: "Welcome",
+        initialRouteName: "Explore",
         headerMode: 'none',
         navigationOptions: {
             headerVisible: false,

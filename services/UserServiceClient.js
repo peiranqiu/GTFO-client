@@ -39,4 +39,24 @@ export default class UserServiceClient {
     findFriendRequests(userId) {
         return fetch(constants.SERVER + 'friend/request/' + userId).then(response => (response.json()));
     }
+
+    acceptFriendRequest(friendId) {
+        return fetch(constants.SERVER + 'friend/' + friendId, {
+            method: 'post'
+        }).then(response => response);
+    }
+
+    sendFriendRequest(userId, user) {
+        return fetch(constants.SERVER + 'friend/request/' + userId, {
+            method: 'post',
+            body: JSON.stringify(user),
+            headers: {
+                'content-type': 'application/json'
+            }
+        }).then(response => console.log(response));
+    }
+
+    findFriendSends(userId) {
+        return fetch(constants.SERVER + 'friend/send/' + userId).then(response => (response.json()));
+    }
 }

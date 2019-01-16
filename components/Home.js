@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import {
     ButtonGroup,
-    FlatList,
     Dimensions,
+    FlatList,
     Image,
     SafeAreaView,
     ScrollView,
@@ -17,6 +17,7 @@ import {Avatar, Icon, SearchBar} from 'react-native-elements'
 import Modal from "react-native-modal";
 import UserServiceClient from "../services/UserServiceClient";
 import Business from './Business'
+import * as constants from "../constants/constant";
 
 const data = [
     {title: "All", key: ""},
@@ -34,6 +35,7 @@ export default class Home extends Component {
         super(props);
         this.postService = PostServiceClient.instance;
         this.userService = UserServiceClient.instance;
+        this.filterFriends = this.filterFriends.bind(this);
         this.state = {
             businesses: [],
             user: null,
@@ -41,40 +43,67 @@ export default class Home extends Component {
             visible: false,
             selected: null,
             appReady: false,
-            selectedIndex: 0
+            selectedIndex: 0,
+            gtfo: null
         }
     }
 
     componentDidMount() {
+        this.userService.findUserById(constants.GTFO_ID)
+            .then(gtfo => this.setState({gtfo: gtfo}));
         storage.load({key: 'user'})
             .then(user => {
                 this.setState({user: user});
+                this.userService.findFriendList(user._id)
+                    .then((friends) => {
+                        this.postService.findAllBusinesses()
+                            .then(businesses => {
+                                businesses = this.filterFriends(businesses, friends);
+                                businesses.map(business => {
+                                    business.interested = false;
+                                    business.followers = [];
+                                    this.postService.findFollowersForBusiness(business.id)
+                                        .then(response => {
+                                            response.push(this.state.gtfo);
+                                            business.followers = response;
+                                            this.setState({appReady: true});
+                                        });
+                                    this.postService.findIfInterested(business.id, user._id)
+                                        .then(response => {
+                                            if(response) {
+                                                business.interested = response;
+                                                this.setState({appReady: true});
+                                            }
+                                        });
+                                });
+                                this.setState({businesses: businesses.reverse(), appReady: true});
+                            });
+                    });
             })
             .catch(err => {
                 this.props.navigation.navigate("Welcome");
             });
-        this.postService.findAllBusinesses()
-            .then(businesses => {
-                businesses.map(business => {
-                    business.interested = false;
-                    business.followers = [];
-                    this.postService.findFollowersForBusiness(business.id)
-                        .then(response => {
-                            if(response.length > 0) {
-                                business.followers = response;
-                                this.setState({appReady: true});
-                            }
-                        });
-                    this.postService.findIfInterested(business.id, this.state.user._id)
-                        .then(response => {
-                            if(response) {
-                                business.interested = response;
-                                this.setState({appReady: true});
-                            }
-                        });
-                });
-                this.setState({businesses: businesses.reverse(), appReady: true});
+
+    }
+
+    filterFriends(businesses, friends) {
+        let friendIds = [];
+        friends.map(user => friendIds.push(user._id));
+        friendIds.push(this.state.user._id);
+        let results = [];
+        businesses.map(business => {
+            let posts = [];
+            business.posts.map(post => {
+                if(friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID) {
+                    posts.push(post);
+                }
             });
+            if(posts.length > 0) {
+                business.posts = posts;
+                results.push(business);
+            }
+        });
+        return results;
     }
 
     userLikesBusiness(business) {

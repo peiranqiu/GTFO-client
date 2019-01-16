@@ -1,12 +1,9 @@
 import React, {Component} from 'react';
-import {Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Business from './Business'
 import PostServiceClient from "../services/PostServiceClient";
-import PropTypes from 'prop-types';
-import ChatServiceClient from "../services/ChatServiceClient";
 import Modal from "react-native-modal";
-
-import {Avatar, Icon, SearchBar} from 'react-native-elements'
+import {Icon} from 'react-native-elements'
 
 export default class CustomView extends Component {
     constructor(props) {

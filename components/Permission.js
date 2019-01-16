@@ -1,8 +1,7 @@
-import UserServiceClient from "../services/UserServiceClient";
 import React, {Component} from 'react';
-import {AsyncStorage, Dimensions, StyleSheet, Image, Text, TouchableOpacity, View, WebView} from "react-native";
+import {Linking, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import background from '../resources/logos/background.png';
-import {Permissions, Location} from "expo"
+import {Permissions} from "expo"
 
 
 export default class Permission extends Component {
@@ -12,21 +11,22 @@ export default class Permission extends Component {
             location: null,
             notification: null,
             initial: 0,
-            update: false
+            ready1: false,
+            ready2: false
         };
     }
 
     async componentDidMount() {
         await Permissions.getAsync(Permissions.NOTIFICATIONS)
             .then(async (response) => {
-                this.setState({notification: response.allowsAlert});
+                this.setState({notification: response.allowsAlert, ready1: true});
                 if (response.allowsAlert) {
                     this.setState({initial: this.state.initial + 1})
                 }
             });
         await Permissions.getAsync(Permissions.LOCATION)
             .then(async (response) => {
-                this.setState({location: response.status});
+                this.setState({location: response.status, ready2: true});
                 if (response.status === 'granted') {
                     this.setState({initial: this.state.initial + 1})
                 }
@@ -36,7 +36,7 @@ export default class Permission extends Component {
     async askLocation() {
         Permissions.askAsync(Permissions.LOCATION)
             .then(() => this.setState({location: null}));
-        this.setState({update: true});
+        this.setState({ready2: true});
     }
 
     async askNotification() {
@@ -47,7 +47,10 @@ export default class Permission extends Component {
 
     render() {
         if (this.state.initial === 2) {
-            this.props.navigation.navigate("Home");
+           this.props.navigation.navigate("Home");
+        }
+        if(!this.state.ready1 || !this.state.ready2) {
+            return null;
         }
         return (
             <View style={styles.background}>
@@ -72,6 +75,9 @@ export default class Permission extends Component {
                         </TouchableOpacity>
                     </View>
                 </View>
+
+
+                {/*need revise*/}
                 {this.state.notification !== null &&
                 <View style={styles.card}>
                     <Text style={styles.title}>Never forget your plans</Text>
@@ -92,15 +98,17 @@ export default class Permission extends Component {
                 }
                 {this.state.location !== null &&
                 <View style={styles.card}>
-                    <Text style={styles.title}>Know
-                        what's nearby</Text>
+                    <Text style={styles.title}>Know what's nearby</Text>
                     <Text style={styles.text}>
                         Turning your locations on will help us show you things to do.
                     </Text>
                     <View style={{justifyContent: 'center', flexDirection: 'row', marginTop: 100}}>
-                        <TouchableOpacity style={styles.button} onPress={() => this.askLocation()}>
+                        {this.state.location === 'undefined' && <TouchableOpacity style={styles.button} onPress={() => this.askLocation()}>
                             <Text style={{color: 'white'}}>Turn on</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity>}
+                        {this.state.location === 'denied' && <TouchableOpacity style={styles.button} onPress={()=>Linking.openURL('app-settings:')}>
+                            <Text style={{color: 'white'}}>Go to Settings</Text>
+                        </TouchableOpacity>}
                     </View>
                 </View>
                 }

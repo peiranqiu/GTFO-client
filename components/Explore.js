@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import PostServiceClient from '../services/PostServiceClient'
 import AppBottomNav from './AppBottomNav'
-import {MapView} from "expo"
+import {MapView, Permissions} from "expo"
 import Geolocation from 'react-native-geolocation-service';
 import * as constants from "../constants/constant";
 import art from '../resources/icons/art.png';
@@ -31,6 +31,7 @@ import mylocation from '../resources/icons/mylocation.png';
 import {Avatar, Icon, SearchBar} from 'react-native-elements'
 import Modal from "react-native-modal";
 import Business from "./Business";
+import UserServiceClient from "../services/UserServiceClient";
 
 
 const icons = [{uri: all_sm, filter: ""},
@@ -47,6 +48,7 @@ export default class Explore extends Component {
     constructor(props) {
         super(props);
         this.postService = PostServiceClient.instance;
+        this.userService = UserServiceClient.instance;
         this.state = {
             businesses: [],
             user: null,
@@ -55,18 +57,17 @@ export default class Explore extends Component {
             visible: false,
             appReady: false,
             icon: 0,
-            dropdown: false
+            dropdown: false,
+            gtfo: null,
+            permission: null
         }
+        this.getPermission = this.getPermission.bind(this);
     }
 
     componentDidMount() {
-        storage.load({key: 'user'})
-            .then(user => {
-                this.setState({user: user});
-            })
-            .catch(err => {
-                this.props.navigation.navigate("Welcome");
-            });
+        this.getPermission();
+        this.userService.findUserById(constants.GTFO_ID)
+            .then(gtfo => this.setState({gtfo: gtfo}));
         Geolocation.getCurrentPosition(
             (position) => {
                 this.setState({
@@ -77,42 +78,84 @@ export default class Explore extends Component {
                         longitudeDelta: 0.08,
                     }
                 });
-                this.postService.findAllBusinesses()
-                    .then(businesses => {
-                        businesses.map(business => {
-                            business.interested = false;
-                            business.followers = [];
-                            this.postService.findFollowersForBusiness(business.id)
-                                .then(response => {
-                                    if (response.length > 0) {
-                                        business.followers = response;
-                                        this.setState({appReady: true});
-                                    }
-                                });
-                            this.postService.findIfInterested(business.id, this.state.user._id)
-                                .then(response => {
-                                    if (response) {
-                                        business.interested = response;
-                                        this.setState({appReady: true});
-                                    }
-                                });
-                        });
-                        this.setState({
-                            businesses: businesses.sort(function (b, a) {
-                                return Math.sqrt(Math.pow(b.latitude - position.coords.latitude, 2)
-                                    + Math.pow(b.longitude - position.coords.longitude, 2))
-                                    - Math.sqrt(Math.pow(a.latitude - position.coords.latitude, 2)
-                                        + Math.pow(a.longitude - position.coords.longitude, 2));
-                            }), appReady: true
-                        });
+                storage.load({key: 'user'})
+                    .then(user => {
+                        this.setState({user: user});
+                        this.userService.findFriendList(user._id)
+                            .then(friends => {
+                                this.postService.findAllBusinesses()
+                                    .then(businesses => {
+                                        businesses = this.filterFriends(businesses, friends);
+                                        businesses.map(business => {
+                                            console.log(business.posts.length);
+                                            business.interested = false;
+                                            business.followers = [];
+                                            this.postService.findFollowersForBusiness(business.id)
+                                                .then(response => {
+                                                    response.push(this.state.gtfo);
+                                                    business.followers = response;
+                                                    this.setState({appReady: true});
+                                                });
+                                            this.postService.findIfInterested(business.id, user._id)
+                                                .then(response => {
+                                                    if (response) {
+                                                        business.interested = response;
+                                                        this.setState({appReady: true});
+                                                    }
+                                                });
+                                        });
+                                        this.setState({
+                                            businesses: businesses.sort(function (b, a) {
+                                                return Math.sqrt(Math.pow(b.latitude - position.coords.latitude, 2)
+                                                    + Math.pow(b.longitude - position.coords.longitude, 2))
+                                                    - Math.sqrt(Math.pow(a.latitude - position.coords.latitude, 2)
+                                                        + Math.pow(a.longitude - position.coords.longitude, 2));
+                                            }), appReady: true
+                                        });
+                                    });
+                            });
+                    })
+                    .catch(err => {
+                        this.props.navigation.navigate("Welcome");
                     });
             },
             (error) => {
             },
             {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000}
         );
+    }
 
+    async getPermission() {
+        await Permissions.getAsync(Permissions.LOCATION)
+            .then(async (response) => {
+                this.setState({location: response.status});
+                if (response.status === 'granted') {
+                    this.setState({permission: true});
+                }
+                else {
+                    this.setState({permission: false});
+                }
+            });
+    }
 
+    filterFriends(businesses, friends) {
+        let friendIds = [];
+        friends.map(user => friendIds.push(user._id));
+        friendIds.push(this.state.user._id);
+        let results = [];
+        businesses.map(business => {
+            let posts = [];
+            business.posts.map(post => {
+                if (friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID) {
+                    posts.push(post);
+                }
+            });
+            if (posts.length > 0) {
+                business.posts = posts;
+                results.push(business);
+            }
+        });
+        return results;
     }
 
     markerSelected(index) {
@@ -187,6 +230,9 @@ export default class Explore extends Component {
 
     render() {
         activeNav = "explore";
+        if(this.state.permission !== null && !this.state.permission) {
+            this.props.navigation.navigate("Permission");
+        }
         let ready = false;
         let size = 0;
         let followers = [];
@@ -221,13 +267,13 @@ export default class Explore extends Component {
                             longitude: this.state.region.longitude
                         }}
                     />
-                    {this.state.businesses.map((business, index) => (
+                    {this.state.appReady && this.state.businesses.map((business, index) => (
                         business.category.includes(icons[this.state.icon].filter) &&
                         this.state.selected !== index &&
                         <MapView.Marker
                             key={index}
                             zIndex={index}
-                            onPress={e=> this.markerSelected(e._targetInst.return.key)}
+                            onPress={e => this.markerSelected(e._targetInst.return.key)}
                             image={this.getCategory(business.category)}
                             coordinate={{latitude: business.latitude, longitude: business.longitude}}
                         />
@@ -245,7 +291,6 @@ export default class Explore extends Component {
 
                 </MapView>
                 }
-
                 <Modal isVisible={this.state.visible}>
                     <ScrollView style={styles.modal}>
                         <Icon name='close'
@@ -301,9 +346,15 @@ export default class Explore extends Component {
                                    source={{uri: this.state.businesses[this.state.selected].posts[0].photo}}
                             />
                             <View style={styles.text}>
-                                <Text>{this.state.businesses[this.state.selected].name}</Text>
-                                <Text>{this.state.businesses[this.state.selected].posts[0].user.name}</Text>
-                                <Text>{this.state.businesses[this.state.selected].posts[0].content}</Text>
+                                <Text style={{fontSize: 16, marginTop: 5}}>
+                                    {this.state.businesses[this.state.selected].name}
+                                </Text>
+                                <Text style={{lineHeight: 20, fontSize: 14, color: 'grey', marginTop: 10}}>
+                                    {this.state.businesses[this.state.selected].posts[0].user.name === 'gtfo_guide' ?
+                                        '' : this.state.businesses[this.state.selected].posts[0].user.name}
+                                    {this.state.businesses[this.state.selected].posts[0].user.name === 'gtfo_guide' ? '' : ': '}
+                                    {this.state.businesses[this.state.selected].posts[0].content}
+                                </Text>
                             </View>
                         </View>
                         <View style={{flexDirection: 'row', margin: 4}}>
@@ -328,6 +379,7 @@ export default class Explore extends Component {
                             </View>
                         </View>
                     </TouchableOpacity>
+
                     <View style={{backgroundColor: 'white', bottom: 0}}>
                         <SafeAreaView>
                             <AppBottomNav/>
@@ -361,8 +413,8 @@ const styles = StyleSheet.create({
     },
     text: {
         width: Dimensions.get('window').width - 175,
-        flexWrap: 'wrap',
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
+        height: 90
     },
     searchContainer: {
         backgroundColor: 'white',

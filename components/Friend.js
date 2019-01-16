@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
-import {Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import UserServiceClient from "../services/UserServiceClient";
-import {SearchBar} from 'react-native-elements'
+import {Avatar, SearchBar} from 'react-native-elements'
 import {Icon} from 'react-native-elements'
+import friend_request from '../resources/icons/friend_request.png';
+import add_friend from '../resources/icons/add_friend.png';
 
 export default class Friend extends Component {
     constructor(props) {
@@ -14,8 +16,9 @@ export default class Friend extends Component {
             searchTerm: '',
             friends: [],
             requests: [],
+            sends: [],
             searching: false
-        }
+        };
     }
 
     componentDidMount() {
@@ -23,14 +26,11 @@ export default class Friend extends Component {
             .then(user => {
                 this.setState({user: user});
                 this.userService.findFriendList(user._id)
-                    .then((users) => {
-                        this.setState({friends: users})
-                    });
+                    .then(users => this.setState({friends: users}));
+                this.userService.findFriendSends(user._id)
+                    .then(users => this.setState({sends: users}));
                 this.userService.findFriendRequests(user._id)
-                    .then((friends) => {
-                        this.setState({requests: friends});
-                    });
-
+                    .then(friends => this.setState({requests: friends}));
             })
             .catch(err => {
                 this.props.navigation.navigate("Welcome");
@@ -41,6 +41,56 @@ export default class Friend extends Component {
             });
     }
 
+    acceptRequest(i) {
+        let requests = this.state.requests;
+        let friends = this.state.friends;
+        this.userService.acceptFriendRequest(requests[i].id)
+            .then(() => {
+                friends.push(requests[i].firstUser);
+                requests.splice(i, 1);
+                this.setState({requests: requests, friends: friends});
+            });
+    }
+
+    sendRequest(user) {
+        this.userService.sendFriendRequest(user._id, this.state.user)
+            .then(response => {
+                let sends = this.state.sends;
+                sends.push(user);
+                this.setState({sends: sends});
+            });
+    }
+
+    isFriend(user) {
+        let status = false;
+        this.state.friends.map(friend => {
+            if (friend._id === user._id) {
+                status = true;
+            }
+        });
+        return status;
+    }
+
+    isInRequest(user) {
+        let status = false;
+        this.state.requests.map(request => {
+            if (request.firstUser._id === user._id) {
+                status = true;
+            }
+        });
+        return status;
+    }
+
+    isSent(user) {
+        let status = false;
+        this.state.sends.map(friend => {
+            if (friend._id === user._id) {
+                status = true;
+            }
+        });
+        return status;
+    }
+
     render() {
         const filteredResults = (
             this.state.allUsers === undefined ?
@@ -48,7 +98,6 @@ export default class Friend extends Component {
                 this.state.allUsers.filter(users => {
                     return users.name.includes(this.state.searchTerm) && users._id !== this.state.user._id;
                 }));
-
         return (
             <SafeAreaView style={{flex: 1}}>
                 <View style={styles.container}>
@@ -60,6 +109,8 @@ export default class Friend extends Component {
                         onChangeText={term => {
                             this.setState({searchTerm: term});
                         }}
+                        autoCapitalize={'none'}
+                        autoCorrect={false}
                         inputStyle={styles.searchInput}
                         containerStyle={styles.searchContainer}
                         placeholder='Search friends by Instagram ID'/>
@@ -69,33 +120,61 @@ export default class Friend extends Component {
                           onPress={() => this.props.navigation.navigate("Me")}
                     />
                 </View>
-                {this.state.searchTerm.length > 0?
-                <ScrollView>
-                    <Text style={{marginHorizontal: 20, marginVertical: 30}}>Users on GTFO</Text>
-                    {filteredResults.map((u, i) => (
-                        <TouchableOpacity key={i} style={styles.resultItem}>
-                            <View>
-                                <Text>{u.name}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView> :
+                {this.state.searchTerm.length > 0 ?
                     <ScrollView>
-                        <Text style={{marginHorizontal: 20, marginVertical: 30}}>Friend Requests</Text>
-                        {this.state.requests.map((request, i) => (
-                            <TouchableOpacity key={i} style={styles.resultItem}>
-                                <View>
-                                    <Text>{request.firstUser.name}</Text>
+                        <Text style={{marginHorizontal: 20, marginTop: 30}}>Users on GTFO</Text>
+                        {filteredResults.map((u, i) => (
+                            <View key={i} style={styles.resultItem}>
+                                <View style={{flexDirection: 'row'}}>
+                                    <Avatar size={20} rounded source={{uri: u.avatar}}/>
+                                    <Text style={{margin: 6}}>{u.name}</Text>
+                                    {!this.isSent(u) && !this.isInRequest(u) && !this.isFriend(u) &&
+                                    <TouchableOpacity style={{position: 'absolute', right: 30, top: 5}}
+                                                      onPress={() => this.sendRequest(u)}>
+                                        <Image
+                                            style={{width: 20, height: 20}}
+                                            source={add_friend}
+                                        />
+                                    </TouchableOpacity>}
+                                    {this.isSent(u) &&
+                                    <Image
+                                        style={{position: 'absolute', right: 30, top: 5, width: 20, height: 20, opacity: 0.3}}
+                                        source={add_friend}
+                                    />}
+                                    {this.isInRequest(u) &&
+                                    <Image
+                                        style={{position: 'absolute', right: 30, top: 5, width: 20, height: 20, opacity: 0.3}}
+                                        source={friend_request}
+                                    />}
                                 </View>
-                            </TouchableOpacity>
+                            </View>
                         ))}
-                        <Text style={{paddingTop: 30, marginHorizontal: 20, marginVertical: 30}}>Friends</Text>
-                        {this.state.friends.map((friend, i) => (
-                            <TouchableOpacity key={i} style={styles.resultItem}>
-                                <View>
-                                    <Text>{friend.name}</Text>
+                    </ScrollView> :
+                    <ScrollView>
+                        <Text style={{color: 'grey', marginHorizontal: 20, marginTop: 30}}>Friend Requests</Text>
+                        {this.state.requests.map((request, i) => (
+                            <View key={i} style={styles.resultItem}>
+                                <View style={{flexDirection: 'row'}}>
+                                    <Avatar size={20} rounded source={{uri: request.firstUser.avatar}}/>
+                                    <Text style={{margin: 6}}>{request.firstUser.name}</Text>
+                                    <TouchableOpacity style={{position: 'absolute', right: 30, top: 5}}
+                                                      onPress={() => this.acceptRequest(i)}>
+                                        <Image style={{width: 20, height: 20,}}
+                                               source={friend_request}
+                                        />
+                                    </TouchableOpacity>
                                 </View>
-                            </TouchableOpacity>
+                            </View>
+                        ))}
+                        <Text
+                            style={{color: 'grey', paddingTop: 20, marginHorizontal: 20, marginTop: 20}}>Friends</Text>
+                        {this.state.friends.map((friend, i) => (
+                            <View key={i} style={styles.resultItem}>
+                                <View style={{flexDirection: 'row'}}>
+                                    <Avatar size={20} rounded source={{uri: friend.avatar}}/>
+                                    <Text style={{margin: 6}}>{friend.name}</Text>
+                                </View>
+                            </View>
                         ))}
                     </ScrollView>
                 }
@@ -108,7 +187,8 @@ const styles = StyleSheet.create({
     resultItem: {
         borderBottomWidth: 0,
         borderColor: 'white',
-        padding: 20
+        marginLeft: 20,
+        marginTop: 25,
     },
     container: {
         width: '100%',
@@ -124,7 +204,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0,
         width: Dimensions.get('window').width,
         alignSelf: 'center',
-        marginTop: 10
+        marginTop: 10,
     },
     searchInput: {
         height: 36,
@@ -140,6 +220,8 @@ const styles = StyleSheet.create({
         borderColor: 'white',
         borderWidth: 1,
         fontSize: 14,
-        textAlign: 'center'
+        textAlign: 'left',
+        paddingBottom: 12,
+        paddingLeft: 30
     }
 });

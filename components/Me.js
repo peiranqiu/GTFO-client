@@ -34,55 +34,59 @@ export default class Me extends Component {
 
     render() {
         activeNav = "me";
-        if(this.state.user === null) {
+        if (this.state.user === null) {
             return null;
         }
         return (
             <SafeAreaView style={{flex: 1}}>
 
                 <View style={{marginTop: 50, flex: 1}}>
-                    <View style={{
-                        justifyContent: 'center',
-                        alignContent: 'center',
-                        alignSelf: 'center'
-                    }}>
+                    <View style={{justifyContent: 'center', flexDirection: 'row'}}>
                         <Avatar medium rounded source={{uri: this.state.user.avatar}}/>
-                        <Text style={{marginTop: 10}}>@{this.state.user.name}</Text>
                     </View>
 
+                    <View style={{justifyContent: 'center', flexDirection: 'row'}}>
+                        <Text style={{marginTop: 10, color: 'grey'}}>@{this.state.user.name}</Text>
+                    </View>
                     <List containerStyle={{borderColor: 'white', marginTop: 80, paddingBottom: 40}}>
                         <ListItem containerStyle={styles.listItem}
+                                  titleStyle = {{fontSize: 16}}
                                   leftIcon={<Image style={styles.listImage}
                                                    source={friends}/>}
                                   onPress={() => this.props.navigation.navigate("Friend")}
                                   title="Friends"
                                   hideChevron/>
                         <ListItem containerStyle={styles.listItem}
+                                  titleStyle = {{fontSize: 16}}
                                   leftIcon={<Image style={styles.listImage}
                                                    source={feedback}/>}
+                                  onPress={() => this.props.navigation.navigate("FeedBack")}
                                   title="Feedback"
                                   hideChevron/>
                         <ListItem containerStyle={styles.listItem}
+                                  titleStyle = {{fontSize: 16}}
                                   leftIcon={<Image style={styles.listImage}
                                                    source={privacy}/>}
                                   title="Privacy and Security"
                                   hideChevron/>
                         <ListItem containerStyle={styles.listItem}
+                                  titleStyle = {{fontSize: 16}}
                                   onPress={() => this.signOut()}
                                   leftIcon={<Image style={styles.listImage}
                                                    source={logout}/>}
                                   title="Logout"
                                   hideChevron/>
                     </List>
-                    <View style={{
-                        justifyContent: 'center',
-                        alignContent: 'center',
-                        alignSelf: 'center'
-                    }}>
-                        <Text>Version 1.00.0</Text>
-                        <Text>Copyright 2018 GTFO, Inc.</Text>
-                        <Text>All rights reserved.</Text>
+                    <View style={{justifyContent: 'center', flexDirection: 'row'}}>
+                        <Text style={{color: 'grey', fontSize: 11, margin: 2}}>Version 1.00.0</Text>
                     </View>
+                    <View style={{justifyContent: 'center', flexDirection: 'row'}}>
+                        <Text style={{color: 'grey', fontSize: 11, margin: 2}}>Copyright 2018 GTFO, Inc.</Text>
+                    </View>
+                    <View style={{justifyContent: 'center', flexDirection: 'row'}}>
+                        <Text style={{color: 'grey', fontSize: 11, margin: 2}}>All rights reserved.</Text>
+                    </View>
+
 
                 </View>
                 <AppBottomNav style={{alignSelf: 'flex-end'}}/>
@@ -99,7 +103,7 @@ const styles = StyleSheet.create({
     listImage: {
         marginLeft: 20,
         marginRight: 20,
-        width:20,
+        width: 20,
         height: 20,
         resizeMode: 'contain'
 

@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {SafeAreaView, View, StyleSheet, Text, Dimensions, ScrollView, TouchableOpacity} from "react-native";
 import AppBottomNav from "./AppBottomNav";
 import ChatServiceClient from '../services/ChatServiceClient'
+import {Icon} from "react-native-elements";
 
 export default class Chats extends Component {
     constructor(props) {
@@ -34,21 +35,36 @@ export default class Chats extends Component {
         return (
             <SafeAreaView style={{flex: 1}}>
                 <View style={styles.container}>
-                    <Text style={{marginTop: 30, alignSelf: 'center'}}>Chats</Text>
+                    <Text style={{fontSize: 16, marginTop: 30, alignSelf: 'center'}}>Chats</Text>
                 </View>
                 <ScrollView>
-                    {this.state.chats.map((chat, i) => (
-                        <TouchableOpacity key={i} style={styles.card}
-                                          onPress={() =>
-                                              this.props.navigation.navigate("Message", {
-                                                  chat: chat,
-                                                  refresh: () => this.setState({refresh: true})
-                                              })}>
-                            <View>
-                                <Text style={styles.text}>{chat.name}({chat.size})</Text>
-                            </View>
-                        </TouchableOpacity>
-                    ))}
+                    {this.state.chats.map((chat, i) => {
+                        let message = chat.messages.sort(function (a, b) {
+                            return new Date(b.createdAt) - new Date(a.createdAt);
+                        })[0];
+                        if (message.businessId >= 0) {
+                            message.text = '[shared business]';
+                        }
+                        return (
+                            <TouchableOpacity key={i} style={styles.card}
+                                              onPress={() =>
+                                                  this.props.navigation.navigate("Message", {
+                                                      chat: chat,
+                                                      refresh: () => this.setState({refresh: true})
+                                                  })}>
+                                <View>
+                                    <Text style={styles.title}>{chat.name}({chat.size})</Text>
+                                    <Text style={styles.text}>{message.user.name}{': '}{message.text}</Text>
+                                </View>
+                                {chat.address.length > 0 &&
+                                <Icon name='date-range'
+                                      containerStyle={styles.icon}
+                                      iconStyle={{margin: 15}}
+                                />}
+
+                            </TouchableOpacity>
+                        )
+                    })}
 
                 </ScrollView>
                 <AppBottomNav style={{alignSelf: 'flex-end'}}/>
@@ -74,11 +90,25 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         shadowOffset: {width: 0, height: 2},
-        marginTop: 10,
-        padding: 10
+        marginTop: 15,
+        paddingVertical: 18,
+        paddingHorizontal: 5
+    },
+    title: {
+        paddingHorizontal: 20,
+        fontSize: 15,
+        marginBottom: 5
     },
     text: {
         paddingHorizontal: 20,
-        fontSize: 20,
+        fontSize: 13,
+        color: 'grey',
+        height: 15,
+        width: 320
     },
+    icon: {
+        position: 'absolute',
+        top: 10,
+        right: 10
+    }
 });

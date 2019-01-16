@@ -12,6 +12,7 @@ import {Avatar, Icon} from 'react-native-elements'
 import call from "react-native-phone-call";
 import openMap from "react-native-open-maps";
 import PostServiceClient from "../services/PostServiceClient";
+import UserServiceClient from "../services/UserServiceClient";
 
 
 export default class Business extends Component {
@@ -19,16 +20,20 @@ export default class Business extends Component {
     constructor(props) {
         super(props);
         this.postService = PostServiceClient.instance;
+        this.userService = UserServiceClient.instance;
         this.state = {
             user: null,
             interested: false,
             followers: [],
             open: false,
-            expand: false
+            expand: false,
+            gtfo: null
         }
     }
 
     componentDidMount() {
+        this.userService.findUserById(constants.GTFO_ID)
+            .then(gtfo => this.setState({gtfo: gtfo}));
         const business = this.props.business;
         storage.load({key: 'user'})
             .then(user => {
@@ -40,8 +45,10 @@ export default class Business extends Component {
                 this.props.navigation.navigate("Welcome");
             });
         this.postService.findFollowersForBusiness(business.id)
-            .then(response => this.setState({followers: response}));
-
+            .then(response => {
+                response.push(this.state.gtfo);
+                this.setState({followers: response});
+            });
         var now = new Date();
         var day = now.getDay() - 1;
         if (day < 0) {
@@ -155,12 +162,12 @@ export default class Business extends Component {
                         <Text
                             style={{fontSize: 14, fontWeight: "700", marginBottom: 3}}>{this.props.business.name}</Text>
                         <Text style={{fontSize: 12}}>
-                            {this.props.business.address.slice(-7).includes("Canada")?
+                            {this.props.business.address.slice(-7).includes("Canada") ?
                                 this.props.business.address.slice(0, -7)
                                 : this.props.business.address}
-                            </Text>
+                        </Text>
                     </View>
-                    <View style={{position: 'absolute', right: 20, top:0, flexDirection: 'row'}}>
+                    <View style={{position: 'absolute', right: 20, top: 0, flexDirection: 'row'}}>
                         <Icon
                             size={20}
                             name={this.state.interested ? 'star' : 'star-border'}

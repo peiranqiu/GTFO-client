@@ -262,10 +262,10 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0,
         height: 70,
         textAlign: 'center',
-        fontSize: 18,
+        alignSelf: 'center',
+        fontSize: 16,
         paddingTop: 25,
-        paddingLeft: 40,
-        width: Dimensions.get('window').width - 40,
+        width: Dimensions.get('window').width,
     },
     modal: {
         justifyContent: 'flex-start',

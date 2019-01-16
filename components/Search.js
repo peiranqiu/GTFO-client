@@ -39,6 +39,8 @@ export default class Search extends Component {
                 <View style={styles.container}>
                     <SearchBar
                         clearIcon
+                        autoCapitalize = {'none'}
+                        autoCorrect = {false}
                         leftIcon={{name: 'chevron-left'}}
                         noIcon
                         value={this.state.searchTerm}
@@ -117,7 +119,9 @@ const styles = StyleSheet.create({
         borderColor: 'white',
         borderWidth: 1,
         fontSize: 14,
-        textAlign: 'center'
+        textAlign: 'left',
+        paddingBottom: 12,
+        paddingLeft: 30
     },
     modal: {
         flex: 1,
