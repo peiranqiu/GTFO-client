@@ -1,6 +1,11 @@
 import React, {Component} from 'react'
 import {BottomNavigation} from 'react-native-material-ui';
 import {withNavigation} from 'react-navigation';
+import me from '../resources/icons/me.png';
+import home from '../resources/icons/home.png';
+import explore from '../resources/icons/explore.png';
+import chats from '../resources/icons/chats.png';
+import {Image, StyleSheet} from "react-native";
 
 class AppBottomNav extends Component {
     constructor(props) {
@@ -22,19 +27,31 @@ class AppBottomNav extends Component {
                 }}
                 active={activeNav} hidden={false}>
                 <BottomNavigation.Action
-                    key="home" icon="home" label="Home"
+                    style={{
+                        container: activeNav === "home"? styles.activeContainer : styles.container
+                    }}
+                    key="home" icon={<Image source={home}/>}
                     onPress={() => this.props.navigation.navigate("Home")}
                 />
                 <BottomNavigation.Action
-                    key="explore" icon="search" label="Explore"
+                    style={{
+                        container: activeNav === "explore"? styles.activeContainer : styles.container
+                    }}
+                    key="explore" icon={<Image source={explore}/>}
                     onPress={() => this.props.navigation.navigate("Explore")}
                 />
                 <BottomNavigation.Action
-                    key="chats" icon="chat" label="Chats"
+                    style={{
+                        container: activeNav === "chats"? styles.activeContainer : styles.container
+                    }}
+                    key="chats" icon={<Image source={chats}/>}
                     onPress={() => {this.props.navigation.navigate("Chats")}}
                 />
                 <BottomNavigation.Action
-                    key="me" icon="account-circle" label="Me"
+                    style={{
+                        container: activeNav === "me"? styles.activeContainer : styles.container
+                    }}
+                    key="me" icon={<Image source={me}/>}
                     onPress={() => this.props.navigation.navigate("Me")}
                 />
             </BottomNavigation>
@@ -43,3 +60,11 @@ class AppBottomNav extends Component {
 }
 
 export default withNavigation(AppBottomNav);
+
+const styles = StyleSheet.create({
+    activeContainer: {
+        opacity: 1
+    },
+    container: {
+        opacity: 0.4
+    },});
