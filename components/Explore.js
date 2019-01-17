@@ -52,13 +52,20 @@ export default class Explore extends Component {
             businesses: [],
             user: null,
             region: null,
-            selected: 0,
+            initialRegion: null,
+            selected: null,
             visible: false,
             appReady: false,
             icon: 0,
             dropdown: false,
             gtfo: null,
-            permission: null
+            permission: null,
+            boundingBox: {
+                westLng: 0,
+                southLat: 0,
+                eastLng: 0,
+                northLat: 0
+            }
         }
         this.getPermission = this.getPermission.bind(this);
     }
@@ -69,14 +76,14 @@ export default class Explore extends Component {
             .then(gtfo => this.setState({gtfo: gtfo}));
         Geolocation.getCurrentPosition(
             (position) => {
-                this.setState({
-                    region: {
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude,
-                        latitudeDelta: 0.08,
-                        longitudeDelta: 0.08,
-                    }
-                });
+                let region = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    latitudeDelta: 0.08,
+                    longitudeDelta: 0.08,
+                };
+                let boundingBox = this.getBoundingBox(region);
+                this.setState({initialRegion: region, region: region, boundingBox: boundingBox});
                 storage.load({key: 'user'})
                     .then(user => {
                         this.setState({user: user});
@@ -105,14 +112,19 @@ export default class Explore extends Component {
                                                     }
                                                 });
                                         });
-                                        this.setState({
-                                            businesses: businesses.sort(function (b, a) {
-                                                return Math.sqrt(Math.pow(b.latitude - position.coords.latitude, 2)
-                                                    + Math.pow(b.longitude - position.coords.longitude, 2))
-                                                    - Math.sqrt(Math.pow(a.latitude - position.coords.latitude, 2)
-                                                        + Math.pow(a.longitude - position.coords.longitude, 2));
-                                            }), appReady: true
+                                        businesses = businesses.sort(function (b, a) {
+                                            return Math.sqrt(Math.pow(b.latitude - position.coords.latitude, 2)
+                                                + Math.pow(b.longitude - position.coords.longitude, 2))
+                                                - Math.sqrt(Math.pow(a.latitude - position.coords.latitude, 2)
+                                                    + Math.pow(a.longitude - position.coords.longitude, 2));
                                         });
+                                        if(businesses.length > 0 || this.isInBoudingBox({latitude: businesses[0].latitude, longitude: businesses[0].longitude})) {
+                                            this.setState({selected: 0});
+                                        }
+                                        this.setState({
+                                            businesses: businesses, appReady: true
+                                        });
+
                                     });
                             });
                     })
@@ -229,6 +241,32 @@ export default class Explore extends Component {
             })
     }
 
+    onRegionChangeComplete(region) {
+        let boundingBox = this.getBoundingBox(region);
+        this.setState({region: region, boundingBox: boundingBox});
+    }
+
+    getBoundingBox(region) {
+        let boundingBox = {
+            westLng: region.longitude - region.longitudeDelta/2, // westLng - min lng
+            southLat: region.latitude - region.latitudeDelta/2, // southLat - min lat
+            eastLng: region.longitude + region.longitudeDelta/2, // eastLng - max lng
+            northLat: region.latitude + region.latitudeDelta/2 // northLat - max lat
+        }
+
+        return boundingBox;
+    }
+
+    isInBoudingBox(coordinate) {
+        if (coordinate.latitude > this.state.boundingBox.southLat && coordinate.latitude < this.state.boundingBox.northLat &&
+            coordinate.longitude > this.state.boundingBox.westLng && coordinate.longitude < this.state.boundingBox.eastLng)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     render() {
         activeNav = "explore";
         if (this.state.permission !== null && !this.state.permission) {
@@ -238,21 +276,9 @@ export default class Explore extends Component {
         let size = 0;
         let followers = [];
         let businesses = this.state.businesses;
-        let firstIndex = businesses.findIndex(b => b.category.includes(icons[this.state.icon].filter));
-        if (this.state.selected === null) {
-            if (firstIndex >= 0) {
-                this.setState({selected: firstIndex});
-            }
-        }
+
         if (businesses !== [] && businesses[this.state.selected] !== undefined && businesses[this.state.selected].followers !== undefined) {
-            if (firstIndex >= 0 && !businesses[this.state.selected].category.includes(icons[this.state.icon].filter)) {
-                this.setState({selected: firstIndex});
-            }
-            if (firstIndex < 0) {
-                this.setState({selected: null});
-            }
             let data = businesses[this.state.selected].followers;
-            const interested = businesses[this.state.selected].interested;
             size = data.length;
             followers = size > 3 ? data.slice(0, 3) : data;
             ready = true;
@@ -266,14 +292,15 @@ export default class Explore extends Component {
                     style={{position: 'absolute', left: 0, right: 0, top: 0, bottom: 0}}
                     provider="google"
                     onPress={() => this.setState({dropdown: false})}
-                    region={this.state.region}
+                    initialRegion={this.state.initialRegion}
+                    onRegionChangeComplete={(region) => this.onRegionChangeComplete(region)}
                     customMapStyle={constants.MAP_STYLE}>
                     <MapView.Marker
                         zIndex={5000}
                         image={mylocation}
                         coordinate={{
-                            latitude: this.state.region.latitude,
-                            longitude: this.state.region.longitude
+                            latitude: this.state.initialRegion.latitude,
+                            longitude: this.state.initialRegion.longitude
                         }}
                     />
                     {this.state.appReady && this.state.businesses.map((business, index) => (
@@ -335,8 +362,24 @@ export default class Explore extends Component {
                         <TouchableOpacity style={styles.dropdown}>
                             {icons.map((icon, i) =>
                                 <TouchableOpacity key={i}
-                                                  onPress={() =>
-                                                      this.setState({icon: i, dropdown: false})}>
+                                                  onPress={() => {
+                                                      this.setState({icon: i, dropdown: false});
+                                                      let firstIndex = businesses.findIndex(b => b.category.includes(icons[i].filter));
+                                                      if(firstIndex >= 0 && this.isInBoudingBox({latitude: businesses[firstIndex].latitude, longitude: businesses[firstIndex].longitude})) {
+                                                          if (this.state.selected === null) {
+                                                              this.setState({selected: firstIndex});
+                                                          }
+                                                          else {
+                                                              if (!businesses[this.state.selected].category.includes(icons[i].filter)) {
+                                                                  this.setState({selected: firstIndex});
+                                                              }
+                                                          }
+                                                      }
+                                                      else {
+                                                          this.setState({selected: null});
+                                                      }
+
+                                                  }}>
                                     <Image style={styles.icon} source={icon.uri}/>
                                 </TouchableOpacity>)}
                         </TouchableOpacity> :
