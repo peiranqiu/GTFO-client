@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Image, Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import UserServiceClient from "../services/UserServiceClient";
 import {Avatar, Icon} from 'react-native-elements'
 import friend_request from '../resources/icons/friend_request.svg';

@@ -28,11 +28,10 @@ import shopping_sm from '../resources/icons/shopping-sm.png';
 import notification from '../resources/icons/notification.png';
 import all_sm from '../resources/icons/all.png';
 import mylocation from '../resources/icons/mylocation.png';
-import {Avatar, Icon, SearchBar} from 'react-native-elements'
+import {Avatar, Icon} from 'react-native-elements'
 import Modal from "react-native-modal";
 import Business from "./Business";
 import UserServiceClient from "../services/UserServiceClient";
-import Carousel from 'react-native-snap-carousel';
 
 const icons = [{uri: all_sm, filter: ""},
     {uri: food_sm, filter: "food"},
@@ -87,11 +86,13 @@ export default class Explore extends Component {
                                     .then(businesses => {
                                         businesses = this.filterFriends(businesses, friends);
                                         businesses.map(business => {
-                                            console.log(business.posts.length);
                                             business.interested = false;
                                             business.followers = [];
                                             this.postService.findFollowersForBusiness(business.id)
                                                 .then(response => {
+                                                    let friendIds = [];
+                                                    friends.map(user => friendIds.push(user._id));
+                                                    response = response.filter(u => friendIds.includes(u._id));
                                                     response.push(this.state.gtfo);
                                                     business.followers = response;
                                                     this.setState({appReady: true});
@@ -230,17 +231,25 @@ export default class Explore extends Component {
 
     render() {
         activeNav = "explore";
-        if(this.state.permission !== null && !this.state.permission) {
+        if (this.state.permission !== null && !this.state.permission) {
             this.props.navigation.navigate("Permission");
         }
         let ready = false;
         let size = 0;
         let followers = [];
         let businesses = this.state.businesses;
+        let firstIndex = businesses.findIndex(b => b.category.includes(icons[this.state.icon].filter));
+        if (this.state.selected === null) {
+            if (firstIndex >= 0) {
+                this.setState({selected: firstIndex});
+            }
+        }
         if (businesses !== [] && businesses[this.state.selected] !== undefined && businesses[this.state.selected].followers !== undefined) {
-            let firstIndex = businesses.findIndex(b => b.category.includes(icons[this.state.icon].filter));
             if (firstIndex >= 0 && !businesses[this.state.selected].category.includes(icons[this.state.icon].filter)) {
                 this.setState({selected: firstIndex});
+            }
+            if (firstIndex < 0) {
+                this.setState({selected: null});
             }
             let data = businesses[this.state.selected].followers;
             const interested = businesses[this.state.selected].interested;
@@ -278,10 +287,10 @@ export default class Explore extends Component {
                             coordinate={{latitude: business.latitude, longitude: business.longitude}}
                         />
                     ))}
-                    {businesses[this.state.selected] !== undefined &&
+                    {this.state.selected !== null && businesses[this.state.selected] !== undefined &&
                     <MapView.Marker
                         zIndex={5000}
-                        anchor={{x: 0.5, y: 0.81}}
+                        anchor={{x: 0.5, y: 1}}
                         image={this.getLargeCategory(businesses[this.state.selected].category)}
                         coordinate={{
                             latitude: businesses[this.state.selected].latitude,
@@ -343,8 +352,8 @@ export default class Explore extends Component {
                     <Icon name='gps-not-fixed'
                           containerStyle={{position: 'absolute', top: -40, right: 20}}
                           onPress={() => this.map.animateToCoordinate(this.state.region, 31)}/>
-                    <TouchableOpacity style={styles.card}
-                                      onPress={() => this.setState({visible: true})}>
+                    {this.state.selected !== null && <TouchableOpacity style={styles.card}
+                                                                       onPress={() => this.setState({visible: true})}>
                         <View style={{flexDirection: 'row'}}>
                             <Image style={styles.image}
                                    source={{uri: this.state.businesses[this.state.selected].posts[0].photo}}
@@ -381,7 +390,7 @@ export default class Explore extends Component {
                                 />
                             </View>
                         </View>
-                    </TouchableOpacity>
+                    </TouchableOpacity>}
 
                     <View style={{backgroundColor: 'white', bottom: 0}}>
                         <SafeAreaView>
@@ -389,9 +398,7 @@ export default class Explore extends Component {
                         </SafeAreaView>
                     </View>
                 </View>}
-            </View>
-        )
-
+            </View>)
     }
 }
 
@@ -399,7 +406,6 @@ const styles = StyleSheet.create({
     card: {
         height: 175,
         alignSelf: 'center',
-        //flexDirection: 'row',
         borderRadius: 12,
         borderWidth: 0,
         backgroundColor: 'white',
@@ -438,7 +444,8 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 0},
         paddingHorizontal: 5,
         paddingTop: 40,
-        marginVertical: 30
+        marginVertical: 30,
+        borderRadius: 10
     },
     topBar: {
         flexDirection: 'row',

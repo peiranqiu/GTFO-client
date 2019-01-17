@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Image, SafeAreaView, View, StyleSheet, Text} from "react-native";
+import {Image, SafeAreaView, StyleSheet, Text, View} from "react-native";
 import AppBottomNav from "./AppBottomNav";
 import {Avatar, List, ListItem} from "react-native-elements";
 import friends from '../resources/icons/friends.png';
@@ -41,11 +41,11 @@ export default class Me extends Component {
             <SafeAreaView style={{flex: 1}}>
 
                 <View style={{marginTop: 50, flex: 1}}>
-                    <View style={{justifyContent: 'center', flexDirection: 'row'}}>
+                    <View style={styles.center}>
                         <Avatar medium rounded source={{uri: this.state.user.avatar}}/>
                     </View>
 
-                    <View style={{justifyContent: 'center', flexDirection: 'row'}}>
+                    <View style={styles.center}>
                         <Text style={{marginTop: 10, color: 'grey'}}>@{this.state.user.name}</Text>
                     </View>
                     <List containerStyle={{borderColor: 'white', marginTop: 80, paddingBottom: 40}}>
@@ -77,14 +77,14 @@ export default class Me extends Component {
                                   title="Logout"
                                   hideChevron/>
                     </List>
-                    <View style={{justifyContent: 'center', flexDirection: 'row'}}>
-                        <Text style={{color: 'grey', fontSize: 11, margin: 2}}>Version 1.00.0</Text>
+                    <View style={styles.center}>
+                        <Text style={styles.text}>Version 1.00.0</Text>
                     </View>
-                    <View style={{justifyContent: 'center', flexDirection: 'row'}}>
-                        <Text style={{color: 'grey', fontSize: 11, margin: 2}}>Copyright 2018 GTFO, Inc.</Text>
+                    <View style={styles.center}>
+                        <Text style={styles.text}>Copyright 2018 GTFO, Inc.</Text>
                     </View>
-                    <View style={{justifyContent: 'center', flexDirection: 'row'}}>
-                        <Text style={{color: 'grey', fontSize: 11, margin: 2}}>All rights reserved.</Text>
+                    <View style={styles.center}>
+                        <Text style={styles.text}>All rights reserved.</Text>
                     </View>
 
 
@@ -107,5 +107,14 @@ const styles = StyleSheet.create({
         height: 20,
         resizeMode: 'contain'
 
+    },
+    center: {
+        justifyContent: 'center',
+        flexDirection: 'row'
+    },
+    text: {
+        color: 'grey',
+        fontSize: 11,
+        margin: 2
     }
 });

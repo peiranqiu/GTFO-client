@@ -38,17 +38,24 @@ export default class Business extends Component {
         storage.load({key: 'user'})
             .then(user => {
                 this.setState({user: user});
+                this.userService.findFriendList(user._id)
+                    .then((friends) => {
+                        this.postService.findFollowersForBusiness(business.id)
+                            .then(response => {
+                                let friendIds = [];
+                                friends.map(user => friendIds.push(user._id));
+                                response = response.filter(u => friendIds.includes(u._id));
+                                response.push(this.state.gtfo);
+                                this.setState({followers: response});
+                            });
+                    });
                 this.postService.findIfInterested(business.id, user._id)
                     .then(response => this.setState({interested: response}));
             })
             .catch(err => {
                 this.props.navigation.navigate("Welcome");
             });
-        this.postService.findFollowersForBusiness(business.id)
-            .then(response => {
-                response.push(this.state.gtfo);
-                this.setState({followers: response});
-            });
+
         var now = new Date();
         var day = now.getDay() - 1;
         if (day < 0) {
@@ -148,15 +155,33 @@ export default class Business extends Component {
         let size = 0;
         let followers = [];
         let data = this.state.followers;
-        const interested = this.state.interested;
         size = data.length;
         followers = size > 3 ? data.slice(0, 3) : data;
 
         return (
             <ScrollView style={{flex: 1}}>
-                <Image style={styles.image}
-                       source={{uri: this.props.business.posts[0].photo}}
-                />
+                <View>
+                    <Image style={styles.image}
+                           source={{uri: this.props.business.posts[0].photo}}
+                    />
+                    <View style={{position: 'absolute', padding: 20, bottom: 20, flexDirection: 'row'}}>
+                        <Avatar medium rounded source={{uri: this.props.business.posts[0].user.avatar}}/>
+                        <Text style={{
+                            width: 250,
+                            height: 60,
+                            marginLeft: 20,
+                            lineHeight: 17,
+                            fontSize: 14,
+                            fontWeight: '600',
+                            color: 'white',
+                            marginTop: 5
+                        }}>
+                            {this.props.business.posts[0].user.name === 'gtfo_guide' ?
+                                '' : this.props.business.posts[0].user.name}
+                            {this.props.business.posts[0].user.name === 'gtfo_guide' ? '' : ': '}
+                            {this.props.business.posts[0].content}
+                        </Text></View>
+                </View>
                 <View style={styles.text}>
                     <View>
                         <Text

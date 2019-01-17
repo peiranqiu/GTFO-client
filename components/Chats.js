@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {SafeAreaView, View, StyleSheet, Text, Dimensions, ScrollView, TouchableOpacity} from "react-native";
+import {Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import AppBottomNav from "./AppBottomNav";
 import ChatServiceClient from '../services/ChatServiceClient'
 import {Icon} from "react-native-elements";

@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import {
-    ButtonGroup,
     Dimensions,
     FlatList,
     Image,
@@ -13,7 +12,7 @@ import {
 } from 'react-native'
 import PostServiceClient from '../services/PostServiceClient'
 import AppBottomNav from './AppBottomNav'
-import {Divider, Avatar, Icon, SearchBar} from 'react-native-elements'
+import {Avatar, Divider, Icon} from 'react-native-elements'
 import Modal from "react-native-modal";
 import UserServiceClient from "../services/UserServiceClient";
 import Business from './Business'
@@ -64,13 +63,16 @@ export default class Home extends Component {
                                     business.followers = [];
                                     this.postService.findFollowersForBusiness(business.id)
                                         .then(response => {
+                                            let friendIds = [];
+                                            friends.map(user => friendIds.push(user._id));
+                                            response = response.filter(u => friendIds.includes(u._id));
                                             response.push(this.state.gtfo);
                                             business.followers = response;
                                             this.setState({appReady: true});
                                         });
                                     this.postService.findIfInterested(business.id, user._id)
                                         .then(response => {
-                                            if(response) {
+                                            if (response) {
                                                 business.interested = response;
                                                 this.setState({appReady: true});
                                             }
@@ -94,11 +96,11 @@ export default class Home extends Component {
         businesses.map(business => {
             let posts = [];
             business.posts.map(post => {
-                if(friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID) {
+                if (friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID) {
                     posts.push(post);
                 }
             });
-            if(posts.length > 0) {
+            if (posts.length > 0) {
                 business.posts = posts;
                 results.push(business);
             }
@@ -142,7 +144,8 @@ export default class Home extends Component {
                                   refresh={(business) => {
                                       let businesses = this.state.businesses;
                                       businesses[this.state.selected] = business;
-                                      this.setState({businesses: businesses})}}/>
+                                      this.setState({businesses: businesses})
+                                  }}/>
                     </ScrollView>
                 </Modal>
 
@@ -167,7 +170,7 @@ export default class Home extends Component {
                               renderItem={({item}) => (
                                   item.key === this.state.filter ?
                                       <View><Text style={styles.activeTab}
-                                            onPress={() => this.setState({filter: item.key})}>
+                                                  onPress={() => this.setState({filter: item.key})}>
                                           {item.title}
                                       </Text><View style={{marginTop: 2, width: 30, alignSelf: 'center'}}>
                                           <Divider style={{backgroundColor: 'black', height: 4}}/></View></View>
@@ -190,9 +193,19 @@ export default class Home extends Component {
                             <TouchableOpacity key={i}
                                               style={styles.card}
                                               onPress={() => this.setState({selected: i, visible: true})}>
-                                <Image style={styles.image}
-                                       source={{uri: business.posts[0].photo}}
-                                />
+                                <View>
+                                    <Image style={styles.image}
+                                           source={{uri: business.posts[0].photo}}
+                                    />
+                                    <View style={{position: 'absolute', padding: 20, bottom: 20, flexDirection: 'row'}}>
+                                        <Avatar medium rounded source={{uri: business.posts[0].user.avatar}}/>
+                                        <Text style={styles.imageText}>
+                                            {business.posts[0].user.name === 'gtfo_guide' ?
+                                                '' : business.posts[0].user.name}
+                                            {business.posts[0].user.name === 'gtfo_guide' ? '' : ': '}
+                                            {business.posts[0].content}
+                                        </Text></View>
+                                </View>
                                 <View style={styles.text}>
                                     <View>
                                         <Text
@@ -225,11 +238,11 @@ export default class Home extends Component {
                                 <View style={{flexDirection: 'row', marginTop: 5, marginHorizontal: 20}}>
                                     {followers.map((user, i) =>
                                         <Avatar size={20} rounded key={i} source={{uri: user.avatar}}/>)}
-                                    {size > 3 && <Text style={{marginVertical: 10, fontSize: 12}}>{' '}+{size - 3}</Text>}
+                                    {size > 3 &&
+                                    <Text style={{marginVertical: 10, fontSize: 12}}>{' '}+{size - 3}</Text>}
                                     <Text style={{marginVertical: 10, fontSize: 12}}>{' '}Interested</Text>
                                 </View>}
-                            </TouchableOpacity>
-                        )
+                            </TouchableOpacity>)
                     })}
                 </ScrollView>
                 <AppBottomNav style={{alignSelf: 'flex-end'}}/>
@@ -249,7 +262,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowOffset: {width: 0, height: 0},
         marginVertical: 10,
-        padding: 5
+        padding: 5,
+        borderRadius: 10
     },
     image: {
         height: 294,
@@ -272,7 +286,8 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 0},
         paddingHorizontal: 5,
         paddingTop: 40,
-        marginVertical: 30
+        marginVertical: 30,
+        borderRadius: 10
     },
     tab: {
         paddingHorizontal: 25,
@@ -302,4 +317,14 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 0},
         shadowRadius: 10,
     },
+    imageText: {
+        width: 250,
+        height: 60,
+        marginLeft: 20,
+        lineHeight: 17,
+        fontSize: 14,
+        fontWeight: '600',
+        color: 'white',
+        marginTop: 5
+    }
 });

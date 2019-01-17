@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import {Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import PostServiceClient from "../services/PostServiceClient";
-import {SearchBar} from 'react-native-elements'
-import {Icon} from 'react-native-elements'
+import {Icon, SearchBar} from 'react-native-elements'
 import Modal from "react-native-modal";
 import Business from "./Business";
 
@@ -131,6 +130,7 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 0},
         paddingHorizontal: 5,
         paddingTop: 40,
-        marginVertical: 30
+        marginVertical: 30,
+        borderRadius: 10
     },
 });

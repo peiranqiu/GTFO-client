@@ -138,13 +138,11 @@ export default class Friend extends Component {
                                         />
                                     </TouchableOpacity>}
                                     {this.isSent(u) &&
-                                    <Image
-                                        style={{position: 'absolute', right: 30, top: 5, width: 20, height: 20, opacity: 0.3}}
-                                        source={add_friend}
-                                    />}
+                                    <Text style={{fontSize: 14, color: 'grey', position: 'absolute', right: 30, top: 5}}>
+                                        Pending</Text>}
                                     {this.isInRequest(u) &&
-                                    <View style={{position: 'absolute', right: 30, top: 5, opacity: 0.3}}>
-                                        <SvgUri width="20" height="20" source={friend_request} /></View>}
+                                    <Text style={{position: 'absolute', right: 30, top: 5}}>
+                                        <SvgUri width="20" height="20" source={friend_request} /></Text>}
                                 </View>
                             </View>
                         ))}
@@ -163,8 +161,7 @@ export default class Friend extends Component {
                                 </View>
                             </View>
                         ))}
-                        <Text
-                            style={{color: 'grey', paddingTop: 20, marginHorizontal: 20, marginTop: 20}}>Friends</Text>
+                        <Text style={{color: 'grey', paddingTop: 20, marginHorizontal: 20, marginTop: 20}}>Friends</Text>
                         {this.state.friends.map((friend, i) => (
                             <View key={i} style={styles.resultItem}>
                                 <View style={{flexDirection: 'row'}}>

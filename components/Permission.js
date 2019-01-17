@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Linking, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Dimensions, Image, Linking, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import background from '../resources/logos/background.png';
 import {Permissions} from "expo"
 
@@ -12,7 +12,9 @@ export default class Permission extends Component {
             notification: null,
             initial: 0,
             ready1: false,
-            ready2: false
+            ready2: false,
+            finish1: false,
+            finish2: false
         };
     }
 
@@ -36,39 +38,32 @@ export default class Permission extends Component {
     async askLocation() {
         Permissions.askAsync(Permissions.LOCATION)
             .then(() => this.setState({location: null}));
-        this.setState({ready2: true});
+        this.setState({finish2: true});
     }
 
     async askNotification() {
         Permissions.askAsync(Permissions.NOTIFICATIONS)
             .then(() => this.setState({notification: null}));
-        this.setState({notification: null});
+        this.setState({finish1: true});
     }
 
     render() {
         if (this.state.initial === 2) {
-           this.props.navigation.navigate("Home");
+            this.props.navigation.navigate("Explore");
         }
-        if(!this.state.ready1 || !this.state.ready2) {
+        if (!this.state.ready1 || !this.state.ready2) {
             return null;
         }
         return (
             <View style={styles.background}>
                 <Image style={styles.image} source={background}/>
                 <View style={styles.card}>
-                    <Text style={{
-                        width: 250,
-                        marginLeft: 20,
-                        marginTop: 60,
-                        fontSize: 32,
-                        fontWeight: '600',
-                        color: '#4c4c4c'
-                    }}>Wanna Hang? Ask Them Out!</Text>
+                    <Text style={styles.friend}>Wanna Hang? Ask Them Out!</Text>
                     <Text style={styles.text}>
                         Add friends to see who’s interested in a place or thing or do, share outing ideas and plan an
                         outing together.
                     </Text>
-                    <View style={{justifyContent: 'center', flexDirection: 'row', marginTop: 100}}>
+                    <View style={styles.centent}>
                         <TouchableOpacity style={styles.button}
                                           onPress={() => this.props.navigation.navigate("Friend")}>
                             <Text style={{color: 'white'}}>Let's go!</Text>
@@ -76,15 +71,13 @@ export default class Permission extends Component {
                     </View>
                 </View>
 
-
-                {/*need revise*/}
-                {this.state.notification !== null &&
+                {!this.state.finish1 &&
                 <View style={styles.card}>
                     <Text style={styles.title}>Never forget your plans</Text>
                     <Text style={styles.text}>
                         Get notifications and never miss an important reminder or invite.
                     </Text>
-                    <View style={{justifyContent: 'center', flexDirection: 'row', marginTop: 100}}>
+                    <View style={styles.centent}>
                         <TouchableOpacity onPress={() => this.setState({notification: null})}>
                             <Text style={{fontSize: 16, textAlign: 'center', margin: 20}}>
                                 Not now
@@ -96,17 +89,18 @@ export default class Permission extends Component {
                     </View>
                 </View>
                 }
-                {this.state.location !== null &&
+                {!this.state.finish2 &&
                 <View style={styles.card}>
                     <Text style={styles.title}>Know what's nearby</Text>
                     <Text style={styles.text}>
                         Turning your locations on will help us show you things to do.
                     </Text>
-                    <View style={{justifyContent: 'center', flexDirection: 'row', marginTop: 100}}>
-                        {this.state.location === 'undefined' && <TouchableOpacity style={styles.button} onPress={() => this.askLocation()}>
+                    <View style={styles.centent}>
+                        <TouchableOpacity style={styles.button} onPress={() => this.askLocation()}>
                             <Text style={{color: 'white'}}>Turn on</Text>
-                        </TouchableOpacity>}
-                        {this.state.location === 'denied' && <TouchableOpacity style={styles.button} onPress={()=>Linking.openURL('app-settings:')}>
+                        </TouchableOpacity>
+                        {this.state.location === 'denied' &&
+                        <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('app-settings:')}>
                             <Text style={{color: 'white'}}>Go to Settings</Text>
                         </TouchableOpacity>}
                     </View>
@@ -167,6 +161,19 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontSize: 12,
         color: 'grey'
+    },
+    friend: {
+        width: 250,
+        marginLeft: 20,
+        marginTop: 60,
+        fontSize: 32,
+        fontWeight: '600',
+        color: '#4c4c4c'
+    },
+    content: {
+        justifyContent: 'center',
+        flexDirection: 'row',
+        marginTop: 100
     }
 
 });

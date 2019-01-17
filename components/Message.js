@@ -175,13 +175,24 @@ export default class Message extends Component {
         return (
             this.state.chat !== null &&
             <SafeAreaView style={{flex: 1}}>
-                <View style={styles.container}>
+                <View style={this.state.chat.address.length > 0 ? styles.containerWithReminder : styles.container}>
                     <Text style={styles.searchContainer}>{this.state.chat.name}({this.state.chat.size})</Text>
                     <Icon name='chevron-left'
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
                           size={30}
                           onPress={() => this.props.navigation.navigate("Chats")}
                     />
+                    {this.state.chat.address.length > 0 &&
+                    <View style={styles.reminder}>
+                        <Icon name='date-range'
+                              iconStyle={{marginBottom: 3}}
+                        />
+                        <View style={{marginLeft: 10}}><Text style={{
+                            marginBottom: 5,
+                            fontSize: 12
+                        }}>{this.state.chat.time.toString().slice(0, 21)}</Text>
+                            <Text style={{fontSize: 12, color: 'grey'}}>{this.state.chat.address}</Text></View>
+                    </View>}
                 </View>
                 <GiftedChat
                     messages={this.state.messages}
@@ -256,11 +267,20 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 14},
         shadowRadius: 10,
     },
+    containerWithReminder: {
+        width: '100%',
+        height: 117,
+        margin: 0,
+        shadowOpacity: 0.06,
+        shadowOffset: {width: 0, height: 14},
+        shadowRadius: 10,
+
+    },
     searchContainer: {
         backgroundColor: 'white',
         borderTopWidth: 0,
         borderBottomWidth: 0,
-        height: 70,
+        height: '100%',
         textAlign: 'center',
         alignSelf: 'center',
         fontSize: 16,
@@ -283,7 +303,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 0,
         left: -20,
-        right: 0
+        right: 0,
     },
     formInput: {
         borderBottomWidth: 0,
@@ -298,4 +318,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 20
     },
+    reminder: {
+        justifyContent: 'center',
+        width: '100%',
+        flexDirection: 'row',
+        bottom: 17,
+        position: 'absolute'
+    }
 });

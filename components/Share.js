@@ -40,7 +40,7 @@ export default class Share extends Component {
     createGroup() {
         const business = this.props.navigation.getParam('business', {});
         let users = this.state.friends.filter(users => users.selected);
-        if (users.length !== 0) {
+        if (users.length > 0) {
             users.push(this.state.user);
             this.chatService.createChat(users)
                 .then(chat => this.props.navigation.navigate("Message", {chat: chat, business: business}));
@@ -106,7 +106,6 @@ export default class Share extends Component {
                                     />
                                 </View>
                             </View>
-
                         )) :
                         this.state.chats.map((chat, i) => (
                             <View key={i} style={styles.resultItem}>
@@ -120,19 +119,9 @@ export default class Share extends Component {
                                         onPress={() => this.setState({selectedChat: i})}
                                     />
                                 </View>
-                            </View>
-                        ))
-                    }
-
+                            </View>))}
                 </ScrollView>
-
-                <View style={{
-                    position: 'absolute',
-                    left: Dimensions.get('window').width / 2 - 70,
-                    bottom: 20,
-                    flexDirection: 'row',
-                    justifyContent: 'center'
-                }}>
+                <View style={styles.buttonContainer}>
                     {this.state.tab === 'Friend' ?
                         <TouchableOpacity style={styles.button} onPress={() => this.createGroup()}>
                             <Text style={{color: 'white'}}>Create a Group</Text>
@@ -199,5 +188,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         alignSelf: 'center'
+    },
+    buttonContainer: {
+        position: 'absolute',
+        left: Dimensions.get('window').width / 2 - 70,
+        bottom: 20,
+        flexDirection: 'row',
+        justifyContent: 'center'
     }
 });

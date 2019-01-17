@@ -1,7 +1,7 @@
 import * as constants from "../constants/constant";
 import UserServiceClient from "../services/UserServiceClient";
 import React, {Component} from 'react';
-import {Dimensions, StyleSheet, Image, Text, TouchableOpacity, View, WebView} from "react-native";
+import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, WebView} from "react-native";
 import Ins from 'react-native-instagram-login'
 
 import background from '../resources/logos/background.png';
@@ -25,15 +25,7 @@ export default class Welcome extends Component {
                     avatar: user.avatar
                 }
             });
-            this.userService.findFriendList(user._id)
-                .then((users) => {
-                    if(users.length > 0) {
-                        this.props.navigation.navigate("Home");
-                    }
-                    else {
-                        this.props.navigation.navigate("Permission");
-                    }
-                });
+            this.props.navigation.navigate("Permission");
         });
     }
 
