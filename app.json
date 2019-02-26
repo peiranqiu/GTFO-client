@@ -4,7 +4,7 @@
     "icon": "./resources/logos/gtfo-logo.png",
     "version": "1.0.0",
     "slug": "gtfo",
-    "sdkVersion": "27.0.0",
+    "sdkVersion": "32.0.0",
     "ios": {
       "bundleIdentifier": "com.gtfo.demo",
       "config": {

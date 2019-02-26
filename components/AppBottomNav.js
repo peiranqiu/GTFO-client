@@ -21,8 +21,7 @@ class AppBottomNav extends Component {
                 style={{
                     container: {
                         borderWidth: 0,
-                        shadowOpacity: 0,
-                        paddingTop: 10
+                        shadowOpacity: 0
                     }
                 }}
                 hidden={false}>
@@ -32,8 +31,9 @@ class AppBottomNav extends Component {
                     onPress={() => this.props.navigation.navigate("Home")}
                 />
                 <BottomNavigation.Action
-                    key="explore" icon={<SvgUri fill={activeNav === "explore" ? 'black' : '#cccccc'} width="30" height="40"
-                                                source={explore}/>}
+                    key="explore"
+                    icon={<SvgUri fill={activeNav === "explore" ? 'black' : '#cccccc'} width="30" height="40"
+                                  source={explore}/>}
                     onPress={() => this.props.navigation.navigate("Explore")}
                 />
                 <BottomNavigation.Action

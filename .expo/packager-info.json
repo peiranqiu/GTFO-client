@@ -1,9 +1,9 @@
 {
-  "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 13904,
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
   "devToolsPort": 19002,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null
+  "expoServerNgrokUrl": "https://8d-sg8.peggypeggyq.client.exp.direct",
+  "packagerNgrokUrl": "https://packager.8d-sg8.peggypeggyq.client.exp.direct",
+  "ngrokPid": 4380
 }
