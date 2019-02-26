@@ -1,4 +1,4 @@
-export const SERVER = 'http://localhost:8080/api/';
+export const SERVER = 'http://test-gtfo.us-east-2.elasticbeanstalk.com/api/';
 
 export const GOOGLE_MAP_KEY = 'AIzaSyD8Gpn93BQCNz2U-hi_6XYGY8gAbcHkSaU';
 
@@ -7,6 +7,7 @@ export const INSTAGRAM_SECRET = 'f080af0e3fb349b1988cbcee54973c22';
 export const INSTAGRAM_REDIRECT = 'https://elfsight.com/service/generate-instagram-access-token/';
 
 export const GTFO_ID = 8;
+
 export const MAP_STYLE = [
     {
         "elementType": "geometry",

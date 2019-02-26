@@ -63,7 +63,7 @@ export default class Permission extends Component {
                         Add friends to see who’s interested in a place or thing or do, share outing ideas and plan an
                         outing together.
                     </Text>
-                    <View style={styles.centent}>
+                    <View style={styles.content}>
                         <TouchableOpacity style={styles.button}
                                           onPress={() => this.props.navigation.navigate("Friend")}>
                             <Text style={{color: 'white'}}>Let's go!</Text>
@@ -77,7 +77,7 @@ export default class Permission extends Component {
                     <Text style={styles.text}>
                         Get notifications and never miss an important reminder or invite.
                     </Text>
-                    <View style={styles.centent}>
+                    <View style={styles.content}>
                         <TouchableOpacity onPress={() => this.setState({notification: null})}>
                             <Text style={{fontSize: 16, textAlign: 'center', margin: 20}}>
                                 Not now
@@ -95,7 +95,7 @@ export default class Permission extends Component {
                     <Text style={styles.text}>
                         Turning your locations on will help us show you things to do.
                     </Text>
-                    <View style={styles.centent}>
+                    <View style={styles.content}>
                         <TouchableOpacity style={styles.button} onPress={() => this.askLocation()}>
                             <Text style={{color: 'white'}}>Turn on</Text>
                         </TouchableOpacity>

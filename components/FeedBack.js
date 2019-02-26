@@ -20,7 +20,7 @@ export default class FeedBack extends Component {
     }
 
     submit() {
-        let url = 'mailto:gtfo@gmail.com&subject=feedback&body=' + this.state.text;
+        let url = 'mailto:gtfotesting@gmail.com&subject=feedback&body=' + this.state.text;
         Linking.openURL(url);
     }
 

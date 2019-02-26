@@ -13,6 +13,7 @@ import Chats from "./components/Chats";
 import Friend from "./components/Friend";
 import Message from "./components/Message";
 import Share from "./components/Share";
+import Terms from "./constants/Terms";
 import Notification from "./components/Notification";
 import Permission from "./components/Permission";
 import FeedBack from "./components/FeedBack";
@@ -40,7 +41,8 @@ const AppNavigator = createStackNavigator({
         Share: Share,
         Permission: Permission,
         Notification: Notification,
-        FeedBack: FeedBack
+        FeedBack: FeedBack,
+        Terms: Terms
     },
     {
         initialRouteName: "Home",

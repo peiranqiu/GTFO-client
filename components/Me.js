@@ -65,9 +65,10 @@ export default class Me extends Component {
                                   hideChevron/>
                         <ListItem containerStyle={styles.listItem}
                                   titleStyle = {{fontSize: 16}}
+                                  onPress={() => this.props.navigation.navigate("Terms")}
                                   leftIcon={<Image style={styles.listImage}
                                                    source={privacy}/>}
-                                  title="Privacy and Security"
+                                  title="Terms and Privacy"
                                   hideChevron/>
                         <ListItem containerStyle={styles.listItem}
                                   titleStyle = {{fontSize: 16}}
@@ -81,7 +82,7 @@ export default class Me extends Component {
                         <Text style={styles.text}>Version 1.00.0</Text>
                     </View>
                     <View style={styles.center}>
-                        <Text style={styles.text}>Copyright 2018 GTFO, Inc.</Text>
+                        <Text style={styles.text}>Copyright 2019 GTFO, Inc.</Text>
                     </View>
                     <View style={styles.center}>
                         <Text style={styles.text}>All rights reserved.</Text>

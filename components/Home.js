@@ -27,6 +27,7 @@ const data = [
     {title: "Movie", key: "movie"},
     {title: "Art", key: "art"},
 ];
+import {AppLoading} from 'expo';
 
 export default class Home extends Component {
 
@@ -34,7 +35,6 @@ export default class Home extends Component {
         super(props);
         this.postService = PostServiceClient.instance;
         this.userService = UserServiceClient.instance;
-        this.filterFriends = this.filterFriends.bind(this);
         this.state = {
             businesses: [],
             user: null,
@@ -57,29 +57,35 @@ export default class Home extends Component {
                     .then((friends) => {
                         this.postService.findAllBusinesses()
                             .then(businesses => {
-                                businesses = this.filterFriends(businesses, friends);
+                                let friendIds = [];
+                                friends.map(u => friendIds.push(u._id));
                                 businesses.map(business => {
-                                    business.interested = false;
-                                    business.followers = [];
-                                    this.postService.findFollowersForBusiness(business.id)
-                                        .then(response => {
-                                            let friendIds = [];
-                                            friends.map(user => friendIds.push(user._id));
-                                            response = response.filter(u => friendIds.includes(u._id));
-                                            response.push(this.state.gtfo);
-                                            business.followers = response;
-                                            this.setState({appReady: true});
-                                        });
-                                    this.postService.findIfInterested(business.id, user._id)
-                                        .then(response => {
-                                            if (response) {
-                                                business.interested = response;
-                                                this.setState({appReady: true});
-                                            }
-                                        });
+                                    let posts = [];
+                                    business.posts.map(post => {
+                                        if (friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID
+                                            || post.user._id === user._id) {
+                                            posts.push(post);
+                                        }
+                                    });
+                                    if (posts.length > 0) {
+                                        business.posts = posts;
+                                        business.interested = false;
+                                        business.followers = [];
+                                        this.postService.findFollowersForBusiness(business.id)
+                                            .then(response => {
+                                                response = response.filter(u => friendIds.includes(u._id));
+                                                response.push(this.state.gtfo);
+                                                business.followers = response;
+                                            });
+                                        this.postService.findIfInterested(business.id, user._id)
+                                            .then(response => business.interested = response);
+                                        let allBusinesses = this.state.businesses;
+                                        allBusinesses.unshift(business);
+                                        this.setState({businesses: allBusinesses, appReady: !this.state.appReady});
+                                    }
                                 });
-                                this.setState({businesses: businesses.reverse(), appReady: true});
-                            });
+                                }
+                            );
                     });
             })
             .catch(err => {
@@ -88,25 +94,6 @@ export default class Home extends Component {
 
     }
 
-    filterFriends(businesses, friends) {
-        let friendIds = [];
-        friends.map(user => friendIds.push(user._id));
-        friendIds.push(this.state.user._id);
-        let results = [];
-        businesses.map(business => {
-            let posts = [];
-            business.posts.map(post => {
-                if (friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID) {
-                    posts.push(post);
-                }
-            });
-            if (posts.length > 0) {
-                business.posts = posts;
-                results.push(business);
-            }
-        });
-        return results;
-    }
 
     userLikesBusiness(business) {
         this.postService.userLikesBusiness(business.id, this.state.user)
@@ -122,15 +109,14 @@ export default class Home extends Component {
                         users._id !== this.state.user._id);
                 }
                 this.setState({businesses: businesses});
-            })
+            });
     }
 
     render() {
         activeNav = "home";
-        const filteredResults = this.state.businesses.filter(businesses => {
-            return businesses.category.includes(this.state.filter);
-        });
-
+        const filteredResults = this.state.businesses.filter(businesses =>
+            businesses.category.includes(this.state.filter));
+        filteredResults.map(item => item.key = item.name);
         return (
             <SafeAreaView style={{flex: 1}}>
                 <Modal isVisible={this.state.visible}>
@@ -148,9 +134,7 @@ export default class Home extends Component {
                                   }}/>
                     </ScrollView>
                 </Modal>
-
                 <ScrollView>
-
                     <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                         <TouchableOpacity style={styles.search}
                                           onPress={() => this.props.navigation.navigate("Search")}>
@@ -160,8 +144,8 @@ export default class Home extends Component {
                                       iconStyle={{color: 'grey'}}
                                 />
                                 <Text style={{color: 'grey'}}>{' '}Search Places</Text></View>
-                        </TouchableOpacity></View>
-
+                        </TouchableOpacity>
+                    </View>
                     <FlatList horizontal={true}
                               showsHorizontalScrollIndicator={false}
                               style={styles.tabGroup}
@@ -179,6 +163,82 @@ export default class Home extends Component {
                                             onPress={() => this.setState({filter: item.key})}>
                                           {item.title}
                                       </Text>)}/>
+
+
+                    <FlatList data={filteredResults}
+                              extraData={this.state.appReady}
+                              renderItem={({item, index}) => {
+                                  let ready = false;
+                                  let followers = [];
+                                  let size = 0;
+                                  let data = item.followers;
+                                  if (data !== undefined) {
+                                      size = data.length;
+                                      followers = size > 3 ? data.slice(0, 3) : data;
+                                      ready = true;
+                                  }
+                                  return (
+                                      <TouchableOpacity key={index}
+                                                        style={styles.card}
+                                                        onPress={() => this.setState({selected: index, visible: true})}>
+                                          <View>
+                                              <Image style={styles.image}
+                                                     source={{uri: item.posts[0].photo}}
+                                              />
+                                              <View style={{position: 'absolute', padding: 20, bottom: 20, flexDirection: 'row'}}>
+                                                  <Avatar medium rounded source={{uri: item.posts[0].user.avatar}}/>
+                                                  <Text style={styles.imageText}>
+                                                      {item.posts[0].user.name === 'gtfo_guide' ?
+                                                          '' : item.posts[0].user.name}
+                                                      {item.posts[0].user.name === 'gtfo_guide' ? '' : ': '}
+                                                      {item.posts[0].content}
+                                                  </Text></View>
+                                          </View>
+                                          <View style={styles.text}>
+                                              <View>
+                                                  <Text
+                                                      style={{
+                                                          fontSize: 14,
+                                                          fontWeight: "700",
+                                                          marginBottom: 3
+                                                      }}>{item.name}</Text>
+                                                  <Text style={{fontSize: 12}}>
+                                                      {item.address.slice(-7).includes("Canada") ?
+                                                          item.address.slice(0, -7) : item.address}
+                                                  </Text>
+                                              </View>
+                                              <View style={{position: 'absolute', right: 20, top: 0, flexDirection: 'row'}}>
+                                                  <Icon
+                                                      size={20}
+                                                      name={item.interested ? 'star' : 'star-border'}
+                                                      iconStyle={{color: 'grey'}}
+                                                      onPress={() => this.userLikesBusiness(item)}
+                                                  />
+                                                  <Icon name='share'
+                                                        size={20}
+                                                        iconStyle={{color: 'grey', marginLeft: 5}}
+                                                        onPress={() =>
+                                                            this.props.navigation.navigate("Share", {business: item})}
+                                                  />
+                                              </View>
+                                          </View>
+                                          {ready &&
+                                          <View style={{flexDirection: 'row', marginTop: 5, marginHorizontal: 20}}>
+                                              {followers.map((user, i) =>
+                                                  <Avatar size={20} rounded key={i} source={{uri: user.avatar}}/>)}
+                                              {size > 3 &&
+                                              <Text style={{marginVertical: 10, fontSize: 12}}>{' '}+{size - 3}</Text>}
+                                              <Text style={{marginVertical: 10, fontSize: 12}}>{' '}Interested</Text>
+                                          </View>}
+                                      </TouchableOpacity>)
+                                  }}/>
+
+
+
+
+
+
+
                     {filteredResults.map((business, i) => {
                         let ready = false;
                         let followers = [];
