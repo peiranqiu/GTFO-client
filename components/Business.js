@@ -216,6 +216,7 @@ export default class Business extends Component {
                 <MapView
                     style={styles.map}
                     provider="google"
+                    scrollEnabled = {false}
                     region={{
                         latitude: this.props.business.latitude,
                         longitude: this.props.business.longitude,
@@ -253,10 +254,11 @@ export default class Business extends Component {
                               containerStyle={styles.iconOuter}
                               name='directions'
                               size={24}
-                              onPress={() => openMap({
-                                  latitude: this.props.business.latitude,
-                                  longitude: this.props.business.longitude
-                              })}/>
+                              onPress={() => {
+                                  let url = "maps:0,0?q=" + this.props.business.name + "@" +
+                                      this.props.business.latitude + "," + this.props.business.longitude;
+                                  Linking.openURL(url);
+                              }}/>
                         <Text style={styles.iconText}>Direction</Text>
                     </View>
                     <View>
@@ -272,7 +274,7 @@ export default class Business extends Component {
                                   });
                               }
                               }/>
-                        <Text style={styles.iconText}>Website</Text>
+                        <Text style={styles.iconText}>Yelp</Text>
                     </View>
                     <View>
                         <Icon iconStyle={styles.icon}

@@ -98,7 +98,8 @@ export default class Explore extends Component {
                                             this.postService.findFollowersForBusiness(business.id)
                                                 .then(response => {
                                                     let friendIds = [];
-                                                    friends.map(user => friendIds.push(user._id));
+                                                    friends.map(u => friendIds.push(u._id));
+                                                    friendIds.push(user._id);
                                                     response = response.filter(u => friendIds.includes(u._id));
                                                     response.push(this.state.gtfo);
                                                     business.followers = response;
@@ -118,7 +119,10 @@ export default class Explore extends Component {
                                                 - Math.sqrt(Math.pow(a.latitude - position.coords.latitude, 2)
                                                     + Math.pow(a.longitude - position.coords.longitude, 2));
                                         });
-                                        if(businesses.length > 0 || this.isInBoudingBox({latitude: businesses[0].latitude, longitude: businesses[0].longitude})) {
+                                        if (businesses.length > 0 || this.isInBoudingBox({
+                                            latitude: businesses[0].latitude,
+                                            longitude: businesses[0].longitude
+                                        })) {
                                             this.setState({selected: 0});
                                         }
                                         this.setState({
@@ -248,10 +252,10 @@ export default class Explore extends Component {
 
     getBoundingBox(region) {
         let boundingBox = {
-            westLng: region.longitude - region.longitudeDelta/2, // westLng - min lng
-            southLat: region.latitude - region.latitudeDelta/2, // southLat - min lat
-            eastLng: region.longitude + region.longitudeDelta/2, // eastLng - max lng
-            northLat: region.latitude + region.latitudeDelta/2 // northLat - max lat
+            westLng: region.longitude - region.longitudeDelta / 2, // westLng - min lng
+            southLat: region.latitude - region.latitudeDelta / 2, // southLat - min lat
+            eastLng: region.longitude + region.longitudeDelta / 2, // eastLng - max lng
+            northLat: region.latitude + region.latitudeDelta / 2 // northLat - max lat
         }
 
         return boundingBox;
@@ -259,8 +263,7 @@ export default class Explore extends Component {
 
     isInBoudingBox(coordinate) {
         if (coordinate.latitude > this.state.boundingBox.southLat && coordinate.latitude < this.state.boundingBox.northLat &&
-            coordinate.longitude > this.state.boundingBox.westLng && coordinate.longitude < this.state.boundingBox.eastLng)
-        {
+            coordinate.longitude > this.state.boundingBox.westLng && coordinate.longitude < this.state.boundingBox.eastLng) {
             return true;
         }
 
@@ -365,7 +368,10 @@ export default class Explore extends Component {
                                                   onPress={() => {
                                                       this.setState({icon: i, dropdown: false});
                                                       let firstIndex = businesses.findIndex(b => b.category.includes(icons[i].filter));
-                                                      if(firstIndex >= 0 && this.isInBoudingBox({latitude: businesses[firstIndex].latitude, longitude: businesses[firstIndex].longitude})) {
+                                                      if (firstIndex >= 0 && this.isInBoudingBox({
+                                                          latitude: businesses[firstIndex].latitude,
+                                                          longitude: businesses[firstIndex].longitude
+                                                      })) {
                                                           if (this.state.selected === null) {
                                                               this.setState({selected: firstIndex});
                                                           }
@@ -394,7 +400,10 @@ export default class Explore extends Component {
 
                     <Icon name='gps-not-fixed'
                           containerStyle={{position: 'absolute', top: -40, right: 20}}
-                          onPress={() => this.map.animateToCoordinate(this.state.region, 31)}/>
+                          onPress={() => this.map.animateToCoordinate({
+                              latitude: this.state.initialRegion.latitude,
+                              longitude: this.state.initialRegion.longitude
+                          }, 31)}/>
                     {this.state.selected !== null && <TouchableOpacity style={styles.card}
                                                                        onPress={() => this.setState({visible: true})}>
                         <View style={{flexDirection: 'row'}}>

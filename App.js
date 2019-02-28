@@ -45,7 +45,7 @@ const AppNavigator = createStackNavigator({
         Terms: Terms
     },
     {
-        initialRouteName: "Home",
+        initialRouteName: "Chats",
         headerMode: 'none',
         navigationOptions: {
             headerVisible: false,

@@ -96,13 +96,14 @@ export default class Permission extends Component {
                         Turning your locations on will help us show you things to do.
                     </Text>
                     <View style={styles.content}>
-                        <TouchableOpacity style={styles.button} onPress={() => this.askLocation()}>
-                            <Text style={{color: 'white'}}>Turn on</Text>
-                        </TouchableOpacity>
-                        {this.state.location === 'denied' &&
-                        <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('app-settings:')}>
-                            <Text style={{color: 'white'}}>Go to Settings</Text>
-                        </TouchableOpacity>}
+                        {this.state.location === 'denied' ?
+                            <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('app-settings:')}>
+                                <Text style={{color: 'white'}}>Go to Settings</Text>
+                            </TouchableOpacity> :
+                            <TouchableOpacity style={styles.button} onPress={() => this.askLocation()}>
+                                <Text style={{color: 'white'}}>Turn on</Text>
+                            </TouchableOpacity>
+                        }
                     </View>
                 </View>
                 }

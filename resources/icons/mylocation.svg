@@ -1,16 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
-    <title>Location</title>
-    <desc>Created with Sketch.</desc>
-    <g id="UI" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="1C.1/feed-in-map/filter/expand" transform="translate(-172.000000, -276.000000)">
-            <g id="Location" transform="translate(172.000000, 276.000000)">
-                <circle id="Oval" fill="#000000" fill-rule="nonzero" cx="12" cy="12" r="12"></circle>
-                <g id="Navigation" transform="translate(5.250000, 6.750000)" fill="#FFFFFF">
-                    <path d="M11.7434687,0.243403285 C11.4916984,-0.00197171019 11.1155869,-0.0687914072 10.7946659,0.0748396947 L0.506442181,4.67462581 C0.172599726,4.82435082 -0.0294032117,5.16938262 0.00349101767,5.53369326 C0.036385247,5.8980039 0.296926463,6.20129606 0.652192016,6.28883646 L4.74747662,7.29736099 L6.03350458,11.4000274 C6.14138739,11.7442073 6.45326106,11.9840405 6.81369488,11.9999995 L6.85370464,11.9999995 C7.19947217,12.0003844 7.51162965,11.7930909 7.64532629,11.4743096 L11.9320862,1.1890736 C12.0693676,0.865030766 11.9945716,0.490026434 11.7434687,0.243403285 Z" id="Shape"></path>
-                </g>
-            </g>
-        </g>
-    </g>
-</svg>
+<?xml version="1.0" encoding="UTF-8"?><svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><title>Location</title><desc>Created with Sketch.</desc><g id="UI" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="1C.1/feed-in-map/filter/expand" transform="translate(-172.000000, -276.000000)"><g id="Location" transform="translate(172.000000, 276.000000)"><circle id="Oval" fill="#000000" fill-rule="nonzero" cx="12" cy="12" r="12"></circle><g id="Navigation" transform="translate(5.250000, 6.750000)" fill="#FFFFFF"><path d="M11.7434687,0.243403285 C11.4916984,-0.00197171019 11.1155869,-0.0687914072 10.7946659,0.0748396947 L0.506442181,4.67462581 C0.172599726,4.82435082 -0.0294032117,5.16938262 0.00349101767,5.53369326 C0.036385247,5.8980039 0.296926463,6.20129606 0.652192016,6.28883646 L4.74747662,7.29736099 L6.03350458,11.4000274 C6.14138739,11.7442073 6.45326106,11.9840405 6.81369488,11.9999995 L6.85370464,11.9999995 C7.19947217,12.0003844 7.51162965,11.7930909 7.64532629,11.4743096 L11.9320862,1.1890736 C12.0693676,0.865030766 11.9945716,0.490026434 11.7434687,0.243403285 Z" id="Shape"></path></g></g></g></g></svg>

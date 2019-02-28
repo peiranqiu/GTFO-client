@@ -1,19 +1,27 @@
 import {Bubble, GiftedChat, InputToolbar} from 'react-native-gifted-chat';
 import React, {Component} from 'react';
-import {DatePickerIOS, Dimensions, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {
+    DatePickerIOS,
+    Dimensions,
+    Keyboard,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from "react-native";
 import CustomView from "./CustomView";
 import {Icon, FormInput} from 'react-native-elements'
 import ChatServiceClient from "../services/ChatServiceClient";
-import PostServiceClient from "../services/PostServiceClient";
 import Modal from "react-native-modal";
-
+import dismissKeyboard from 'react-native-dismiss-keyboard';
 console.disableYellowBox = true;
 
 export default class Message extends Component {
     constructor(props) {
         super(props);
         this.chatService = ChatServiceClient.instance;
-        this.postService = PostServiceClient.instance;
         this.state = {
             messages: [],
             visible: false,
@@ -21,9 +29,30 @@ export default class Message extends Component {
             chat: null,
             formTitle: "",
             formTime: null,
-            formLocation: ""
+            formLocation: "",
+            keyboard: 0
         };
         this.onSend = this.onSend.bind(this);
+        this._keyboardDidShow = this._keyboardDidShow.bind(this);
+        this._keyboardDidHide = this._keyboardDidHide.bind(this);
+    }
+
+    _keyboardDidShow(e) {
+        this.setState({keyboard: e.endCoordinates.height})
+    }
+
+    _keyboardDidHide() {
+        this.setState({keyboard: 0})
+    }
+
+    componentWillMount() {
+        this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+        this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+    }
+
+    componentWillUnmount() {
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
     }
 
     componentDidMount() {
@@ -145,7 +174,7 @@ export default class Message extends Component {
                               borderTopColor: '#ffffff',
                               marginRight: 10,
                               marginLeft: 50,
-                              marginBottom: 5
+                              marginBottom: 5,
                           }}/>
         </View>
     }
@@ -170,11 +199,12 @@ export default class Message extends Component {
             })
     }
 
-
     render() {
         return (
             this.state.chat !== null &&
-            <SafeAreaView style={{flex: 1}}>
+            <TouchableWithoutFeedback onPress={() => dismissKeyboard()}>
+            <SafeAreaView style={{flex: 1}}
+                          keyboardShouldPersistTaps={'handled'}>
                 <View style={this.state.chat.address.length > 0 ? styles.containerWithReminder : styles.container}>
                     <Text style={styles.searchContainer}>{this.state.chat.name}({this.state.chat.size})</Text>
                     <Icon name='chevron-left'
@@ -187,14 +217,17 @@ export default class Message extends Component {
                         <Icon name='date-range'
                               iconStyle={{marginBottom: 3}}
                         />
-                        <View style={{marginLeft: 10}}><Text style={{
+                        <View style={{marginLeft: 10}}>
+                            <Text style={{
                             marginBottom: 5,
                             fontSize: 12
-                        }}>{this.state.chat.time.toString().slice(0, 21)}</Text>
+                        }}>{this.state.chat.time === null? "" : this.state.chat.time.toString().slice(0, 21)}</Text>
                             <Text style={{fontSize: 12, color: 'grey'}}>{this.state.chat.address}</Text></View>
                     </View>}
                 </View>
+
                 <GiftedChat
+                    keyboardShouldPersistTaps={'handled'}
                     messages={this.state.messages}
                     onSend={this.onSend}
                     user={this.state.user}
@@ -203,22 +236,36 @@ export default class Message extends Component {
                     renderInputToolbar={this.renderInputToolbar}
                     extraData={this}
                 />
-                <Modal isVisible={this.state.visible} style={styles.modal}>
+                <Modal isVisible={this.state.visible}
+                       style={{
+                           justifyContent: 'flex-start',
+                           alignSelf: 'flex-end',
+                           backgroundColor: 'white',
+                           width: Dimensions.get('window').width,
+                           borderRadius: 10,
+                           position: 'absolute',
+                           bottom: this.state.keyboard,
+                           left: -20,
+                           right: 0
+                       }}>
                     <View style={{flexDirection: 'row'}}>
                         <Text style={styles.title}>Set Reminder</Text>
                         <Icon name='close'
-                              containerStyle={{position: 'absolute', top: 20, right: 20}}
+                              containerStyle={{position: 'absolute', top: 12, right: 20}}
                               iconStyle={{color: 'grey'}}
-                              onPress={() => this.setState({formTime: this.state.chat.time, visible: false})}
+                              onPress={() => {
+                                  this.setState({formTime: this.state.chat.time, visible: false});
+                              }}
                         />
                     </View>
                     <FormInput containerStyle={styles.formInput}
+                               autoFocus={this.state.visible}
                                value={this.state.chat.address.length > 0 ? this.state.chat.name : ""}
                                placeholder="Reminder Title..."
                                onChangeText={text => this.setState({formTitle: text})}/>
                     <View style={{flexDirection: 'row'}}>
                         <Icon name='date-range'
-                              iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 20}}
+                              iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 10}}
                         />
                         <FormInput containerStyle={styles.formInput}
                                    value={new Date(this.state.formTime).toString().slice(0, 21)}
@@ -230,14 +277,15 @@ export default class Message extends Component {
                                    }}/>
                     </View>
                     {this.state.formTime !== null &&
-                    <DatePickerIOS
-                        date={new Date(this.state.formTime)}
-                        onDateChange={date => this.setState({formTime: date})
-                        }
-                    />}
+                    <View style={{height: 150, justifyContent: 'center', overflow: 'hidden'}}>
+                        <DatePickerIOS
+                            date={new Date(this.state.formTime)}
+                            onDateChange={date => this.setState({formTime: date})
+                            }
+                        /></View>}
                     <View style={{flexDirection: 'row'}}>
                         <Icon name='place'
-                              iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 20}}
+                              iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 10}}
                         />
                         <FormInput containerStyle={styles.formInput}
                                    placeholder="Location"
@@ -247,6 +295,7 @@ export default class Message extends Component {
 
                     <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                         <TouchableOpacity style={styles.button}
+                                          delayPressIn={ 200 }
                                           onPress={() => this.submit()}>
                             {this.state.chat.address.length > 0 ?
                                 <Text style={{color: 'white'}}>Save</Text> :
@@ -254,6 +303,7 @@ export default class Message extends Component {
                         </TouchableOpacity></View>
                 </Modal>
             </SafeAreaView>
+            </TouchableWithoutFeedback>
         );
     }
 }
@@ -288,26 +338,16 @@ const styles = StyleSheet.create({
         width: Dimensions.get('window').width,
     },
     title: {
-        height: 70,
+        height: 45,
         textAlign: 'center',
         alignSelf: 'center',
         fontSize: 16,
-        paddingTop: 25,
+        paddingTop: 12,
         width: Dimensions.get('window').width,
-    },
-    modal: {
-        justifyContent: 'flex-start',
-        backgroundColor: 'white',
-        width: Dimensions.get('window').width,
-        borderRadius: 10,
-        position: 'absolute',
-        bottom: 0,
-        left: -20,
-        right: 0,
     },
     formInput: {
         borderBottomWidth: 0,
-        marginBottom: 20
+        marginBottom: 5
     },
     button: {
         borderRadius: 20,
@@ -316,7 +356,7 @@ const styles = StyleSheet.create({
         width: 139,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 20
+        marginBottom: 12
     },
     reminder: {
         justifyContent: 'center',

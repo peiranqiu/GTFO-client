@@ -9,6 +9,12 @@
       "bundleIdentifier": "com.gtfo.demo",
       "config": {
         "googleMapsApiKey": "AIzaSyD8Gpn93BQCNz2U-hi_6XYGY8gAbcHkSaU"
+      },
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ]
       }
     },
     "android": {

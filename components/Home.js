@@ -59,11 +59,11 @@ export default class Home extends Component {
                             .then(businesses => {
                                 let friendIds = [];
                                 friends.map(u => friendIds.push(u._id));
+                                friendIds.push(this.state.user._id);
                                 businesses.map(business => {
                                     let posts = [];
                                     business.posts.map(post => {
-                                        if (friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID
-                                            || post.user._id === user._id) {
+                                        if (friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID) {
                                             posts.push(post);
                                         }
                                     });
@@ -79,6 +79,7 @@ export default class Home extends Component {
                                             });
                                         this.postService.findIfInterested(business.id, user._id)
                                             .then(response => business.interested = response);
+                                        business.key = business.name;
                                         let allBusinesses = this.state.businesses;
                                         allBusinesses.unshift(business);
                                         this.setState({businesses: allBusinesses, appReady: !this.state.appReady});
@@ -93,7 +94,6 @@ export default class Home extends Component {
             });
 
     }
-
 
     userLikesBusiness(business) {
         this.postService.userLikesBusiness(business.id, this.state.user)
@@ -116,7 +116,6 @@ export default class Home extends Component {
         activeNav = "home";
         const filteredResults = this.state.businesses.filter(businesses =>
             businesses.category.includes(this.state.filter));
-        filteredResults.map(item => item.key = item.name);
         return (
             <SafeAreaView style={{flex: 1}}>
                 <Modal isVisible={this.state.visible}>
@@ -163,9 +162,8 @@ export default class Home extends Component {
                                             onPress={() => this.setState({filter: item.key})}>
                                           {item.title}
                                       </Text>)}/>
-
-
                     <FlatList data={filteredResults}
+                              initialNumToRender = {2}
                               extraData={this.state.appReady}
                               renderItem={({item, index}) => {
                                   let ready = false;
@@ -251,6 +249,8 @@ export default class Home extends Component {
                         }
                         return (
                             <TouchableOpacity key={i}
+                                              activeOpacity = {1}
+                                              //delayPressIn={ 200 }
                                               style={styles.card}
                                               onPress={() => this.setState({selected: i, visible: true})}>
                                 <View>

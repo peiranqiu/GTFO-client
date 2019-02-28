@@ -1,6 +1,16 @@
 import React, {Component} from 'react';
-import {Dimensions, Linking, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {
+    Dimensions,
+    Linking,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from "react-native";
 import {FormInput, Icon} from "react-native-elements";
+import dismissKeyboard from 'react-native-dismiss-keyboard';
 
 export default class FeedBack extends Component {
     constructor(props) {
@@ -20,44 +30,46 @@ export default class FeedBack extends Component {
     }
 
     submit() {
-        let url = 'mailto:gtfotesting@gmail.com&subject=feedback&body=' + this.state.text;
+        let url = 'mailto:contact@gtfo.gg?subject=feedback&body=' + this.state.text;
         Linking.openURL(url);
     }
 
     render() {
         return (
-            <SafeAreaView style={{flex: 1}}>
-                <View style={styles.container}>
-                    <Text style={styles.searchContainer}>Feedback</Text>
-                    <Icon name='chevron-left'
-                          containerStyle={{position: 'absolute', left: 10, top: 20}}
-                          size={30}
-                          onPress={() => this.props.navigation.navigate("Me")}
-                    />
-                </View>
-                <FormInput containerStyle={{marginTop: 200, minHeight: 155, borderBottomWidth: 0}}
-                           inputStyle={{
-                               width: '80%',
-                               alignSelf: 'center',
-                               textAlign: 'center',
-                               lineHeight: 50,
-                               fontSize: 14
-                           }}
-                           multiline={true}
-                           numberOfLines={4}
-                           onChangeText={text => this.setState({text: text})}
-                           placeholder="Hey👋 We’d love to hear your feedback! If you’d like a response, please include your email, we’ll get back to you asap."/>
-                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-                    {this.state.text.length > 0 ?
-                        <TouchableOpacity style={styles.button}
-                                          onPress={() => this.submit()}>
-                            <Text style={{color: 'white'}}>Submit</Text>
-                        </TouchableOpacity> :
-                        <View style={styles.disabledButton}>
-                            <Text style={{color: 'white'}}>Submit</Text>
-                        </View>}
-                </View>
-            </SafeAreaView>
+            <TouchableWithoutFeedback onPress={() => dismissKeyboard()}>
+                <SafeAreaView style={{flex: 1}}>
+                    <View style={styles.container}>
+                        <Text style={styles.searchContainer}>Feedback</Text>
+                        <Icon name='chevron-left'
+                              containerStyle={{position: 'absolute', left: 10, top: 20}}
+                              size={30}
+                              onPress={() => this.props.navigation.navigate("Me")}
+                        />
+                    </View>
+                    <FormInput containerStyle={{marginTop: 200, minHeight: 155, borderBottomWidth: 0}}
+                               inputStyle={{
+                                   width: '80%',
+                                   alignSelf: 'center',
+                                   textAlign: 'center',
+                                   lineHeight: 50,
+                                   fontSize: 14
+                               }}
+                               multiline={true}
+                               numberOfLines={4}
+                               onChangeText={text => this.setState({text: text})}
+                               placeholder="Hey👋 We’d love to hear your feedback! If you’d like a response, please include your email, we’ll get back to you asap."/>
+                    <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                        {this.state.text.length > 0 ?
+                            <TouchableOpacity style={styles.button}
+                                              onPress={() => this.submit()}>
+                                <Text style={{color: 'white'}}>Submit</Text>
+                            </TouchableOpacity> :
+                            <View style={styles.disabledButton}>
+                                <Text style={{color: 'white'}}>Submit</Text>
+                            </View>}
+                    </View>
+                </SafeAreaView>
+            </TouchableWithoutFeedback>
         );
     }
 }

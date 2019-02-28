@@ -42,7 +42,7 @@ export default class Chats extends Component {
                         let message = chat.messages.sort(function (a, b) {
                             return new Date(b.createdAt) - new Date(a.createdAt);
                         })[0];
-                        if (message.businessId >= 0) {
+                        if (message !== undefined && message.businessId >= 0) {
                             message.text = '[shared business]';
                         }
                         return (
@@ -54,7 +54,7 @@ export default class Chats extends Component {
                                                   })}>
                                 <View>
                                     <Text style={styles.title}>{chat.name}({chat.size})</Text>
-                                    <Text style={styles.text}>{message.user.name}{': '}{message.text}</Text>
+                                    {message !== undefined && <Text style={styles.text}>{message.user.name}{': '}{message.text}</Text>}
                                 </View>
                                 {chat.address.length > 0 &&
                                 <Icon name='date-range'
