@@ -1,4 +1,4 @@
-import {Bubble, GiftedChat, InputToolbar} from 'react-native-gifted-chat';
+import {Bubble, Composer, GiftedChat, InputToolbar} from 'react-native-gifted-chat';
 import React, {Component} from 'react';
 import {
     DatePickerIOS,
@@ -16,6 +16,7 @@ import {Icon, FormInput} from 'react-native-elements'
 import ChatServiceClient from "../services/ChatServiceClient";
 import Modal from "react-native-modal";
 import dismissKeyboard from 'react-native-dismiss-keyboard';
+
 console.disableYellowBox = true;
 
 export default class Message extends Component {
@@ -63,7 +64,8 @@ export default class Message extends Component {
         if (chat.address.length > 0) {
             this.setState({
                 formTime: chat.time,
-                formTitle: chat.name, formLocation: chat.address
+                formTitle: chat.name,
+                formLocation: chat.address
             })
         }
 
@@ -75,22 +77,22 @@ export default class Message extends Component {
                     this.chatService.createMessage(chat.id, initialMessage)
                         .then(() => {
                             this.chatService.findMessagesForChat(chat.id)
-                                .then(messages =>
-                                    this.setState({
-                                        messages: messages.sort(function (a, b) {
-                                            return new Date(b.createdAt) - new Date(a.createdAt);
-                                        })
-                                    }));
+                                .then(messages => {
+                                    messages.sort((b, a) => {
+                                        return new Date(a.createdAt.split('.')[0]) - new Date(b.createdAt.split('.')[0]);
+                                    });
+                                    this.setState({messages: messages});
+                                });
                         })
                 }
                 else {
                     this.chatService.findMessagesForChat(chat.id)
-                        .then(messages =>
-                            this.setState({
-                                messages: messages.sort(function (a, b) {
-                                    return new Date(b.createdAt) - new Date(a.createdAt);
-                                })
-                            }));
+                        .then(messages => {
+                            messages.sort((b, a) => {
+                                return new Date(a.createdAt.split('.')[0]) - new Date(b.createdAt.split('.')[0]);
+                            });
+                            this.setState({messages: messages});
+                        });
                 }
             })
             .catch(err => {
@@ -103,14 +105,19 @@ export default class Message extends Component {
         if (messages.length > 0) {
             const chat = this.props.navigation.getParam('chat', {});
             const currentMessage = {text: messages[0].text, user: this.state.user};
-            this.chatService.createMessage(chat.id, currentMessage);
+            this.chatService.createMessage(chat.id, currentMessage).then(() => {
+                    const refresh = this.props.navigation.state.params.refresh;
+                    if (typeof refresh === 'function') {
+                        refresh();
+                    }
+                }
+            );
             this.setState((previousState) => {
                 return {
                     messages: GiftedChat.append(previousState.messages, messages)
                 };
             });
         }
-
     }
 
     renderCustomView(props) {
@@ -162,22 +169,18 @@ export default class Message extends Component {
     }
 
     renderInputToolbar(props) {
-        return <View style={{flexDirection: 'row'}}>
-            <Icon name='date-range'
-                  iconStyle={{color: 'grey', margin: 15}}
-                  onPress={() => this.extraData.setState({visible: true})}
-            />
-            <InputToolbar {...props}
-                          containerStyle={{
-                              backgroundColor: '#f1f1f2',
-                              borderRadius: 50,
-                              borderTopColor: '#ffffff',
-                              marginRight: 10,
-                              marginLeft: 50,
-                              marginBottom: 5,
-                          }}/>
-        </View>
+        return <InputToolbar {...props}
+                             containerStyle={{
+                                 backgroundColor: '#f1f1f2',
+                                 borderRadius: 50,
+                                 borderTopColor: '#ffffff',
+                                 marginRight: 10,
+                                 marginLeft: 50,
+                                 marginBottom: 5,
+                                 marginTop: 5
+                             }}/>
     }
+
 
     submit() {
         if (this.state.formTitle.length === 0 || this.state.formLocation.length === 0) {
@@ -200,109 +203,137 @@ export default class Message extends Component {
     }
 
     render() {
+
         return (
             this.state.chat !== null &&
-            <TouchableWithoutFeedback onPress={() => dismissKeyboard()}>
-            <SafeAreaView style={{flex: 1}}
-                          keyboardShouldPersistTaps={'handled'}>
-                <View style={this.state.chat.address.length > 0 ? styles.containerWithReminder : styles.container}>
-                    <Text style={styles.searchContainer}>{this.state.chat.name}({this.state.chat.size})</Text>
-                    <Icon name='chevron-left'
-                          containerStyle={{position: 'absolute', left: 10, top: 20}}
-                          size={30}
-                          onPress={() => this.props.navigation.navigate("Chats")}
-                    />
-                    {this.state.chat.address.length > 0 &&
-                    <View style={styles.reminder}>
-                        <Icon name='date-range'
-                              iconStyle={{marginBottom: 3}}
+            <TouchableWithoutFeedback onPress={() => {
+                this.setState({keyboard: 0});
+                dismissKeyboard();
+            }}>
+                <SafeAreaView style={{flex: 1}}
+                              keyboardShouldPersistTaps={'handled'}>
+                    <View style={this.state.chat.address.length > 0 ? styles.containerWithReminder : styles.container}>
+                        <Text style={styles.searchContainer}>{this.state.chat.name}({this.state.chat.size})</Text>
+                        <Icon name='chevron-left'
+                              containerStyle={{position: 'absolute', left: 10, top: 20}}
+                              size={30}
+                              onPress={() => this.props.navigation.navigate("Chats")}
                         />
-                        <View style={{marginLeft: 10}}>
-                            <Text style={{
-                            marginBottom: 5,
-                            fontSize: 12
-                        }}>{this.state.chat.time === null? "" : this.state.chat.time.toString().slice(0, 21)}</Text>
-                            <Text style={{fontSize: 12, color: 'grey'}}>{this.state.chat.address}</Text></View>
-                    </View>}
-                </View>
+                        {this.state.chat.address.length > 0 &&
+                        <View style={styles.reminder}>
+                            <Icon name='date-range'
+                                  iconStyle={{marginBottom: 3}}
+                            />
+                            <View style={{marginLeft: 10}}>
+                                <Text style={{
+                                    marginBottom: 5,
+                                    fontSize: 12
+                                }}>{this.state.chat.time === null ? "" :
+                                    (this.state.chat.time.toString().includes('.') ?
+                                        this.state.chat.time.toString().split('.')[0] :
+                                        this.state.chat.time.toString().slice(0, 21))}</Text>
+                                <Text style={{fontSize: 12, color: 'grey'}}>{this.state.chat.address}</Text></View>
+                        </View>}
+                    </View>
 
-                <GiftedChat
-                    keyboardShouldPersistTaps={'handled'}
-                    messages={this.state.messages}
-                    onSend={this.onSend}
-                    user={this.state.user}
-                    renderCustomView={this.renderCustomView}
-                    renderBubble={this.renderBubble}
-                    renderInputToolbar={this.renderInputToolbar}
-                    extraData={this}
-                />
-                <Modal isVisible={this.state.visible}
-                       style={{
-                           justifyContent: 'flex-start',
-                           alignSelf: 'flex-end',
-                           backgroundColor: 'white',
-                           width: Dimensions.get('window').width,
-                           borderRadius: 10,
-                           position: 'absolute',
-                           bottom: this.state.keyboard,
-                           left: -20,
-                           right: 0
-                       }}>
-                    <View style={{flexDirection: 'row'}}>
-                        <Text style={styles.title}>Set Reminder</Text>
-                        <Icon name='close'
-                              containerStyle={{position: 'absolute', top: 12, right: 20}}
-                              iconStyle={{color: 'grey'}}
-                              onPress={() => {
-                                  this.setState({formTime: this.state.chat.time, visible: false});
-                              }}
-                        />
-                    </View>
-                    <FormInput containerStyle={styles.formInput}
-                               autoFocus={this.state.visible}
-                               value={this.state.chat.address.length > 0 ? this.state.chat.name : ""}
-                               placeholder="Reminder Title..."
-                               onChangeText={text => this.setState({formTitle: text})}/>
-                    <View style={{flexDirection: 'row'}}>
-                        <Icon name='date-range'
-                              iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 10}}
-                        />
-                        <FormInput containerStyle={styles.formInput}
-                                   value={new Date(this.state.formTime).toString().slice(0, 21)}
-                                   placeholder="Select Date and Time..."
-                                   onFocus={() => {
-                                       if (this.state.formTime === null) {
-                                           this.setState({formTime: new Date()})
-                                       }
-                                   }}/>
-                    </View>
-                    {this.state.formTime !== null &&
-                    <View style={{height: 150, justifyContent: 'center', overflow: 'hidden'}}>
-                        <DatePickerIOS
-                            date={new Date(this.state.formTime)}
-                            onDateChange={date => this.setState({formTime: date})
+                    <GiftedChat
+                        keyboardShouldPersistTaps={'handled'}
+                        messages={this.state.messages}
+                        onSend={this.onSend}
+                        user={this.state.user}
+                        renderCustomView={this.renderCustomView}
+                        renderBubble={this.renderBubble}
+                        renderInputToolbar={this.renderInputToolbar}
+                        textInputProps={{
+                            style: {
+                                marginLeft: 10,
+                                minHeight: 30,
+                                marginBottom: 5,
+                                marginTop: 5,
+                                width: Dimensions.get('window').width - 180,
                             }
-                        /></View>}
-                    <View style={{flexDirection: 'row'}}>
-                        <Icon name='place'
-                              iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 10}}
-                        />
+                        }}
+                        minInputToolbarHeight={55}
+                        extraData={this}
+                    />
+                    <Icon name='date-range'
+                          iconStyle={{color: 'grey', position: 'absolute', left: 15, bottom: 15 + this.state.keyboard}}
+                          onPress={() => {
+                              dismissKeyboard();
+                              this.setState({visible: true});
+                          }}
+                    />
+                    <Modal isVisible={this.state.visible}
+                           style={{
+                               justifyContent: 'flex-start',
+                               alignSelf: 'flex-end',
+                               backgroundColor: 'white',
+                               width: Dimensions.get('window').width,
+                               borderRadius: 10,
+                               position: 'absolute',
+                               bottom: this.state.keyboard,
+                               left: -20,
+                               right: 0
+                           }}>
+                        <View style={{flexDirection: 'row'}}>
+                            <Text style={styles.title}>Set Reminder</Text>
+                            <Icon name='close'
+                                  containerStyle={{position: 'absolute', top: 12, right: 20}}
+                                  iconStyle={{color: 'grey'}}
+                                  onPress={() => {
+                                      this.setState({
+                                          formTime: this.state.chat.time,
+                                          visible: false
+                                      });
+                                  }}
+                            />
+                        </View>
                         <FormInput containerStyle={styles.formInput}
-                                   placeholder="Location"
-                                   value={this.state.chat.address}
-                                   onChangeText={text => this.setState({formLocation: text})}/>
-                    </View>
+                                   autoFocus={this.state.visible}
+                                   value={this.state.chat.address.length > 0 ? this.state.formTitle : ""}
+                                   placeholder="Reminder Title..."
+                                   onChangeText={text => this.setState({formTitle: text})}/>
+                        <View style={{flexDirection: 'row'}}>
+                            <Icon name='date-range'
+                                  iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 10}}
+                            />
+                            <FormInput containerStyle={styles.formInput}
+                                       value={this.state.formTime.toString().slice(0, 21)}
+                                       placeholder="Select Date and Time..."
+                                       onFocus={() => {
+                                           if (this.state.formTime === null) {
+                                               this.setState({formTime: new Date()})
+                                           }
+                                       }}/>
+                        </View>
+                        {this.state.formTime !== null &&
+                        <View style={{height: 150, justifyContent: 'center', overflow: 'hidden'}}>
+                            <DatePickerIOS
+                                date={new Date(this.state.formTime)}
+                                onDateChange={date => {
+                                    this.setState({formTime: date});
+                                }}
+                            /></View>}
+                        <View style={{flexDirection: 'row'}}>
+                            <Icon name='place'
+                                  iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 10}}
+                            />
+                            <FormInput containerStyle={styles.formInput}
+                                       placeholder="Location"
+                                       value={this.state.formLocation}
+                                       onChangeText={text => this.setState({formLocation: text})}/>
+                        </View>
 
-                    <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-                        <TouchableOpacity style={styles.button}
-                                          delayPressIn={ 200 }
-                                          onPress={() => this.submit()}>
-                            {this.state.chat.address.length > 0 ?
-                                <Text style={{color: 'white'}}>Save</Text> :
-                                <Text style={{color: 'white'}}>Create</Text>}
-                        </TouchableOpacity></View>
-                </Modal>
-            </SafeAreaView>
+                        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                            <TouchableOpacity style={styles.button}
+                                              activeOpacity={1}
+                                              onPress={() => this.submit()}>
+                                {this.state.chat.address.length > 0 ?
+                                    <Text style={{color: 'white'}}>Save</Text> :
+                                    <Text style={{color: 'white'}}>Create</Text>}
+                            </TouchableOpacity></View>
+                    </Modal>
+                </SafeAreaView>
             </TouchableWithoutFeedback>
         );
     }

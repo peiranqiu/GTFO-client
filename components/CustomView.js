@@ -37,6 +37,7 @@ export default class CustomView extends Component {
             <View>
                 {business !== null &&
                 <TouchableOpacity style={styles.container}
+                                  activeOpacity = {1}
                                   onPress={() => this.setState({visible: true})}>
                     <Image style={styles.image}
                            source={{uri: business.posts[0].photo}}

@@ -8,7 +8,7 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-    View
+    View, VirtualizedList
 } from 'react-native'
 import PostServiceClient from '../services/PostServiceClient'
 import AppBottomNav from './AppBottomNav'
@@ -57,34 +57,35 @@ export default class Home extends Component {
                     .then((friends) => {
                         this.postService.findAllBusinesses()
                             .then(businesses => {
-                                let friendIds = [];
-                                friends.map(u => friendIds.push(u._id));
-                                friendIds.push(this.state.user._id);
-                                businesses.map(business => {
-                                    let posts = [];
-                                    business.posts.map(post => {
-                                        if (friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID) {
-                                            posts.push(post);
+                                    let friendIds = [];
+                                    friends.map(u => friendIds.push(u._id));
+                                    friendIds.push(this.state.user._id);
+                                    businesses.map(business => {
+                                        let posts = [];
+                                        business.posts.map(post => {
+                                            if (friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID) {
+                                                posts.push(post);
+                                            }
+                                        });
+                                        if (posts.length > 0) {
+                                            business.posts = posts;
+                                            business.interested = false;
+                                            business.followers = [];
+                                            this.postService.findFollowersForBusiness(business.id)
+                                                .then(response => {
+                                                    response = response.filter(u => friendIds.includes(u._id));
+                                                    response.push(this.state.gtfo);
+                                                    business.followers = response;
+                                                });
+                                            this.postService.findIfInterested(business.id, user._id)
+                                                .then(response => business.interested = response);
+                                            business.key = business.id.toString();
+                                            let allBusinesses = this.state.businesses;
+                                            //allBusinesses.unshift(business);
+                                            allBusinesses.push(business);
+                                            this.setState({businesses: allBusinesses, appReady: !this.state.appReady});
                                         }
                                     });
-                                    if (posts.length > 0) {
-                                        business.posts = posts;
-                                        business.interested = false;
-                                        business.followers = [];
-                                        this.postService.findFollowersForBusiness(business.id)
-                                            .then(response => {
-                                                response = response.filter(u => friendIds.includes(u._id));
-                                                response.push(this.state.gtfo);
-                                                business.followers = response;
-                                            });
-                                        this.postService.findIfInterested(business.id, user._id)
-                                            .then(response => business.interested = response);
-                                        business.key = business.name;
-                                        let allBusinesses = this.state.businesses;
-                                        allBusinesses.unshift(business);
-                                        this.setState({businesses: allBusinesses, appReady: !this.state.appReady});
-                                    }
-                                });
                                 }
                             );
                     });
@@ -116,6 +117,7 @@ export default class Home extends Component {
         activeNav = "home";
         const filteredResults = this.state.businesses.filter(businesses =>
             businesses.category.includes(this.state.filter));
+        const length = filteredResults.length;
         return (
             <SafeAreaView style={{flex: 1}}>
                 <Modal isVisible={this.state.visible}>
@@ -162,148 +164,97 @@ export default class Home extends Component {
                                             onPress={() => this.setState({filter: item.key})}>
                                           {item.title}
                                       </Text>)}/>
-                    <FlatList data={filteredResults}
-                              initialNumToRender = {2}
-                              extraData={this.state.appReady}
-                              renderItem={({item, index}) => {
-                                  let ready = false;
-                                  let followers = [];
-                                  let size = 0;
-                                  let data = item.followers;
-                                  if (data !== undefined) {
-                                      size = data.length;
-                                      followers = size > 3 ? data.slice(0, 3) : data;
-                                      ready = true;
-                                  }
-                                  return (
-                                      <TouchableOpacity key={index}
-                                                        style={styles.card}
-                                                        onPress={() => this.setState({selected: index, visible: true})}>
-                                          <View>
-                                              <Image style={styles.image}
-                                                     source={{uri: item.posts[0].photo}}
-                                              />
-                                              <View style={{position: 'absolute', padding: 20, bottom: 20, flexDirection: 'row'}}>
-                                                  <Avatar medium rounded source={{uri: item.posts[0].user.avatar}}/>
-                                                  <Text style={styles.imageText}>
-                                                      {item.posts[0].user.name === 'gtfo_guide' ?
-                                                          '' : item.posts[0].user.name}
-                                                      {item.posts[0].user.name === 'gtfo_guide' ? '' : ': '}
-                                                      {item.posts[0].content}
-                                                  </Text></View>
-                                          </View>
-                                          <View style={styles.text}>
-                                              <View>
-                                                  <Text
-                                                      style={{
-                                                          fontSize: 14,
-                                                          fontWeight: "700",
-                                                          marginBottom: 3
-                                                      }}>{item.name}</Text>
-                                                  <Text style={{fontSize: 12}}>
-                                                      {item.address.slice(-7).includes("Canada") ?
-                                                          item.address.slice(0, -7) : item.address}
-                                                  </Text>
-                                              </View>
-                                              <View style={{position: 'absolute', right: 20, top: 0, flexDirection: 'row'}}>
-                                                  <Icon
-                                                      size={20}
-                                                      name={item.interested ? 'star' : 'star-border'}
-                                                      iconStyle={{color: 'grey'}}
-                                                      onPress={() => this.userLikesBusiness(item)}
-                                                  />
-                                                  <Icon name='share'
-                                                        size={20}
-                                                        iconStyle={{color: 'grey', marginLeft: 5}}
-                                                        onPress={() =>
-                                                            this.props.navigation.navigate("Share", {business: item})}
-                                                  />
-                                              </View>
-                                          </View>
-                                          {ready &&
-                                          <View style={{flexDirection: 'row', marginTop: 5, marginHorizontal: 20}}>
-                                              {followers.map((user, i) =>
-                                                  <Avatar size={20} rounded key={i} source={{uri: user.avatar}}/>)}
-                                              {size > 3 &&
-                                              <Text style={{marginVertical: 10, fontSize: 12}}>{' '}+{size - 3}</Text>}
-                                              <Text style={{marginVertical: 10, fontSize: 12}}>{' '}Interested</Text>
-                                          </View>}
-                                      </TouchableOpacity>)
-                                  }}/>
-
-
-
-
-
-
-
-                    {filteredResults.map((business, i) => {
-                        let ready = false;
-                        let followers = [];
-                        let size = 0;
-                        let data = business.followers;
-                        if (data !== undefined) {
-                            size = data.length;
-                            followers = size > 3 ? data.slice(0, 3) : data;
-                            ready = true;
-                        }
-                        return (
-                            <TouchableOpacity key={i}
-                                              activeOpacity = {1}
-                                              //delayPressIn={ 200 }
-                                              style={styles.card}
-                                              onPress={() => this.setState({selected: i, visible: true})}>
-                                <View>
-                                    <Image style={styles.image}
-                                           source={{uri: business.posts[0].photo}}
-                                    />
-                                    <View style={{position: 'absolute', padding: 20, bottom: 20, flexDirection: 'row'}}>
-                                        <Avatar medium rounded source={{uri: business.posts[0].user.avatar}}/>
-                                        <Text style={styles.imageText}>
-                                            {business.posts[0].user.name === 'gtfo_guide' ?
-                                                '' : business.posts[0].user.name}
-                                            {business.posts[0].user.name === 'gtfo_guide' ? '' : ': '}
-                                            {business.posts[0].content}
-                                        </Text></View>
-                                </View>
-                                <View style={styles.text}>
-                                    <View>
-                                        <Text
-                                            style={{
-                                                fontSize: 14,
-                                                fontWeight: "700",
-                                                marginBottom: 3
-                                            }}>{business.name}</Text>
-                                        <Text style={{fontSize: 12}}>
-                                            {business.address.slice(-7).includes("Canada") ?
-                                                business.address.slice(0, -7) : business.address}
-                                        </Text>
-                                    </View>
-                                    <View style={{position: 'absolute', right: 20, top: 0, flexDirection: 'row'}}>
-                                        <Icon
-                                            size={20}
-                                            name={business.interested ? 'star' : 'star-border'}
-                                            iconStyle={{color: 'grey'}}
-                                            onPress={() => this.userLikesBusiness(business)}
-                                        />
-                                        <Icon name='share'
-                                              size={20}
-                                              iconStyle={{color: 'grey', marginLeft: 5}}
-                                              onPress={() =>
-                                                  this.props.navigation.navigate("Share", {business: business})}
-                                        />
-                                    </View>
-                                </View>
-                                {ready &&
-                                <View style={{flexDirection: 'row', marginTop: 5, marginHorizontal: 20}}>
-                                    {followers.map((user, i) =>
-                                        <Avatar size={20} rounded key={i} source={{uri: user.avatar}}/>)}
-                                    {size > 3 &&
-                                    <Text style={{marginVertical: 10, fontSize: 12}}>{' '}+{size - 3}</Text>}
-                                    <Text style={{marginVertical: 10, fontSize: 12}}>{' '}Interested</Text>
-                                </View>}
-                            </TouchableOpacity>)
-                    })}
+                    <VirtualizedList data={filteredResults}
+                                     getItem={(data, index) => data[index]}
+                                     getItemCount={() => length}
+                                     renderItem={({item, index}) => {
+                                         let ready = false;
+                                         let followers = [];
+                                         let size = 0;
+                                         let data = item.followers;
+                                         if (data !== undefined) {
+                                             size = data.length;
+                                             followers = size > 3 ? data.slice(0, 3) : data;
+                                             ready = true;
+                                         }
+                                         return (
+                                             <TouchableOpacity key={index}
+                                                               activeOpacity = {1}
+                                                               style={styles.card}
+                                                               onPress={() => this.setState({
+                                                                   selected: index,
+                                                                   visible: true
+                                                               })}>
+                                                 <View>
+                                                     <Image style={styles.image}
+                                                            source={{uri: item.posts[0].photo}}
+                                                     />
+                                                     <View style={{
+                                                         position: 'absolute',
+                                                         padding: 20,
+                                                         bottom: 20,
+                                                         flexDirection: 'row'
+                                                     }}>
+                                                         <Avatar medium rounded
+                                                                 source={{uri: item.posts[0].user.avatar}}/>
+                                                         <Text style={styles.imageText}>
+                                                             {item.posts[0].user.name === 'gtfo_guide' ?
+                                                                 '' : item.posts[0].user.name}
+                                                             {item.posts[0].user.name === 'gtfo_guide' ? '' : ': '}
+                                                             {item.posts[0].content}
+                                                         </Text></View>
+                                                 </View>
+                                                 <View style={styles.text}>
+                                                     <View>
+                                                         <Text
+                                                             style={{
+                                                                 fontSize: 14,
+                                                                 fontWeight: "700",
+                                                                 marginBottom: 3
+                                                             }}>{item.name}</Text>
+                                                         <Text style={{fontSize: 12}}>
+                                                             {item.address.slice(-7).includes("Canada") ?
+                                                                 item.address.slice(0, -7) : item.address}
+                                                         </Text>
+                                                     </View>
+                                                     <View style={{
+                                                         position: 'absolute',
+                                                         right: 20,
+                                                         top: 0,
+                                                         flexDirection: 'row'
+                                                     }}>
+                                                         <Icon
+                                                             size={20}
+                                                             name={item.interested ? 'star' : 'star-border'}
+                                                             iconStyle={{color: 'grey'}}
+                                                             onPress={() => this.userLikesBusiness(item)}
+                                                         />
+                                                         <Icon name='share'
+                                                               size={20}
+                                                               iconStyle={{color: 'grey', marginLeft: 5}}
+                                                               onPress={() =>
+                                                                   this.props.navigation.navigate("Share", {business: item})}
+                                                         />
+                                                     </View>
+                                                 </View>
+                                                 {ready &&
+                                                 <View
+                                                     style={{flexDirection: 'row', marginTop: 5, marginHorizontal: 20}}>
+                                                     {followers.map((user, i) =>
+                                                         <Avatar size={20} rounded key={i}
+                                                                 source={{uri: user.avatar}}/>)}
+                                                     {size > 3 &&
+                                                     <Text style={{
+                                                         marginVertical: 10,
+                                                         fontSize: 12
+                                                     }}>{' '}+{size - 3}</Text>}
+                                                     <Text style={{
+                                                         marginVertical: 10,
+                                                         fontSize: 12
+                                                     }}>{' '}Interested</Text>
+                                                 </View>}
+                                             </TouchableOpacity>)
+                                     }}/>
                 </ScrollView>
                 <AppBottomNav style={{alignSelf: 'flex-end'}}/>
             </SafeAreaView>

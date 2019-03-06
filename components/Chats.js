@@ -40,7 +40,7 @@ export default class Chats extends Component {
                 <ScrollView>
                     {this.state.chats.map((chat, i) => {
                         let message = chat.messages.sort(function (a, b) {
-                            return new Date(b.createdAt) - new Date(a.createdAt);
+                            return new Date(b.createdAt.split('.')[0]) - new Date(a.createdAt.split('.')[0]);
                         })[0];
                         if (message !== undefined && message.businessId >= 0) {
                             message.text = '[shared business]';
