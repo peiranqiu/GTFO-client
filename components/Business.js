@@ -14,7 +14,6 @@ import openMap from "react-native-open-maps";
 import PostServiceClient from "../services/PostServiceClient";
 import UserServiceClient from "../services/UserServiceClient";
 
-
 export default class Business extends Component {
 
     constructor(props) {
@@ -192,15 +191,15 @@ export default class Business extends Component {
                                 : this.props.business.address}
                         </Text>
                     </View>
-                    <View style={{position: 'absolute', right: 20, top: 0, flexDirection: 'row'}}>
+                    <View style={{position: 'absolute', right: 10, top: -10, flexDirection: 'row'}}>
                         <Icon
-                            size={20}
+                            size={32}
                             name={this.state.interested ? 'star' : 'star-border'}
                             iconStyle={{color: 'grey'}}
                             onPress={() => this.userLikesBusiness()}
                         />
                         <Icon name='share'
-                              size={20}
+                              size={32}
                               iconStyle={{color: 'grey', marginLeft: 5}}
                               onPress={() =>
                                   this.props.navigation.navigate("Share", {business: this.props.business})}
@@ -235,11 +234,11 @@ export default class Business extends Component {
                 <View style={{margin: 20}}>
                     <Text>{this.state.open ? "Open now" : "Closed"}</Text>
                     <View style={{flexDirection: 'row', marginTop: 5}}>
-                        <Text style={{fontSize: 12, color: 'grey', marginTop: 2}}>Hours</Text>
+                        <Text style={{fontSize: 12, color: 'grey', marginTop: 8}}>Hours</Text>
                         <Icon name={this.state.expand ? 'arrow-drop-up' : 'arrow-drop-down'}
                               iconStyle={{color: 'grey'}}
                               containerStyle={{marginTop: 0}}
-                              size={20}
+                              size={32}
                               onPress={() => this.setState({expand: !this.state.expand})}
                         />
                     </View>
@@ -253,7 +252,7 @@ export default class Business extends Component {
                         <Icon iconStyle={styles.icon}
                               containerStyle={styles.iconOuter}
                               name='directions'
-                              size={24}
+                              size={32}
                               onPress={() => {
                                   let url = "maps:0,0?q=" + this.props.business.name + "@" +
                                       this.props.business.latitude + "," + this.props.business.longitude;
@@ -265,7 +264,7 @@ export default class Business extends Component {
                         <Icon iconStyle={styles.icon}
                               containerStyle={styles.iconOuter}
                               name='public'
-                              size={24}
+                              size={32}
                               onPress={() => {
                                   Linking.canOpenURL(this.props.business.website).then(supported => {
                                       if (supported) {
@@ -280,7 +279,7 @@ export default class Business extends Component {
                         <Icon iconStyle={styles.icon}
                               containerStyle={styles.iconOuter}
                               name='phone'
-                              size={24}
+                              size={32}
                               onPress={() => {
                                   if (this.props.business.phone.length > 9) {
                                       const args = {

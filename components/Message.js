@@ -19,6 +19,8 @@ import dismissKeyboard from 'react-native-dismiss-keyboard';
 
 console.disableYellowBox = true;
 
+
+
 export default class Message extends Component {
     constructor(props) {
         super(props);
@@ -290,7 +292,7 @@ export default class Message extends Component {
                         </View>
                         <FormInput containerStyle={styles.formInput}
                                    autoFocus={this.state.visible}
-                                   value={this.state.chat.address.length > 0 ? this.state.formTitle : ""}
+                                   value={this.state.formTitle}
                                    placeholder="Reminder Title..."
                                    onChangeText={text => this.setState({formTitle: text})}/>
                         <View style={{flexDirection: 'row'}}>
@@ -298,7 +300,7 @@ export default class Message extends Component {
                                   iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 10}}
                             />
                             <FormInput containerStyle={styles.formInput}
-                                       value={this.state.formTime.toString().slice(0, 21)}
+                                       value={this.state.formTime === null? "" : this.state.formTime.toString().slice(0, 21)}
                                        placeholder="Select Date and Time..."
                                        onFocus={() => {
                                            if (this.state.formTime === null) {

@@ -1,10 +1,21 @@
 import React, {Component} from 'react';
-import {Dimensions, FlatList, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+    Dimensions,
+    FlatList,
+    Image,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native';
 import UserServiceClient from "../services/UserServiceClient";
 import {Avatar, Divider, Icon} from 'react-native-elements'
 
 import RadioButton from 'react-native-radio-button'
 import ChatServiceClient from "../services/ChatServiceClient";
+import group_add from '../resources/icons/group_add.png';
 
 export default class Share extends Component {
     constructor(props) {
@@ -88,38 +99,63 @@ export default class Share extends Component {
                                   </View>}/></View>
                 <ScrollView style={{position: 'absolute', top: 200, bottom: 150}}>
                     {this.state.tab === 'Friend' ?
-                        this.state.friends.map((friend, i) => (
-                            <View key={i} style={styles.resultItem}>
-                                <Avatar size={20} rounded source={{uri: friend.avatar}}/>
-                                <Text style={{margin: 6}}>{friend.name}</Text>
-                                <View style={{position: 'absolute', right: 40, top: 5}}>
-                                    <RadioButton
-                                        isSelected={friend.selected}
-                                        size={14}
-                                        outerColor={'#4c4c4c'}
-                                        innerColor={'#4c4c4c'}
-                                        onPress={() => {
-                                            var friends = this.state.friends;
-                                            friends[i].selected = !friends[i].selected;
-                                            this.setState({friends: friends});
-                                        }}
-                                    />
+                        (this.state.friends.length === 0 ?
+                            <TouchableOpacity style={{
+                                width: Dimensions.get('window').width,
+                                marginTop: '30%',
+                                flex: 1,
+                                justifyContent: 'center'
+                            }}
+                                              onPress={() => this.props.navigation.navigate("Friend")}>
+                                <Image
+                                    style={{width: 40, height: 22, alignSelf: 'center'}}
+                                    source={group_add}
+                                />
+                                <Text style={{marginTop: 20, alignSelf: 'center'}}>You don't have any friend.</Text>
+                                <Text style={{marginTop: 10, alignSelf: 'center'}}>Add some friends to plan an
+                                    outing!</Text>
+                            </TouchableOpacity> :
+                            (this.state.friends.map((friend, i) => (
+                                <View key={i} style={styles.resultItem}>
+                                    <Avatar size={20} rounded source={{uri: friend.avatar}}/>
+                                    <Text style={{margin: 6}}>{friend.name}</Text>
+                                    <View style={{position: 'absolute', right: 40, top: 5}}>
+                                        <RadioButton
+                                            isSelected={friend.selected}
+                                            size={14}
+                                            outerColor={'#4c4c4c'}
+                                            innerColor={'#4c4c4c'}
+                                            onPress={() => {
+                                                var friends = this.state.friends;
+                                                friends[i].selected = !friends[i].selected;
+                                                this.setState({friends: friends});
+                                            }}
+                                        />
+                                    </View>
                                 </View>
-                            </View>
-                        )) :
-                        this.state.chats.map((chat, i) => (
-                            <View key={i} style={styles.resultItem}>
-                                <Text style={{margin: 6}}>{chat.name}({chat.size})</Text>
-                                <View style={{position: 'absolute', right: 40, top: 5}}>
-                                    <RadioButton
-                                        isSelected={this.state.selectedChat === i}
-                                        size={14}
-                                        outerColor={'#4c4c4c'}
-                                        innerColor={'#4c4c4c'}
-                                        onPress={() => this.setState({selectedChat: i})}
-                                    />
-                                </View>
-                            </View>))}
+                            )))) :
+                        (this.state.chats.length === 0 ?
+                            <View style={{
+                                width: Dimensions.get('window').width,
+                                marginTop: '30%',
+                                flex: 1,
+                                justifyContent: 'center'
+                            }}>
+                                <Text style={{marginTop: 20, alignSelf: 'center'}}>You don't have any chat yet.</Text>
+                            </View> :
+                            (this.state.chats.map((chat, i) => (
+                                <View key={i} style={styles.resultItem}>
+                                    <Text style={{margin: 6}}>{chat.name}({chat.size})</Text>
+                                    <View style={{position: 'absolute', right: 40, top: 5}}>
+                                        <RadioButton
+                                            isSelected={this.state.selectedChat === i}
+                                            size={14}
+                                            outerColor={'#4c4c4c'}
+                                            innerColor={'#4c4c4c'}
+                                            onPress={() => this.setState({selectedChat: i})}
+                                        />
+                                    </View>
+                                </View>))))}
                 </ScrollView>
                 <View style={styles.buttonContainer}>
                     {this.state.tab === 'Friend' ?

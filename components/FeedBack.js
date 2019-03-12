@@ -32,6 +32,7 @@ export default class FeedBack extends Component {
     submit() {
         let url = 'mailto:contact@gtfo.gg?subject=feedback&body=' + this.state.text;
         Linking.openURL(url);
+        this.setState({text: ""});
     }
 
     render() {
@@ -46,7 +47,7 @@ export default class FeedBack extends Component {
                               onPress={() => this.props.navigation.navigate("Me")}
                         />
                     </View>
-                    <FormInput containerStyle={{marginTop: 200, minHeight: 155, borderBottomWidth: 0}}
+                    <FormInput containerStyle={{marginTop: 100, minHeight: 155, borderBottomWidth: 0}}
                                inputStyle={{
                                    width: '80%',
                                    alignSelf: 'center',
@@ -100,7 +101,8 @@ const styles = StyleSheet.create({
         width: 139,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 20
+        marginBottom: 280,
+        marginTop:10
     },
     disabledButton: {
         borderRadius: 20,
@@ -109,6 +111,7 @@ const styles = StyleSheet.create({
         width: 139,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 20
+        marginBottom: 280,
+        marginTop:10
     },
 });

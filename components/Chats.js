@@ -38,33 +38,42 @@ export default class Chats extends Component {
                     <Text style={{fontSize: 16, marginTop: 30, alignSelf: 'center'}}>Chats</Text>
                 </View>
                 <ScrollView>
-                    {this.state.chats.map((chat, i) => {
-                        let message = chat.messages.sort(function (a, b) {
-                            return new Date(b.createdAt.split('.')[0]) - new Date(a.createdAt.split('.')[0]);
-                        })[0];
-                        if (message !== undefined && message.businessId >= 0) {
-                            message.text = '[shared business]';
-                        }
-                        return (
-                            <TouchableOpacity key={i} style={styles.card}
-                                              onPress={() =>
-                                                  this.props.navigation.navigate("Message", {
-                                                      chat: chat,
-                                                      refresh: () => this.setState({refresh: true})
-                                                  })}>
-                                <View>
-                                    <Text style={styles.title}>{chat.name}({chat.size})</Text>
-                                    {message !== undefined && <Text style={styles.text}>{message.user.name}{': '}{message.text}</Text>}
-                                </View>
-                                {chat.address.length > 0 &&
-                                <Icon name='date-range'
-                                      containerStyle={styles.icon}
-                                      iconStyle={{margin: 15}}
-                                />}
+                    {this.state.chats.length === 0 ?
+                        <View style={{
+                            width: Dimensions.get('window').width,
+                            marginTop: '40%',
+                            flex: 1,
+                            justifyContent: 'center'
+                        }}><Text style={{marginTop: 20, alignSelf: 'center'}}>You don't have any chat
+                            yet.</Text></View> :
+                        (this.state.chats.map((chat, i) => {
+                            let message = chat.messages.sort(function (a, b) {
+                                return new Date(b.createdAt.split('.')[0]) - new Date(a.createdAt.split('.')[0]);
+                            })[0];
+                            if (message !== undefined && message.businessId >= 0) {
+                                message.text = '[shared business]';
+                            }
+                            return (
+                                <TouchableOpacity key={i} style={styles.card}
+                                                  onPress={() =>
+                                                      this.props.navigation.navigate("Message", {
+                                                          chat: chat,
+                                                          refresh: () => this.setState({refresh: true})
+                                                      })}>
+                                    <View>
+                                        <Text style={styles.title}>{chat.name}({chat.size})</Text>
+                                        {message !== undefined &&
+                                        <Text style={styles.text}>{message.user.name}{': '}{message.text}</Text>}
+                                    </View>
+                                    {chat.address.length > 0 &&
+                                    <Icon name='date-range'
+                                          containerStyle={styles.icon}
+                                          iconStyle={{margin: 15}}
+                                    />}
 
-                            </TouchableOpacity>
-                        )
-                    })}
+                                </TouchableOpacity>
+                            )
+                        }))}
 
                 </ScrollView>
                 <AppBottomNav style={{alignSelf: 'flex-end'}}/>

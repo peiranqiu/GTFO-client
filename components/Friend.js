@@ -5,6 +5,7 @@ import {Avatar, SearchBar} from 'react-native-elements'
 import {Icon} from 'react-native-elements'
 import friend_request from '../resources/icons/friend_request.svg';
 import add_friend from '../resources/icons/add_friend.png';
+import group_add from '../resources/icons/group_add.png';
 import SvgUri from 'react-native-svg-uri';
 
 export default class Friend extends Component {
@@ -103,6 +104,7 @@ export default class Friend extends Component {
             <SafeAreaView style={{flex: 1}}>
                 <View style={styles.container}>
                     <SearchBar
+                        ref={search => this.search = search}
                         clearIcon
                         leftIcon={{name: 'chevron-left'}}
                         noIcon
@@ -124,7 +126,17 @@ export default class Friend extends Component {
                 {this.state.searchTerm.length > 0 ?
                     <ScrollView>
                         <Text style={{marginHorizontal: 20, marginTop: 30}}>Users on GTFO</Text>
-                        {filteredResults.map((u, i) => (
+                        {filteredResults.length === 0 ?
+                        <TouchableOpacity style={{width: Dimensions.get('window').width, marginTop: '30%', flex: 1, justifyContent: 'center'}}
+                                          onPress={() => this.search.focus()}>
+                            <Image
+                                style={{width: 40, height: 22, alignSelf: 'center'}}
+                                source={group_add}
+                            />
+                            <Text style={{marginTop: 20, alignSelf: 'center'}}>No result...</Text>
+                            <Text style={{marginTop: 10, alignSelf: 'center'}}>Try another search or ask your friend to sign up!</Text>
+                        </TouchableOpacity> :
+                        (filteredResults.map((u, i) => (
                             <View key={i} style={styles.resultItem}>
                                 <View style={{flexDirection: 'row'}}>
                                     <Avatar size={20} rounded source={{uri: u.avatar}}/>
@@ -138,39 +150,55 @@ export default class Friend extends Component {
                                         />
                                     </TouchableOpacity>}
                                     {this.isSent(u) &&
-                                    <Text style={{fontSize: 14, color: 'grey', position: 'absolute', right: 30, top: 5}}>
+                                    <Text
+                                        style={{fontSize: 14, color: 'grey', position: 'absolute', right: 30, top: 5}}>
                                         Pending</Text>}
                                     {this.isInRequest(u) &&
                                     <Text style={{position: 'absolute', right: 30, top: 5}}>
-                                        <SvgUri width="20" height="20" source={friend_request} /></Text>}
+                                        <SvgUri width="20" height="20" source={friend_request}/></Text>}
                                 </View>
                             </View>
-                        ))}
+                        )))}
                     </ScrollView> :
-                    <ScrollView>
-                        <Text style={{color: 'grey', marginHorizontal: 20, marginTop: 30}}>Friend Requests</Text>
-                        {this.state.requests.map((request, i) => (
-                            <View key={i} style={styles.resultItem}>
-                                <View style={{flexDirection: 'row'}}>
-                                    <Avatar size={20} rounded source={{uri: request.firstUser.avatar}}/>
-                                    <Text style={{margin: 6}}>{request.firstUser.name}</Text>
-                                    <TouchableOpacity style={{position: 'absolute', right: 30, top: 5}}
-                                                      onPress={() => this.acceptRequest(i)}>
-                                        <SvgUri width="20" height="20" source={friend_request} />
-                                    </TouchableOpacity>
+                    (this.state.requests.length + this.state.friends.length === 0 ?
+                        <TouchableOpacity style={{width: Dimensions.get('window').width, marginTop: '30%', flex: 1, justifyContent: 'center'}}
+                                          onPress={() => this.search.focus()}>
+                            <Image
+                                style={{width: 40, height: 22, alignSelf: 'center'}}
+                                source={group_add}
+                            />
+                            <Text style={{marginTop: 20, alignSelf: 'center'}}>You don't have any friend:( {"\n"} Search
+                                to add some friend!</Text>
+                        </TouchableOpacity> :
+                        <ScrollView>
+                            <Text style={{color: 'grey', marginHorizontal: 20, marginTop: 30}}>Friend Requests</Text>
+                            {this.state.requests.map((request, i) => (
+                                <View key={i} style={styles.resultItem}>
+                                    <View style={{flexDirection: 'row'}}>
+                                        <Avatar size={20} rounded source={{uri: request.firstUser.avatar}}/>
+                                        <Text style={{margin: 6}}>{request.firstUser.name}</Text>
+                                        <TouchableOpacity style={{position: 'absolute', right: 30, top: 5}}
+                                                          onPress={() => this.acceptRequest(i)}>
+                                            <SvgUri width="20" height="20" source={friend_request}/>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
-                            </View>
-                        ))}
-                        <Text style={{color: 'grey', paddingTop: 20, marginHorizontal: 20, marginTop: 20}}>Friends</Text>
-                        {this.state.friends.map((friend, i) => (
-                            <View key={i} style={styles.resultItem}>
-                                <View style={{flexDirection: 'row'}}>
-                                    <Avatar size={20} rounded source={{uri: friend.avatar}}/>
-                                    <Text style={{margin: 6}}>{friend.name}</Text>
+                            ))}
+                            <Text style={{
+                                color: 'grey',
+                                paddingTop: 20,
+                                marginHorizontal: 20,
+                                marginTop: 20
+                            }}>Friends</Text>
+                            {this.state.friends.map((friend, i) => (
+                                <View key={i} style={styles.resultItem}>
+                                    <View style={{flexDirection: 'row'}}>
+                                        <Avatar size={20} rounded source={{uri: friend.avatar}}/>
+                                        <Text style={{margin: 6}}>{friend.name}</Text>
+                                    </View>
                                 </View>
-                            </View>
-                        ))}
-                    </ScrollView>
+                            ))}
+                        </ScrollView>)
                 }
             </SafeAreaView>
         );

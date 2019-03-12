@@ -3,7 +3,6 @@ import UserServiceClient from "../services/UserServiceClient";
 import React, {Component} from 'react';
 import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, WebView} from "react-native";
 import Ins from 'react-native-instagram-login'
-
 import background from '../resources/logos/background.png';
 
 export default class Welcome extends Component {

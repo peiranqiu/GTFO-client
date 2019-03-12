@@ -27,7 +27,10 @@ const data = [
     {title: "Movie", key: "movie"},
     {title: "Art", key: "art"},
 ];
+import {CollapsibleHeaderScrollView} from 'react-native-collapsible-header-views';
 import {AppLoading} from 'expo';
+import DoubleClick from "react-native-double-tap";
+
 
 export default class Home extends Component {
 
@@ -81,8 +84,8 @@ export default class Home extends Component {
                                                 .then(response => business.interested = response);
                                             business.key = business.id.toString();
                                             let allBusinesses = this.state.businesses;
-                                            //allBusinesses.unshift(business);
-                                            allBusinesses.push(business);
+                                            allBusinesses.unshift(business);
+                                            //allBusinesses.push(business);
                                             this.setState({businesses: allBusinesses, appReady: !this.state.appReady});
                                         }
                                     });
@@ -113,18 +116,20 @@ export default class Home extends Component {
             });
     }
 
+
     render() {
         activeNav = "home";
         const filteredResults = this.state.businesses.filter(businesses =>
             businesses.category.includes(this.state.filter));
         const length = filteredResults.length;
+
         return (
             <SafeAreaView style={{flex: 1}}>
                 <Modal isVisible={this.state.visible}>
                     <ScrollView style={styles.modal}>
                         <Icon name='close'
                               containerStyle={{position: 'absolute', right: 0, top: -30}}
-                              iconStyle={{color: 'grey'}}
+                              iconStyle={{color: 'grey', height: 32, width: 32}}
                               onPress={() => this.setState({visible: false})}
                         />
                         <Business business={this.state.businesses[this.state.selected]}
@@ -135,127 +140,143 @@ export default class Home extends Component {
                                   }}/>
                     </ScrollView>
                 </Modal>
-                <ScrollView>
-                    <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-                        <TouchableOpacity style={styles.search}
-                                          onPress={() => this.props.navigation.navigate("Search")}>
-                            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-                                <Icon name='search'
-                                      size={16}
-                                      iconStyle={{color: 'grey'}}
-                                />
-                                <Text style={{color: 'grey'}}>{' '}Search Places</Text></View>
-                        </TouchableOpacity>
-                    </View>
-                    <FlatList horizontal={true}
-                              showsHorizontalScrollIndicator={false}
-                              style={styles.tabGroup}
-                              data={data}
-                              extraData={this.state}
-                              renderItem={({item}) => (
-                                  item.key === this.state.filter ?
-                                      <View><Text style={styles.activeTab}
-                                                  onPress={() => this.setState({filter: item.key})}>
-                                          {item.title}
-                                      </Text><View style={{marginTop: 2, width: 30, alignSelf: 'center'}}>
-                                          <Divider style={{backgroundColor: 'black', height: 4}}/></View></View>
-                                      :
-                                      <Text style={styles.tab}
-                                            onPress={() => this.setState({filter: item.key})}>
-                                          {item.title}
-                                      </Text>)}/>
-                    <VirtualizedList data={filteredResults}
-                                     getItem={(data, index) => data[index]}
-                                     getItemCount={() => length}
-                                     renderItem={({item, index}) => {
-                                         let ready = false;
-                                         let followers = [];
-                                         let size = 0;
-                                         let data = item.followers;
-                                         if (data !== undefined) {
-                                             size = data.length;
-                                             followers = size > 3 ? data.slice(0, 3) : data;
-                                             ready = true;
-                                         }
-                                         return (
-                                             <TouchableOpacity key={index}
-                                                               activeOpacity = {1}
-                                                               style={styles.card}
-                                                               onPress={() => this.setState({
-                                                                   selected: index,
-                                                                   visible: true
-                                                               })}>
-                                                 <View>
-                                                     <Image style={styles.image}
-                                                            source={{uri: item.posts[0].photo}}
-                                                     />
-                                                     <View style={{
-                                                         position: 'absolute',
-                                                         padding: 20,
-                                                         bottom: 20,
-                                                         flexDirection: 'row'
-                                                     }}>
-                                                         <Avatar medium rounded
-                                                                 source={{uri: item.posts[0].user.avatar}}/>
-                                                         <Text style={styles.imageText}>
-                                                             {item.posts[0].user.name === 'gtfo_guide' ?
-                                                                 '' : item.posts[0].user.name}
-                                                             {item.posts[0].user.name === 'gtfo_guide' ? '' : ': '}
-                                                             {item.posts[0].content}
-                                                         </Text></View>
-                                                 </View>
-                                                 <View style={styles.text}>
+                <CollapsibleHeaderScrollView
+                    CollapsibleHeaderComponent={<View style={{height: 120}}>
+                        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                            <TouchableOpacity style={styles.search}
+                                              onPress={() => this.props.navigation.navigate("Search")}>
+                                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                                    <Icon name='search'
+                                          size={16}
+                                          iconStyle={{color: 'grey'}}
+                                    />
+                                    <Text style={{color: 'grey'}}>{' '}Search Places</Text></View>
+                            </TouchableOpacity>
+                        </View>
+                        <FlatList horizontal={true}
+                                  showsHorizontalScrollIndicator={false}
+                                  style={styles.tabGroup}
+                                  data={data}
+                                  extraData={this.state}
+                                  renderItem={({item}) => (
+                                      item.key === this.state.filter ?
+                                          <View><Text style={styles.activeTab}
+                                                      onPress={() => this.setState({filter: item.key})}>
+                                              {item.title}
+                                          </Text><View style={{marginTop: 2, width: 30, alignSelf: 'center'}}>
+                                              <Divider style={{backgroundColor: 'black', height: 4}}/></View></View>
+                                          :
+                                          <Text style={styles.tab}
+                                                onPress={() => this.setState({filter: item.key})}>
+                                              {item.title}
+                                          </Text>)}/></View>}
+                    headerHeight={125}
+                    statusBarHeight={0}
+                >
+                    {(this.state.filter !== "" && length === 0) ?
+                        <View style={{paddingTop: '50%', flex: 1, flexDirection: 'row', justifyContent: 'center'}}>
+                            <Text>Oops, this category is empty:(</Text>
+                        </View> :
+                        <VirtualizedList data={filteredResults}
+                                         getItem={(data, index) => data[index]}
+                                         getItemCount={() => length}
+                                         renderItem={({item, index}) => {
+                                             let ready = false;
+                                             let followers = [];
+                                             let size = 0;
+                                             let data = item.followers;
+                                             if (data !== undefined) {
+                                                 size = data.length;
+                                                 followers = size > 3 ? data.slice(0, 3) : data;
+                                                 ready = true;
+                                             }
+                                             return (
+                                                 <TouchableOpacity key={index}
+                                                                   activeOpacity={1}
+                                                                   style={styles.card}
+                                                                   onPress={() => this.setState({
+                                                                       selected: index,
+                                                                       visible: true
+                                                                   })}>
                                                      <View>
-                                                         <Text
-                                                             style={{
-                                                                 fontSize: 14,
-                                                                 fontWeight: "700",
-                                                                 marginBottom: 3
-                                                             }}>{item.name}</Text>
-                                                         <Text style={{fontSize: 12}}>
-                                                             {item.address.slice(-7).includes("Canada") ?
-                                                                 item.address.slice(0, -7) : item.address}
-                                                         </Text>
+                                                         <DoubleClick
+                                                             doubleTap={() => this.userLikesBusiness(item)}
+                                                             delay={200}
+                                                         >
+                                                             <Image style={styles.image}
+                                                                    source={{uri: item.posts[0].photo}}
+                                                             /></DoubleClick>
+                                                         <View style={{
+                                                             position: 'absolute',
+                                                             padding: 20,
+                                                             bottom: 20,
+                                                             flexDirection: 'row'
+                                                         }}>
+                                                             <Avatar medium rounded
+                                                                     source={{uri: item.posts[0].user.avatar}}/>
+                                                             <Text style={styles.imageText}>
+                                                                 {item.posts[0].user.name === 'gtfo_guide' ?
+                                                                     '' : item.posts[0].user.name}
+                                                                 {item.posts[0].user.name === 'gtfo_guide' ? '' : ': '}
+                                                                 {item.posts[0].content}
+                                                             </Text></View>
                                                      </View>
-                                                     <View style={{
-                                                         position: 'absolute',
-                                                         right: 20,
-                                                         top: 0,
-                                                         flexDirection: 'row'
-                                                     }}>
-                                                         <Icon
-                                                             size={20}
-                                                             name={item.interested ? 'star' : 'star-border'}
-                                                             iconStyle={{color: 'grey'}}
-                                                             onPress={() => this.userLikesBusiness(item)}
-                                                         />
-                                                         <Icon name='share'
-                                                               size={20}
-                                                               iconStyle={{color: 'grey', marginLeft: 5}}
-                                                               onPress={() =>
-                                                                   this.props.navigation.navigate("Share", {business: item})}
-                                                         />
+                                                     <View style={styles.text}>
+                                                         <View>
+                                                             <Text
+                                                                 style={{
+                                                                     fontSize: 14,
+                                                                     fontWeight: "700",
+                                                                     marginBottom: 3
+                                                                 }}>{item.name}</Text>
+                                                             <Text style={{fontSize: 12}}>
+                                                                 {item.address.slice(-7).includes("Canada") ?
+                                                                     item.address.slice(0, -7) : item.address}
+                                                             </Text>
+                                                         </View>
+                                                         <View style={{
+                                                             position: 'absolute',
+                                                             right: 10,
+                                                             top: -10,
+                                                             flexDirection: 'row'
+                                                         }}>
+                                                             <Icon
+                                                                 size={32}
+                                                                 name={item.interested ? 'star' : 'star-border'}
+                                                                 iconStyle={{color: 'grey'}}
+                                                                 onPress={() => this.userLikesBusiness(item)}
+                                                             />
+                                                             <Icon name='share'
+                                                                   size={32}
+                                                                   iconStyle={{color: 'grey', marginLeft: 5}}
+                                                                   onPress={() =>
+                                                                       this.props.navigation.navigate("Share", {business: item})}
+                                                             />
+                                                         </View>
                                                      </View>
-                                                 </View>
-                                                 {ready &&
-                                                 <View
-                                                     style={{flexDirection: 'row', marginTop: 5, marginHorizontal: 20}}>
-                                                     {followers.map((user, i) =>
-                                                         <Avatar size={20} rounded key={i}
-                                                                 source={{uri: user.avatar}}/>)}
-                                                     {size > 3 &&
-                                                     <Text style={{
-                                                         marginVertical: 10,
-                                                         fontSize: 12
-                                                     }}>{' '}+{size - 3}</Text>}
-                                                     <Text style={{
-                                                         marginVertical: 10,
-                                                         fontSize: 12
-                                                     }}>{' '}Interested</Text>
-                                                 </View>}
-                                             </TouchableOpacity>)
-                                     }}/>
-                </ScrollView>
+                                                     {ready &&
+                                                     <View
+                                                         style={{
+                                                             flexDirection: 'row',
+                                                             marginTop: 5,
+                                                             marginHorizontal: 20
+                                                         }}>
+                                                         {followers.map((user, i) =>
+                                                             <Avatar size={20} rounded key={i}
+                                                                     source={{uri: user.avatar}}/>)}
+                                                         {size > 3 &&
+                                                         <Text style={{
+                                                             marginVertical: 10,
+                                                             fontSize: 12
+                                                         }}>{' '}+{size - 3}</Text>}
+                                                         <Text style={{
+                                                             marginVertical: 10,
+                                                             fontSize: 12
+                                                         }}>{' '}Interested</Text>
+                                                     </View>}
+                                                 </TouchableOpacity>)
+                                         }}/>}
+                </CollapsibleHeaderScrollView>
                 <AppBottomNav style={{alignSelf: 'flex-end'}}/>
             </SafeAreaView>
         )
@@ -297,7 +318,7 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 0},
         paddingHorizontal: 5,
         paddingTop: 40,
-        marginVertical: 30,
+        marginVertical: 10,
         borderRadius: 10
     },
     tab: {

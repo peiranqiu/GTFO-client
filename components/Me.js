@@ -79,7 +79,7 @@ export default class Me extends Component {
                                   hideChevron/>
                     </List>
                     <View style={styles.center}>
-                        <Text style={styles.text}>Version 1.00.0</Text>
+                        <Text style={styles.text}>Version 1.1.0</Text>
                     </View>
                     <View style={styles.center}>
                         <Text style={styles.text}>Copyright 2019 GTFO, Inc.</Text>

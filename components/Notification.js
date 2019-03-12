@@ -5,6 +5,7 @@ import {Avatar, Icon} from 'react-native-elements'
 import friend_request from '../resources/icons/friend_request.svg';
 import SvgUri from 'react-native-svg-uri';
 
+
 export default class Notification extends Component {
     constructor(props) {
         super(props);

@@ -327,14 +327,13 @@ export default class Explore extends Component {
                             longitude: businesses[this.state.selected].longitude
                         }}
                     />}
-
                 </MapView>
                 }
                 <Modal isVisible={this.state.visible}>
                     <ScrollView style={styles.modal}>
                         <Icon name='close'
                               containerStyle={{position: 'absolute', right: 0, top: -30}}
-                              iconStyle={{color: 'grey'}}
+                              iconStyle={{color: 'grey', height: 32, width: 32}}
                               onPress={() => this.setState({visible: false})}
                         />
                         <Business business={this.state.businesses[this.state.selected]}
@@ -400,9 +399,11 @@ export default class Explore extends Component {
 
                     <Icon name='gps-not-fixed'
                           containerStyle={{position: 'absolute', top: -40, right: 20}}
-                          onPress={() => this.map.animateToCoordinate({
+                          onPress={() => this.map.animateToRegion({
                               latitude: this.state.initialRegion.latitude,
-                              longitude: this.state.initialRegion.longitude
+                              longitude: this.state.initialRegion.longitude,
+                              latitudeDelta: 0.08,
+                              longitudeDelta: 0.08,
                           }, 31)}/>
                     {this.state.selected !== null && <TouchableOpacity style={styles.card}
                                                                        onPress={() => this.setState({visible: true})}>
@@ -427,15 +428,15 @@ export default class Explore extends Component {
                                 <Avatar size={20} rounded key={i} source={{uri: user.avatar}}/>)}
                             {size > 3 && <Text style={{marginVertical: 10, fontSize: 12}}>{' '}+{size - 3}</Text>}
                             <Text style={{marginVertical: 10, fontSize: 12}}>{' '}Interested</Text>
-                            <View style={{position: 'absolute', right: 5, bottom: 10, flexDirection: 'row'}}>
+                            <View style={{position: 'absolute', right: 0, bottom: 10, flexDirection: 'row'}}>
                                 <Icon
-                                    size={20}
+                                    size={32}
                                     name={this.state.businesses[this.state.selected].interested ? 'star' : 'star-border'}
                                     iconStyle={{color: 'grey'}}
                                     onPress={() => this.userLikesBusiness()}
                                 />
                                 <Icon name='share'
-                                      size={20}
+                                      size={32}
                                       iconStyle={{color: 'grey', marginLeft: 5}}
                                       onPress={() =>
                                           this.props.navigation.navigate("Share", {business: this.state.businesses[this.state.selected]})}
@@ -496,14 +497,14 @@ const styles = StyleSheet.create({
         shadowOffset: {width: 0, height: 0},
         paddingHorizontal: 5,
         paddingTop: 40,
-        marginVertical: 30,
+        marginVertical: 10,
         borderRadius: 10
     },
     topBar: {
         flexDirection: 'row',
         flex: 1,
         position: 'absolute',
-        top: 54,
+        top: 50,
         left: 0,
         right: 0,
         width: Dimensions.get('window').width,
