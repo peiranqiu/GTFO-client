@@ -198,9 +198,9 @@ export default class Business extends Component {
                             iconStyle={{color: 'grey'}}
                             onPress={() => this.userLikesBusiness()}
                         />
-                        <Icon name='share'
-                              size={32}
-                              iconStyle={{color: 'grey', marginLeft: 5}}
+                        <Icon name='send'
+                              size={30}
+                              iconStyle={{transform:[{ rotate: '-45deg'},{ translateY: -3}], color: 'grey', marginLeft: 8}}
                               onPress={() =>
                                   this.props.navigation.navigate("Share", {business: this.props.business})}
                         />

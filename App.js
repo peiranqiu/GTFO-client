@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {AsyncStorage, YellowBox, Animated, Easing} from 'react-native';
+import {AsyncStorage, Alert, YellowBox, Animated, Easing} from 'react-native';
 import Storage from 'react-native-storage';
 import PostServiceClient from "./services/PostServiceClient.js";
 import UserServiceClient from "./services/UserServiceClient.js";
@@ -18,6 +18,7 @@ import Notification from "./components/Notification";
 import Permission from "./components/Permission";
 import FeedBack from "./components/FeedBack";
 import {Font, Asset, AppLoading} from 'expo'
+import * as constants from "./constants/constant";
 
 YellowBox.ignoreWarnings(['Remote debugger']);
 
@@ -60,12 +61,28 @@ const AppNavigator = createStackNavigator({
     });
 const AppContainer = createAppContainer(AppNavigator);
 
+// BackgroundTask.define(async () => {
+//     PostServiceClient.instance.updateAll();
+//     UserServiceClient.instance.updateAvatar();
+//
+//     storage.load({key: 'user'})
+//         .then(user => {
+//             fetch(constants.SERVER + 'friend/request/' + user._id)
+//                 .then(response => {
+//                     let requests = response.json();
+//                     if (requests.length > 0) {
+//                         console.log(requests[0].firstUser.name);
+//                     }
+//                 })
+//         })
+//         .catch(err => console.log(err));
+//     BackgroundTask.finish();
+// });
 
 export default class App extends Component {
     state = {
         fontLoaded: false,
-    };
-
+    }
 
     async componentDidMount() {
         await Font.loadAsync({
@@ -73,18 +90,14 @@ export default class App extends Component {
         });
 
         this.setState({fontLoaded: true});
-    }
-
-    autoUpdate() {
-        PostServiceClient.instance.updateAll();
-        UserServiceClient.instance.updateAvatar();
-
+        // BackgroundTask.schedule({
+        //     period: 900,
+        // });
     }
 
     render() {
         global.storage = storage;
         global.activeNav = "home";
-        this.interval = setInterval(() => this.autoUpdate(), 1000 * 60 * 10);
         if (!this.state.fontLoaded) {
             return (
                 <AppLoading

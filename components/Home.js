@@ -63,7 +63,7 @@ export default class Home extends Component {
                                     let friendIds = [];
                                     friends.map(u => friendIds.push(u._id));
                                     friendIds.push(this.state.user._id);
-                                    businesses.map(business => {
+                                    businesses.reverse().map(business => {
                                         let posts = [];
                                         business.posts.map(post => {
                                             if (friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID) {
@@ -84,8 +84,7 @@ export default class Home extends Component {
                                                 .then(response => business.interested = response);
                                             business.key = business.id.toString();
                                             let allBusinesses = this.state.businesses;
-                                            allBusinesses.unshift(business);
-                                            //allBusinesses.push(business);
+                                            allBusinesses.push(business);
                                             this.setState({businesses: allBusinesses, appReady: !this.state.appReady});
                                         }
                                     });
@@ -246,9 +245,9 @@ export default class Home extends Component {
                                                                  iconStyle={{color: 'grey'}}
                                                                  onPress={() => this.userLikesBusiness(item)}
                                                              />
-                                                             <Icon name='share'
-                                                                   size={32}
-                                                                   iconStyle={{color: 'grey', marginLeft: 5}}
+                                                             <Icon name='send'
+                                                                   size={30}
+                                                                   iconStyle={{transform:[{ rotate: '-45deg'},{ translateY: -3}], color: 'grey', marginLeft: 8}}
                                                                    onPress={() =>
                                                                        this.props.navigation.navigate("Share", {business: item})}
                                                              />
