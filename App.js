@@ -61,24 +61,6 @@ const AppNavigator = createStackNavigator({
     });
 const AppContainer = createAppContainer(AppNavigator);
 
-// BackgroundTask.define(async () => {
-//     PostServiceClient.instance.updateAll();
-//     UserServiceClient.instance.updateAvatar();
-//
-//     storage.load({key: 'user'})
-//         .then(user => {
-//             fetch(constants.SERVER + 'friend/request/' + user._id)
-//                 .then(response => {
-//                     let requests = response.json();
-//                     if (requests.length > 0) {
-//                         console.log(requests[0].firstUser.name);
-//                     }
-//                 })
-//         })
-//         .catch(err => console.log(err));
-//     BackgroundTask.finish();
-// });
-
 export default class App extends Component {
     state = {
         fontLoaded: false,
@@ -90,9 +72,6 @@ export default class App extends Component {
         });
 
         this.setState({fontLoaded: true});
-        // BackgroundTask.schedule({
-        //     period: 900,
-        // });
     }
 
     render() {

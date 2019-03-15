@@ -59,11 +59,14 @@ export default class Home extends Component {
                 this.userService.findFriendList(user._id)
                     .then((friends) => {
                         this.postService.findAllBusinesses()
-                            .then(businesses => {
+                            .then(result => {
+                                    let businesses = result.filter(result => result.order >= 0)
+                                        .sort((a, b) => a.order - b.order)
+                                        .concat(result.filter(result => result.order < 0).reverse());
                                     let friendIds = [];
                                     friends.map(u => friendIds.push(u._id));
                                     friendIds.push(this.state.user._id);
-                                    businesses.reverse().map(business => {
+                                    businesses.map(business => {
                                         let posts = [];
                                         business.posts.map(post => {
                                             if (friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID) {
@@ -240,14 +243,18 @@ export default class Home extends Component {
                                                              flexDirection: 'row'
                                                          }}>
                                                              <Icon
-                                                                 size={32}
-                                                                 name={item.interested ? 'star' : 'star-border'}
+                                                                 size={30}
+                                                                 name={item.interested ? 'favorite' : 'favorite-border'}
                                                                  iconStyle={{color: 'grey'}}
                                                                  onPress={() => this.userLikesBusiness(item)}
                                                              />
-                                                             <Icon name='send'
-                                                                   size={30}
-                                                                   iconStyle={{transform:[{ rotate: '-45deg'},{ translateY: -3}], color: 'grey', marginLeft: 8}}
+                                                             <Icon name='reply'
+                                                                   size={32}
+                                                                   iconStyle={{
+                                                                       transform: [{scaleX: -1}],
+                                                                       color: 'grey',
+                                                                       marginLeft: 5
+                                                                   }}
                                                                    onPress={() =>
                                                                        this.props.navigation.navigate("Share", {business: item})}
                                                              />

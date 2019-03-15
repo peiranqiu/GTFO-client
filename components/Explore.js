@@ -296,7 +296,7 @@ export default class Explore extends Component {
                     provider="google"
                     onPress={() => this.setState({dropdown: false})}
                     initialRegion={this.state.initialRegion}
-                    onRegionChangeComplete={(region) => this.onRegionChangeComplete(region)}
+                    onRegionChangeComplete={region => this.onRegionChangeComplete(region)}
                     customMapStyle={constants.MAP_STYLE}>
                     <MapView.Marker
                         zIndex={5000}
@@ -430,14 +430,14 @@ export default class Explore extends Component {
                             <Text style={{marginVertical: 10, fontSize: 12}}>{' '}Interested</Text>
                             <View style={{position: 'absolute', right: 0, bottom: 10, flexDirection: 'row'}}>
                                 <Icon
-                                    size={32}
-                                    name={this.state.businesses[this.state.selected].interested ? 'star' : 'star-border'}
+                                    size={30}
+                                    name={this.state.businesses[this.state.selected].interested ? 'favorite' : 'favorite-border'}
                                     iconStyle={{color: 'grey'}}
                                     onPress={() => this.userLikesBusiness()}
                                 />
-                                <Icon name='send'
-                                      size={30}
-                                      iconStyle={{transform:[{ rotate: '-45deg'},{ translateY: -3}], color: 'grey', marginLeft: 8}}
+                                <Icon name='reply'
+                                      size={32}
+                                      iconStyle={{transform:[{ scaleX: -1}], color: 'grey', marginLeft: 5}}
                                       onPress={() =>
                                           this.props.navigation.navigate("Share", {business: this.state.businesses[this.state.selected]})}
                                 />

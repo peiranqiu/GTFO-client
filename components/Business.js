@@ -158,7 +158,7 @@ export default class Business extends Component {
         followers = size > 3 ? data.slice(0, 3) : data;
 
         return (
-            <ScrollView style={{flex: 1}}>
+            <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
                 <View>
                     <Image style={styles.image}
                            source={{uri: this.props.business.posts[0].photo}}
@@ -193,14 +193,14 @@ export default class Business extends Component {
                     </View>
                     <View style={{position: 'absolute', right: 10, top: -10, flexDirection: 'row'}}>
                         <Icon
-                            size={32}
-                            name={this.state.interested ? 'star' : 'star-border'}
+                            size={30}
+                            name={this.state.interested ? 'favorite' : 'favorite-border'}
                             iconStyle={{color: 'grey'}}
                             onPress={() => this.userLikesBusiness()}
                         />
-                        <Icon name='send'
-                              size={30}
-                              iconStyle={{transform:[{ rotate: '-45deg'},{ translateY: -3}], color: 'grey', marginLeft: 8}}
+                        <Icon name='reply'
+                              size={32}
+                              iconStyle={{transform:[{ scaleX: -1}], color: 'grey', marginLeft: 5}}
                               onPress={() =>
                                   this.props.navigation.navigate("Share", {business: this.props.business})}
                         />
