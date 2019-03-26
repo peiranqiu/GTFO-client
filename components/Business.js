@@ -200,9 +200,11 @@ export default class Business extends Component {
                         />
                         <Icon name='reply'
                               size={32}
-                              iconStyle={{transform:[{ scaleX: -1}], color: 'grey', marginLeft: 5}}
-                              onPress={() =>
-                                  this.props.navigation.navigate("Share", {business: this.props.business})}
+                              iconStyle={{transform: [{scaleX: -1}], color: 'grey', marginLeft: 5}}
+                              onPress={() => {
+                                  this.setState({visible: false});
+                                  this.props.navigation.navigate("Share", {business: this.props.business});
+                              }}
                         />
                     </View>
                 </View>
@@ -215,7 +217,7 @@ export default class Business extends Component {
                 <MapView
                     style={styles.map}
                     provider="google"
-                    scrollEnabled = {false}
+                    scrollEnabled={false}
                     region={{
                         latitude: this.props.business.latitude,
                         longitude: this.props.business.longitude,

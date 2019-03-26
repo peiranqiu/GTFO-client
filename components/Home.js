@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     View, VirtualizedList
 } from 'react-native'
+import {Permissions} from "expo"
 import PostServiceClient from '../services/PostServiceClient'
 import AppBottomNav from './AppBottomNav'
 import {Avatar, Divider, Icon} from 'react-native-elements'
@@ -48,9 +49,12 @@ export default class Home extends Component {
             selectedIndex: 0,
             gtfo: null
         }
+        this.getPermission = this.getPermission.bind(this);
     }
 
     componentDidMount() {
+
+
         this.userService.findUserById(constants.GTFO_ID)
             .then(gtfo => this.setState({gtfo: gtfo}));
         storage.load({key: 'user'})
@@ -98,7 +102,33 @@ export default class Home extends Component {
             .catch(err => {
                 this.props.navigation.navigate("Welcome");
             });
+        storage.load({key: 'region'})
+            .then(region => console.log(region))
+            .catch(err => this.getPermission());
+    }
 
+    async getPermission() {
+        await Permissions.getAsync(Permissions.LOCATION)
+            .then(async (response) => {
+                this.setState({location: response.status});
+                if (response.status === 'granted') {
+                    Geolocation.getCurrentPosition(
+                        (position) => {
+                            storage.save({
+                                key: 'region',
+                                data: {
+                                    latitude: position.coords.latitude,
+                                    longitude: position.coords.longitude,
+                                    latitudeDelta: 0.08,
+                                    longitudeDelta: 0.08,
+                                }
+                            })
+                        },
+                        (error) => {
+                        },
+                        {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000})
+                }
+            });
     }
 
     userLikesBusiness(business) {
@@ -135,6 +165,7 @@ export default class Home extends Component {
                               onPress={() => this.setState({visible: false})}
                         />
                         <Business business={this.state.businesses[this.state.selected]}
+                                  navigation={this.props.navigation}
                                   refresh={(business) => {
                                       let businesses = this.state.businesses;
                                       businesses[this.state.selected] = business;

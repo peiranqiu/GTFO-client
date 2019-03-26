@@ -46,7 +46,7 @@ const AppNavigator = createStackNavigator({
         Terms: Terms
     },
     {
-        initialRouteName: "Home",
+        initialRouteName: "Explore",
         headerMode: 'none',
         navigationOptions: {
             headerVisible: false,

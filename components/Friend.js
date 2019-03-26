@@ -7,6 +7,7 @@ import friend_request from '../resources/icons/friend_request.svg';
 import add_friend from '../resources/icons/add_friend.png';
 import group_add from '../resources/icons/group_add.png';
 import SvgUri from 'react-native-svg-uri';
+import * as constants from "../constants/constant";
 
 export default class Friend extends Component {
     constructor(props) {

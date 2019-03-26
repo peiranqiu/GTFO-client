@@ -67,7 +67,8 @@ export default class CustomView extends Component {
                               iconStyle={{color: 'grey'}}
                               onPress={() => this.setState({visible: false})}
                         />
-                        <Business business={this.state.business}/>
+                        <Business business={this.state.business}
+                                  navigation = {this.props.navigation}/>
                     </ScrollView>
                 </Modal>
             </View>

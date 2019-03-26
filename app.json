@@ -2,7 +2,7 @@
   "expo": {
     "name": "GTFO",
     "icon": "./resources/logos/gtfo-logo.png",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "slug": "gtfo",
     "sdkVersion": "32.0.0",
     "ios": {
@@ -19,6 +19,9 @@
     },
     "android": {
       "package": "com.gtfo.demo"
+    },
+    "androidStatusBar": {
+      "barStyle": "dark-content"
     },
     "splash": {
       "image": "./resources/logos/splash.png",

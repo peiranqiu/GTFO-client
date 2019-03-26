@@ -68,78 +68,38 @@ export default class Explore extends Component {
             }
         }
         this.getPermission = this.getPermission.bind(this);
+        this.loadData = this.loadData.bind(this);
     }
 
     componentDidMount() {
-        this.getPermission();
         this.userService.findUserById(constants.GTFO_ID)
             .then(gtfo => this.setState({gtfo: gtfo}));
-        Geolocation.getCurrentPosition(
-            (position) => {
-                let region = {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude,
-                    latitudeDelta: 0.08,
-                    longitudeDelta: 0.08,
-                };
+        storage.load({key: 'region'})
+            .then(region => {
                 let boundingBox = this.getBoundingBox(region);
                 this.setState({initialRegion: region, region: region, boundingBox: boundingBox});
-                storage.load({key: 'user'})
-                    .then(user => {
-                        this.setState({user: user});
-                        this.userService.findFriendList(user._id)
-                            .then(friends => {
-                                this.postService.findAllBusinesses()
-                                    .then(businesses => {
-                                        businesses = this.filterFriends(businesses, friends);
-                                        businesses.map(business => {
-                                            business.interested = false;
-                                            business.followers = [];
-                                            this.postService.findFollowersForBusiness(business.id)
-                                                .then(response => {
-                                                    let friendIds = [];
-                                                    friends.map(u => friendIds.push(u._id));
-                                                    friendIds.push(user._id);
-                                                    response = response.filter(u => friendIds.includes(u._id));
-                                                    response.push(this.state.gtfo);
-                                                    business.followers = response;
-                                                    this.setState({appReady: true});
-                                                });
-                                            this.postService.findIfInterested(business.id, user._id)
-                                                .then(response => {
-                                                    if (response) {
-                                                        business.interested = response;
-                                                        this.setState({appReady: true});
-                                                    }
-                                                });
-                                        });
-                                        businesses = businesses.sort(function (b, a) {
-                                            return Math.sqrt(Math.pow(b.latitude - position.coords.latitude, 2)
-                                                + Math.pow(b.longitude - position.coords.longitude, 2))
-                                                - Math.sqrt(Math.pow(a.latitude - position.coords.latitude, 2)
-                                                    + Math.pow(a.longitude - position.coords.longitude, 2));
-                                        });
-                                        if (businesses.length > 0 || this.isInBoudingBox({
-                                            latitude: businesses[0].latitude,
-                                            longitude: businesses[0].longitude
-                                        })) {
-                                            this.setState({selected: 0});
-                                        }
-                                        this.setState({
-                                            businesses: businesses, appReady: true
-                                        });
-
-                                    });
-                            });
-                    })
-                    .catch(err => {
-                        this.props.navigation.navigate("Welcome");
-                    });
-            },
-            (error) => {
-            },
-            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000}
-        );
+                this.loadData(region);
+            })
+            .catch(err => {
+                this.getPermission();
+                Geolocation.getCurrentPosition(
+                    (position) => {
+                        let region = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            latitudeDelta: 0.08,
+                            longitudeDelta: 0.08,
+                        };
+                        this.loadData(region);
+                        storage.save({
+                            key: 'region',
+                            data: region
+                        });
+                    },
+                    (error) => {
+                    },
+                    {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000})
+            });
     }
 
     async getPermission() {
@@ -152,6 +112,63 @@ export default class Explore extends Component {
                 else {
                     this.setState({permission: false});
                 }
+            });
+    }
+
+    loadData(region) {
+        storage.load({key: 'user'})
+            .then(user => {
+                this.setState({user: user});
+                this.userService.findFriendList(user._id)
+                    .then(friends => {
+                        this.postService.findAllBusinesses()
+                            .then(businesses => {
+                                businesses = this.filterFriends(businesses, friends);
+                                businesses.map(business => {
+                                    business.interested = false;
+                                    business.followers = [];
+                                    this.postService.findFollowersForBusiness(business.id)
+                                        .then(response => {
+                                            let friendIds = [];
+                                            friends.map(u => friendIds.push(u._id));
+                                            friendIds.push(user._id);
+                                            response = response.filter(u => friendIds.includes(u._id));
+                                            response.push(this.state.gtfo);
+                                            business.followers = response;
+                                            this.setState({appReady: true});
+                                        });
+                                    this.postService.findIfInterested(business.id, user._id)
+                                        .then(response => {
+                                            if (response) {
+                                                business.interested = response;
+                                                this.setState({appReady: true});
+                                            }
+                                        });
+                                });
+                                businesses = businesses.sort(function (b, a) {
+                                    return Math.sqrt(Math.pow(b.latitude - region.latitude, 2)
+                                        + Math.pow(b.longitude - region.longitude, 2))
+                                        - Math.sqrt(Math.pow(a.latitude - region.latitude, 2)
+                                            + Math.pow(a.longitude - region.longitude, 2));
+                                });
+                                for (let i = 0; i < businesses.length; i++) {
+                                    businesses[i].key = i;
+                                }
+                                if (businesses.length > 0 && this.isInBoudingBox({
+                                    latitude: businesses[0].latitude,
+                                    longitude: businesses[0].longitude
+                                })) {
+                                    this.setState({selected: 0});
+                                }
+                                this.setState({
+                                    businesses: businesses, appReady: true
+                                });
+
+                            });
+                    });
+            })
+            .catch(err => {
+                this.props.navigation.navigate("Welcome");
             });
     }
 
@@ -279,6 +296,8 @@ export default class Explore extends Component {
         let size = 0;
         let followers = [];
         let businesses = this.state.businesses;
+        const filteredResults = businesses.filter(businesses =>
+            this.isInBoudingBox({latitude: businesses.latitude, longitude: businesses.longitude}));
 
         if (businesses !== [] && businesses[this.state.selected] !== undefined && businesses[this.state.selected].followers !== undefined) {
             let data = businesses[this.state.selected].followers;
@@ -306,11 +325,11 @@ export default class Explore extends Component {
                             longitude: this.state.initialRegion.longitude
                         }}
                     />
-                    {this.state.appReady && this.state.businesses.map((business, index) => (
+                    {this.state.appReady && filteredResults.map((business, index) => (
                         business.category.includes(icons[this.state.icon].filter) &&
-                        this.state.selected !== index &&
+                        this.state.selected !== business.key &&
                         <MapView.Marker
-                            key={index}
+                            key={business.key}
                             zIndex={index}
                             onPress={e => this.markerSelected(e._targetInst.return.key)}
                             image={this.getCategory(business.category)}
@@ -337,6 +356,7 @@ export default class Explore extends Component {
                               onPress={() => this.setState({visible: false})}
                         />
                         <Business business={this.state.businesses[this.state.selected]}
+                                  navigation={this.props.navigation}
                                   refresh={(business) => {
                                       let businesses = this.state.businesses;
                                       businesses[this.state.selected] = business;
@@ -394,7 +414,7 @@ export default class Explore extends Component {
                         </TouchableOpacity>
                     }
                 </SafeAreaView>
-                {ready &&
+
                 <View style={{position: 'absolute', bottom: 0, left: 0, right: 0}}>
 
                     <Icon name='gps-not-fixed'
@@ -405,8 +425,8 @@ export default class Explore extends Component {
                               latitudeDelta: 0.08,
                               longitudeDelta: 0.08,
                           }, 31)}/>
-                    {this.state.selected !== null && <TouchableOpacity style={styles.card}
-                                                                       onPress={() => this.setState({visible: true})}>
+                    {ready && this.state.selected !== null && <TouchableOpacity style={styles.card}
+                                                                                onPress={() => this.setState({visible: true})}>
                         <View style={{flexDirection: 'row'}}>
                             <Image style={styles.image}
                                    source={{uri: this.state.businesses[this.state.selected].posts[0].photo}}
@@ -437,7 +457,7 @@ export default class Explore extends Component {
                                 />
                                 <Icon name='reply'
                                       size={32}
-                                      iconStyle={{transform:[{ scaleX: -1}], color: 'grey', marginLeft: 5}}
+                                      iconStyle={{transform: [{scaleX: -1}], color: 'grey', marginLeft: 5}}
                                       onPress={() =>
                                           this.props.navigation.navigate("Share", {business: this.state.businesses[this.state.selected]})}
                                 />
@@ -450,7 +470,7 @@ export default class Explore extends Component {
                             <AppBottomNav/>
                         </SafeAreaView>
                     </View>
-                </View>}
+                </View>
             </View>)
     }
 }
