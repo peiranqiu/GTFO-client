@@ -1,5 +1,6 @@
 import * as constants from "../constants/constant";
 import UserServiceClient from "../services/UserServiceClient";
+import PostServiceClient from '../services/PostServiceClient';
 import React, {Component} from 'react';
 import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, WebView} from "react-native";
 import Ins from 'react-native-instagram-login'
@@ -8,6 +9,7 @@ import background from '../resources/logos/background.png';
 export default class Welcome extends Component {
     constructor(props) {
         super(props);
+        this.postService = PostServiceClient.instance;
         this.userService = UserServiceClient.instance;
         this.state = {}
     }
@@ -24,6 +26,7 @@ export default class Welcome extends Component {
                     avatar: user.avatar
                 }
             });
+            this.postService.updateAll();
             this.props.navigation.navigate("Permission");
         });
     }
@@ -70,6 +73,7 @@ export default class Welcome extends Component {
         );
     }
 }
+
 const styles = StyleSheet.create({
     card: {
         position: 'absolute',

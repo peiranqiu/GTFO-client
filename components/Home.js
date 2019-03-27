@@ -103,7 +103,7 @@ export default class Home extends Component {
                 this.props.navigation.navigate("Welcome");
             });
         storage.load({key: 'region'})
-            .then(region => console.log(region))
+            .then(region => {})
             .catch(err => this.getPermission());
     }
 
@@ -261,7 +261,7 @@ export default class Home extends Component {
                                                                      fontSize: 14,
                                                                      fontWeight: "700",
                                                                      marginBottom: 3
-                                                                 }}>{item.name}</Text>
+                                                                 }}>{item.name.length > 32? item.name.slice(0, 29) + '...' : item.name}</Text>
                                                              <Text style={{fontSize: 12}}>
                                                                  {item.address.slice(-7).includes("Canada") ?
                                                                      item.address.slice(0, -7) : item.address}

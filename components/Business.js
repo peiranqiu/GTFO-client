@@ -184,7 +184,11 @@ export default class Business extends Component {
                 <View style={styles.text}>
                     <View>
                         <Text
-                            style={{fontSize: 14, fontWeight: "700", marginBottom: 3}}>{this.props.business.name}</Text>
+                            style={{
+                                fontSize: 14,
+                                fontWeight: "700",
+                                marginBottom: 3
+                            }}>{this.props.business.name.length > 32 ? this.props.business.name.slice(0, 29) + '...' : this.props.business.name}</Text>
                         <Text style={{fontSize: 12}}>
                             {this.props.business.address.slice(-7).includes("Canada") ?
                                 this.props.business.address.slice(0, -7)

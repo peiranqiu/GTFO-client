@@ -5,6 +5,8 @@ export const GOOGLE_MAP_KEY = 'AIzaSyD8Gpn93BQCNz2U-hi_6XYGY8gAbcHkSaU';
 export const INSTAGRAM_ID = '863f01f5c465429d8b938a54bf59bb27';
 export const INSTAGRAM_SECRET = 'f080af0e3fb349b1988cbcee54973c22';
 export const INSTAGRAM_REDIRECT = 'https://elfsight.com/service/generate-instagram-access-token/';
+export const EXPO_URL = "https://exp.host/--/api/v2/push/send";
+export const MIXPANEL_TOKEN = '4a6cb5e1424f6d48daab4641701f3c1c';
 
 export const GTFO_ID = 8;
 

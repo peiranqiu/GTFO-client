@@ -308,7 +308,7 @@ export default class Explore extends Component {
 
         return (
             <View style={{flex: 1}}>
-                {this.state.region !== null &&
+                {this.state.region !== null && this.state.initialRegion !== null &&
                 <MapView
                     ref={ref => this.map = ref}
                     style={{position: 'absolute', left: 0, right: 0, top: 0, bottom: 0}}
@@ -433,7 +433,9 @@ export default class Explore extends Component {
                             />
                             <View style={styles.text}>
                                 <Text style={{fontSize: 16, marginTop: 5}}>
-                                    {this.state.businesses[this.state.selected].name}
+                                    {this.state.businesses[this.state.selected].name.length > 32 ?
+                                        this.state.businesses[this.state.selected].name.slice(0, 29) + '...' :
+                                        this.state.businesses[this.state.selected].name}
                                 </Text>
                                 <Text style={{lineHeight: 20, fontSize: 14, color: 'grey', marginTop: 10}}>
                                     {this.state.businesses[this.state.selected].posts[0].user.name === 'gtfo_guide' ?

@@ -18,16 +18,16 @@ export default class Permission extends Component {
         };
     }
 
-    async componentDidMount() {
-        await Permissions.getAsync(Permissions.NOTIFICATIONS)
-            .then(async (response) => {
+   componentDidMount() {
+        Permissions.getAsync(Permissions.NOTIFICATIONS)
+            .then(response => {
                 this.setState({notification: response.allowsAlert, ready1: true});
                 if (response.allowsAlert) {
                     this.setState({initial: this.state.initial + 1})
                 }
             });
-        await Permissions.getAsync(Permissions.LOCATION)
-            .then(async (response) => {
+        Permissions.getAsync(Permissions.LOCATION)
+            .then(response => {
                 this.setState({location: response.status, ready2: true});
                 if (response.status === 'granted') {
                     this.setState({initial: this.state.initial + 1})
