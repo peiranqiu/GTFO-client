@@ -3,7 +3,7 @@ import {
     AsyncStorage,
     Dimensions,
     SafeAreaView,
-    ScrollView,
+    ScrollView, StatusBar,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -31,15 +31,10 @@ export default class Chats extends Component {
                 this.setState({user: user});
                 this.chatService.findChatsForUser(user._id)
                     .then(chats => {
-                        let sorted = chats.filter(chats =>
-                            chats.address.length > 0).sort((b, a) => {
-                            return new Date(a.time.slice(0, 19) + 'Z') - new Date(b.time.slice(0, 19) + 'Z');
-                        });
-                        chats.map(chat => {
-                            if(chat.address.length === 0) {
-                                sorted.push(chat);
-                            }
-                        })
+                        let sorted = chats.filter(chats => chats.address.length > 0 && new Date(chats.time.slice(0, 19) + 'Z') > new Date())
+                            .sort((b, a) => new Date(a.time.slice(0, 19) + 'Z') - new Date(b.time.slice(0, 19) + 'Z'))
+                            .concat(chats.filter(chats => chats.address.length === 0))
+                            .concat(chats.filter(chats => chats.address.length > 0 && new Date(chats.time.slice(0, 19) + 'Z') < new Date()));
                         this.setState({chats: sorted});
                         Permissions.getAsync(Permissions.NOTIFICATIONS).then(permission => {
                             if (permission.status === 'granted') {
@@ -56,23 +51,25 @@ export default class Chats extends Component {
     scheduleNotification(chats) {
         Notifications.cancelAllScheduledNotificationsAsync();
         chats.map(chat => {
-
-            let date = new Date(chat.time.slice(0, 19) + 'Z');
-            date.setMinutes(date.getMinutes() - 30); // timestamp
-            date = new Date(date);
-            if(chat.address.length > 0 && date > new Date()) {
-                let localNotification = {
-                    title: 'Let\'s get out!',
-                    body: chat.name + ' is happening in 30 minute at ' + chat.address,
-                    ios: {
-                        sound: true
-                    },
-                };
-                let schedulingOptions = {
-                    time: date
-                };
-                Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions);
+            if (chat.address.length > 0) {
+                let date = new Date(chat.time.slice(0, 19) + 'Z');
+                date.setMinutes(date.getMinutes() - 30); // timestamp
+                date = new Date(date);
+                if (date > new Date()) {
+                    let localNotification = {
+                        title: 'Let\'s get out!',
+                        body: chat.name + ' is happening in 30 minute at ' + chat.address,
+                        ios: {
+                            sound: true
+                        },
+                    };
+                    let schedulingOptions = {
+                        time: date
+                    };
+                    Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions);
+                }
             }
+
         })
     }
 
@@ -83,6 +80,7 @@ export default class Chats extends Component {
         }
         return (
             <SafeAreaView style={{flex: 1}}>
+                <StatusBar barStyle='dark-content'/>
                 <View style={styles.container}>
                     <Text style={{fontSize: 16, marginTop: 30, alignSelf: 'center'}}>Chats</Text>
                 </View>
@@ -109,7 +107,10 @@ export default class Chats extends Component {
                                 {chat.address.length > 0 &&
                                 <Icon name='date-range'
                                       containerStyle={styles.icon}
-                                      iconStyle={{margin: 15, color: new Date(chat.time.slice(0, 19) + 'Z') > new Date() ? 'black' : 'lightgrey'}}
+                                      iconStyle={{
+                                          margin: 15,
+                                          color: new Date(chat.time.slice(0, 19) + 'Z') > new Date() ? 'black' : 'lightgrey'
+                                      }}
                                 />}
 
                             </TouchableOpacity>

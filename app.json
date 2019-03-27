@@ -20,9 +20,6 @@
     "android": {
       "package": "com.gtfo.demo"
     },
-    "androidStatusBar": {
-      "barStyle": "dark-content"
-    },
     "splash": {
       "image": "./resources/logos/splash.png",
       "resizeMode": "cover"

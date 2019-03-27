@@ -1,5 +1,15 @@
 import React, {Component} from 'react';
-import {Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+    Dimensions,
+    Image,
+    SafeAreaView,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native';
 import UserServiceClient from "../services/UserServiceClient";
 import {Avatar, SearchBar} from 'react-native-elements'
 import {Icon} from 'react-native-elements'
@@ -103,6 +113,7 @@ export default class Friend extends Component {
                 }));
         return (
             <SafeAreaView style={{flex: 1}}>
+                <StatusBar barStyle='dark-content'/>
                 <View style={styles.container}>
                     <SearchBar
                         ref={search => this.search = search}

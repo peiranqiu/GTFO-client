@@ -5,7 +5,7 @@ import {
     DatePickerIOS,
     Dimensions,
     Keyboard,
-    SafeAreaView,
+    SafeAreaView, StatusBar,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -17,6 +17,8 @@ import {Icon, FormInput} from 'react-native-elements'
 import ChatServiceClient from "../services/ChatServiceClient";
 import Modal from "react-native-modal";
 import dismissKeyboard from 'react-native-dismiss-keyboard';
+
+import {AppLoading, BackgroundFetch, Font, Notifications, Permissions} from 'expo'
 
 console.disableYellowBox = true;
 
@@ -39,6 +41,7 @@ export default class Message extends Component {
         this.onSend = this.onSend.bind(this);
         this._keyboardDidShow = this._keyboardDidShow.bind(this);
         this._keyboardDidHide = this._keyboardDidHide.bind(this);
+        this.renderCustomView = this.renderCustomView.bind(this);
     }
 
     _keyboardDidShow(e) {
@@ -130,7 +133,7 @@ export default class Message extends Component {
 
     renderCustomView(props) {
         if (props.currentMessage.businessId > 0) {
-            return (<CustomView {...props}/>);
+            return (<CustomView {...props}  navigation={this.props.navigation}/>);
         }
         return null;
     }
@@ -225,6 +228,7 @@ export default class Message extends Component {
             }}>
                 <SafeAreaView style={{flex: 1}}
                               keyboardShouldPersistTaps={'handled'}>
+                    <StatusBar barStyle='dark-content'/>
                     <View style={this.state.chat.address.length > 0 ? styles.containerWithReminder : styles.container}>
                         <Text style={styles.searchContainer}>{this.state.chat.name}({this.state.chat.size})</Text>
                         <Icon name='chevron-left'

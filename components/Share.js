@@ -4,7 +4,7 @@ import {
     FlatList,
     Image,
     SafeAreaView,
-    ScrollView,
+    ScrollView, StatusBar,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -72,6 +72,7 @@ export default class Share extends Component {
     render() {
         return (
             <SafeAreaView style={{flex: 1}}>
+                <StatusBar barStyle='dark-content'/>
                 <View style={styles.container}>
                     <Text style={styles.searchContainer}>Share to...</Text>
                     <Icon name='chevron-left'

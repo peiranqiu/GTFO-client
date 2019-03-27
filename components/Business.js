@@ -206,7 +206,10 @@ export default class Business extends Component {
                               size={32}
                               iconStyle={{transform: [{scaleX: -1}], color: 'grey', marginLeft: 5}}
                               onPress={() => {
-                                  this.setState({visible: false});
+                                  const close = this.props.close;
+                                  if (typeof close === 'function') {
+                                      close();
+                                  }
                                   this.props.navigation.navigate("Share", {business: this.props.business});
                               }}
                         />

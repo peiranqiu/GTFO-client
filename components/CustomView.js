@@ -68,6 +68,7 @@ export default class CustomView extends Component {
                               onPress={() => this.setState({visible: false})}
                         />
                         <Business business={this.state.business}
+                                  close={() => this.setState({visible: false})}
                                   navigation = {this.props.navigation}/>
                     </ScrollView>
                 </Modal>

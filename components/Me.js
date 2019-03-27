@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Image, SafeAreaView, StyleSheet, Text, View} from "react-native";
+import {Image, SafeAreaView, StatusBar, StyleSheet, Text, View} from "react-native";
 import AppBottomNav from "./AppBottomNav";
 import {Avatar, List, ListItem} from "react-native-elements";
 import friends from '../resources/icons/friends.png';
@@ -40,6 +40,7 @@ export default class Me extends Component {
         return (
             <SafeAreaView style={{flex: 1}}>
 
+                <StatusBar barStyle='dark-content'/>
                 <View style={{marginTop: 50, flex: 1}}>
                     <View style={styles.center}>
                         <Avatar medium rounded source={{uri: this.state.user.avatar}}/>

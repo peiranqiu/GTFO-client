@@ -111,22 +111,25 @@ TaskManager.defineTask('fetch', async () => {
                 .then(chats => {
                     Notifications.cancelAllScheduledNotificationsAsync();
                     chats.map(chat => {
-                        let date = new Date(chat.time.slice(0, 19) + 'Z');
-                        date.setMinutes(date.getMinutes() - 30); // timestamp
-                        date = new Date(date);
-                        if(chat.address.length > 0 && date > new Date()) {
-                            let localNotification = {
-                                title: 'Let\'s get out!',
-                                body: chat.name + ' is happening in 30 minute at ' + chat.address,
-                                ios: {
-                                    sound: true
-                                },
-                            };
-                            let schedulingOptions = {
-                                time: date
-                            };
-                            Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions);
+                        if(chat.address.length > 0) {
+                            let date = new Date(chat.time.slice(0, 19) + 'Z');
+                            date.setMinutes(date.getMinutes() - 30); // timestamp
+                            date = new Date(date);
+                            if(date > new Date()) {
+                                let localNotification = {
+                                    title: 'Let\'s get out!',
+                                    body: chat.name + ' is happening in 30 minute at ' + chat.address,
+                                    ios: {
+                                        sound: true
+                                    },
+                                };
+                                let schedulingOptions = {
+                                    time: date
+                                };
+                                Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions);
+                            }
                         }
+
                     })
                 });
             UserServiceClient.instance.findFriendRequests(user._id)

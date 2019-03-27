@@ -1,5 +1,15 @@
 import React, {Component} from 'react'
-import {Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
+import {
+    Dimensions,
+    Image,
+    SafeAreaView,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native'
 import PostServiceClient from '../services/PostServiceClient'
 import AppBottomNav from './AppBottomNav'
 import {MapView, Permissions} from "expo"
@@ -308,6 +318,7 @@ export default class Explore extends Component {
 
         return (
             <View style={{flex: 1}}>
+                <StatusBar barStyle='dark-content'/>
                 {this.state.region !== null && this.state.initialRegion !== null &&
                 <MapView
                     ref={ref => this.map = ref}
@@ -357,6 +368,7 @@ export default class Explore extends Component {
                         />
                         <Business business={this.state.businesses[this.state.selected]}
                                   navigation={this.props.navigation}
+                                  close={() => this.setState({visible: false})}
                                   refresh={(business) => {
                                       let businesses = this.state.businesses;
                                       businesses[this.state.selected] = business;

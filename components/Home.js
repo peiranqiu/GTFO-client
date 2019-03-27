@@ -4,7 +4,7 @@ import {
     FlatList,
     Image,
     SafeAreaView,
-    ScrollView,
+    ScrollView, StatusBar,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -157,6 +157,7 @@ export default class Home extends Component {
 
         return (
             <SafeAreaView style={{flex: 1}}>
+                <StatusBar barStyle='dark-content'/>
                 <Modal isVisible={this.state.visible}>
                     <ScrollView style={styles.modal}>
                         <Icon name='close'
@@ -166,6 +167,7 @@ export default class Home extends Component {
                         />
                         <Business business={this.state.businesses[this.state.selected]}
                                   navigation={this.props.navigation}
+                                  close={() => this.setState({visible: false})}
                                   refresh={(business) => {
                                       let businesses = this.state.businesses;
                                       businesses[this.state.selected] = business;

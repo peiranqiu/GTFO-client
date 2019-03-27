@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {
     Dimensions,
     Linking,
-    SafeAreaView,
+    SafeAreaView, StatusBar,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -39,6 +39,7 @@ export default class FeedBack extends Component {
         return (
             <TouchableWithoutFeedback onPress={() => dismissKeyboard()}>
                 <SafeAreaView style={{flex: 1}}>
+                    <StatusBar barStyle='dark-content'/>
                     <View style={styles.container}>
                         <Text style={styles.searchContainer}>Feedback</Text>
                         <Icon name='chevron-left'

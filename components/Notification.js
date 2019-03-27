@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Dimensions, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import UserServiceClient from "../services/UserServiceClient";
 import {Avatar, Icon} from 'react-native-elements'
 import friend_request from '../resources/icons/friend_request.svg';
@@ -34,6 +34,7 @@ export default class Notification extends Component {
 
         return (
             <SafeAreaView style={{flex: 1}}>
+                <StatusBar barStyle='dark-content'/>
                 <View style={styles.container}>
                     <Text style={styles.searchContainer}>Notification</Text>
                     <Icon name='chevron-left'

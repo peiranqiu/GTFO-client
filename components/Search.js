@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Dimensions, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import PostServiceClient from "../services/PostServiceClient";
 import {Icon, SearchBar} from 'react-native-elements'
 import Modal from "react-native-modal";
@@ -38,6 +38,7 @@ export default class Search extends Component {
                 }).reverse());
         return (
             <SafeAreaView style={{flex: 1}}>
+                <StatusBar barStyle='dark-content'/>
                 <View style={styles.container}>
                     <SearchBar
                         clearIcon
