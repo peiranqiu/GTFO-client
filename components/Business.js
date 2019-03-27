@@ -13,7 +13,6 @@ import call from "react-native-phone-call";
 import openMap from "react-native-open-maps";
 import PostServiceClient from "../services/PostServiceClient";
 import UserServiceClient from "../services/UserServiceClient";
-
 export default class Business extends Component {
 
     constructor(props) {
@@ -146,7 +145,6 @@ export default class Business extends Component {
     }
 
     render() {
-
         if (this.props.business === undefined) {
             return null;
         }
@@ -210,6 +208,9 @@ export default class Business extends Component {
                                   if (typeof close === 'function') {
                                       close();
                                   }
+
+                                  analytics.track('detail page', { "type": "close" });
+                                  analytics.track('share page', { "type": "open" });
                                   this.props.navigation.navigate("Share", {business: this.props.business});
                               }}
                         />

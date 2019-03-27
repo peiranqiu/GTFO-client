@@ -28,6 +28,7 @@
     "exp": "^57.2.1",
     "expo": "^32.0.0",
     "expo-cli": "^2.6.13",
+    "expo-mixpanel-analytics": "0.0.7",
     "jsdom": "^13.2.0",
     "nodemailer": "^5.1.1",
     "prop-types": "^15.6.2",

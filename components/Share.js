@@ -54,13 +54,18 @@ export default class Share extends Component {
         if (users.length > 0) {
             users.push(this.state.user);
             this.chatService.createChat(users)
-                .then(chat => this.props.navigation.navigate("Message", {chat: chat, business: business}));
+                .then(chat => {
+                    analytics.track('share page', {"type": "close"});
+                    analytics.track('message page', {"type": "open"});
+                    this.props.navigation.navigate("Message", {chat: chat, business: business});});
         }
     }
 
     sendToGroup() {
         const business = this.props.navigation.getParam('business', {});
         if (this.state.selectedChat !== null) {
+            analytics.track('share page', {"type": "close"});
+            analytics.track('message page', {"type": "open"});
             this.props.navigation.navigate("Message", {
                 chat: this.state.chats[this.state.selectedChat],
                 business: business
@@ -78,7 +83,10 @@ export default class Share extends Component {
                     <Icon name='chevron-left'
                           size={30}
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
-                          onPress={() => this.props.navigation.goBack()}
+                          onPress={() => {
+
+                              analytics.track('share page', {"type": "close"});
+                              this.props.navigation.goBack();}}
                     />
                 </View>
                 <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
@@ -107,7 +115,11 @@ export default class Share extends Component {
                                 flex: 1,
                                 justifyContent: 'center'
                             }}
-                                              onPress={() => this.props.navigation.navigate("Friend")}>
+                                              onPress={() => {
+
+                                                  analytics.track('share page', {"type": "close"});
+                                                  analytics.track('friend page', {"type": "open"});
+                                                  this.props.navigation.navigate("Friend");}}>
                                 <Image
                                     style={{width: 40, height: 22, alignSelf: 'center'}}
                                     source={group_add}

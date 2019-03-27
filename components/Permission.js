@@ -49,6 +49,7 @@ export default class Permission extends Component {
 
     render() {
         if (this.state.initial === 2) {
+            analytics.track('explore page', {"type": "open"});
             this.props.navigation.navigate("Explore");
         }
         if (!this.state.ready1 || !this.state.ready2) {
@@ -65,7 +66,9 @@ export default class Permission extends Component {
                     </Text>
                     <View style={styles.content}>
                         <TouchableOpacity style={styles.button}
-                                          onPress={() => this.props.navigation.navigate("Friend")}>
+                                          onPress={() => {
+                                              analytics.track('friend page', {"type": "open"});
+                                              this.props.navigation.navigate("Friend");}}>
                             <Text style={{color: 'white'}}>Let's go!</Text>
                         </TouchableOpacity>
                     </View>

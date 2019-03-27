@@ -54,19 +54,28 @@ export default class Me extends Component {
                                   titleStyle = {{fontSize: 16}}
                                   leftIcon={<Image style={styles.listImage}
                                                    source={friends}/>}
-                                  onPress={() => this.props.navigation.navigate("Friend")}
+                                  onPress={() => {
+                                      analytics.track('me page', {"type": "close"});
+                                      analytics.track('friend page', {"type": "open"});
+                                      this.props.navigation.navigate("Friend");}}
                                   title="Friends"
                                   hideChevron/>
                         <ListItem containerStyle={styles.listItem}
                                   titleStyle = {{fontSize: 16}}
                                   leftIcon={<Image style={styles.listImage}
                                                    source={feedback}/>}
-                                  onPress={() => this.props.navigation.navigate("FeedBack")}
+                                  onPress={() => {
+                                      analytics.track('me page', {"type": "close"});
+                                      analytics.track('feedback page', {"type": "open"});
+                                      this.props.navigation.navigate("FeedBack");}}
                                   title="Feedback"
                                   hideChevron/>
                         <ListItem containerStyle={styles.listItem}
                                   titleStyle = {{fontSize: 16}}
-                                  onPress={() => this.props.navigation.navigate("Terms")}
+                                  onPress={() => {
+                                      analytics.track('me page', {"type": "close"});
+                                      analytics.track('terms page', {"type": "open"});
+                                      this.props.navigation.navigate("Terms");}}
                                   leftIcon={<Image style={styles.listImage}
                                                    source={privacy}/>}
                                   title="Terms and Privacy"

@@ -55,6 +55,7 @@ const icons = [{uri: all_sm, filter: ""},
 export default class Explore extends Component {
 
     constructor(props) {
+        console.log('construct');
         super(props);
         this.postService = PostServiceClient.instance;
         this.userService = UserServiceClient.instance;
@@ -82,6 +83,7 @@ export default class Explore extends Component {
     }
 
     componentDidMount() {
+        console.log('didmount');
         this.userService.findUserById(constants.GTFO_ID)
             .then(gtfo => this.setState({gtfo: gtfo}));
         storage.load({key: 'region'})
@@ -91,6 +93,7 @@ export default class Explore extends Component {
                 this.loadData(region);
             })
             .catch(err => {
+                console.log('err');
                 this.getPermission();
                 Geolocation.getCurrentPosition(
                     (position) => {
@@ -379,12 +382,18 @@ export default class Explore extends Component {
 
                 <SafeAreaView style={styles.topBar}>
                     <TouchableOpacity style={styles.leftCircle}
-                                      onPress={() => this.props.navigation.navigate("Notification")}>
+                                      onPress={() => {
+                                          analytics.track('explore page', {"type": "close"});
+                                          analytics.track('notification page', {"type": "open"});
+                                          this.props.navigation.navigate("Notification");}}>
                         <Image style={styles.icon} source={notification}/>
                     </TouchableOpacity>
                     <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                         <TouchableOpacity style={styles.search}
-                                          onPress={() => this.props.navigation.navigate("Search")}>
+                                          onPress={() => {
+                                              analytics.track('explore page', {"type": "close"});
+                                              analytics.track('search page', {"type": "open"});
+                                              this.props.navigation.navigate("Search");}}>
                             <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                                 <Icon name='search'
                                       size={16}
@@ -472,8 +481,11 @@ export default class Explore extends Component {
                                 <Icon name='reply'
                                       size={32}
                                       iconStyle={{transform: [{scaleX: -1}], color: 'grey', marginLeft: 5}}
-                                      onPress={() =>
-                                          this.props.navigation.navigate("Share", {business: this.state.businesses[this.state.selected]})}
+                                      onPress={() => {
+
+                                          analytics.track('explore page', {"type": "close"});
+                                          analytics.track('share page', {"type": "open"});
+                                          this.props.navigation.navigate("Share", {business: this.state.businesses[this.state.selected]});}}
                                 />
                             </View>
                         </View>

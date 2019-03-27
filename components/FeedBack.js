@@ -45,7 +45,10 @@ export default class FeedBack extends Component {
                         <Icon name='chevron-left'
                               containerStyle={{position: 'absolute', left: 10, top: 20}}
                               size={30}
-                              onPress={() => this.props.navigation.navigate("Me")}
+                              onPress={() => {
+                                  analytics.track('feedback page', {"type": "close"});
+                                  analytics.track('me page', {"type": "open"});
+                                  this.props.navigation.navigate("Me");}}
                         />
                     </View>
                     <FormInput containerStyle={{marginTop: 100, minHeight: 155, borderBottomWidth: 0}}

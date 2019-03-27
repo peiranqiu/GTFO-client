@@ -132,7 +132,10 @@ export default class Friend extends Component {
                     <Icon name='chevron-left'
                           containerStyle={{position: 'absolute', left: 10, top: 15}}
                           size={30}
-                          onPress={() => this.props.navigation.navigate("Me")}
+                          onPress={() => {
+                              analytics.track('friend page', {"type": "close"});
+                              analytics.track('me page', {"type": "open"});
+                              this.props.navigation.navigate("Me");}}
                     />
                 </View>
                 {this.state.searchTerm.length > 0 ?

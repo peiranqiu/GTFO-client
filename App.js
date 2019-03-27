@@ -20,18 +20,16 @@ import Permission from "./components/Permission";
 import FeedBack from "./components/FeedBack";
 import * as constants from "./constants/constant";
 import {AppLoading, BackgroundFetch, Font, Notifications, TaskManager} from 'expo'
+import ExpoMixpanelAnalytics from 'expo-mixpanel-analytics';
 
 YellowBox.ignoreWarnings(['Remote debugger']);
-
-
-
 const storage = new Storage({
     size: 1000,
     storageBackend: AsyncStorage,
     defaultExpires: 1000 * 3600 * 24 * 30,
     enableCache: true
 });
-
+const analytics = new ExpoMixpanelAnalytics(constants.MIXPANEL_TOKEN);
 const AppNavigator = createStackNavigator({
         Welcome: Welcome,
         Home: Home,
@@ -92,6 +90,7 @@ export default class App extends Component {
     render() {
         global.storage = storage;
         global.activeNav = "home";
+        global.analytics = analytics;
         if (!this.state.fontLoaded) {
             return (
                 <AppLoading

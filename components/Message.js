@@ -219,7 +219,6 @@ export default class Message extends Component {
     }
 
     render() {
-
         return (
             this.state.chat !== null &&
             <TouchableWithoutFeedback onPress={() => {
@@ -234,7 +233,10 @@ export default class Message extends Component {
                         <Icon name='chevron-left'
                               containerStyle={{position: 'absolute', left: 10, top: 20}}
                               size={30}
-                              onPress={() => this.props.navigation.navigate("Chats")}
+                              onPress={() => {
+                                  analytics.track('message page', {"type": "close"});
+                                  analytics.track('chats page', {"type": "open"});
+                                  this.props.navigation.navigate("Chats");}}
                         />
                         {this.state.chat.address.length > 0 &&
                         <View style={styles.reminder}>

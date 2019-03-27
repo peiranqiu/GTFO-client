@@ -36,6 +36,7 @@ import DoubleClick from "react-native-double-tap";
 export default class Home extends Component {
 
     constructor(props) {
+        console.log('home-construct');
         super(props);
         this.postService = PostServiceClient.instance;
         this.userService = UserServiceClient.instance;
@@ -50,11 +51,11 @@ export default class Home extends Component {
             gtfo: null
         }
         this.getPermission = this.getPermission.bind(this);
+        analytics.track('home page', { "type": "open" });
     }
 
     componentDidMount() {
-
-
+        console.log('home-didmount');
         this.userService.findUserById(constants.GTFO_ID)
             .then(gtfo => this.setState({gtfo: gtfo}));
         storage.load({key: 'user'})
@@ -179,7 +180,10 @@ export default class Home extends Component {
                     CollapsibleHeaderComponent={<View style={{height: 120}}>
                         <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                             <TouchableOpacity style={styles.search}
-                                              onPress={() => this.props.navigation.navigate("Search")}>
+                                              onPress={() => {
+                                                  analytics.track('home page', {"type": "close"});
+                                                  analytics.track('search page', {"type": "open"});
+                                                  this.props.navigation.navigate("Search");}}>
                                 <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                                     <Icon name='search'
                                           size={16}
@@ -288,8 +292,10 @@ export default class Home extends Component {
                                                                        color: 'grey',
                                                                        marginLeft: 5
                                                                    }}
-                                                                   onPress={() =>
-                                                                       this.props.navigation.navigate("Share", {business: item})}
+                                                                   onPress={() => {
+                                                                       analytics.track('home page', {"type": "close"});
+                                                                       analytics.track('share page', {"type": "open"});
+                                                                       this.props.navigation.navigate("Share", {business: item});}}
                                                              />
                                                          </View>
                                                      </View>

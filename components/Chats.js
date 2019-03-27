@@ -94,11 +94,14 @@ export default class Chats extends Component {
                         }
                         return (
                             <TouchableOpacity key={i} style={styles.card}
-                                              onPress={() =>
+                                              onPress={() => {
+                                                  analytics.track('chats page', {"type": "close"});
+                                                  analytics.track('message page', {"type": "open"});
                                                   this.props.navigation.navigate("Message", {
                                                       chat: chat,
                                                       refresh: () => this.setState({refresh: true})
-                                                  })}>
+                                                  });
+                                              }}>
                                 <View>
                                     <Text style={styles.title}>{chat.name}({chat.size})</Text>
                                     {message !== undefined &&

@@ -17,7 +17,7 @@ export default class Search extends Component {
             searchTerm: '',
             visible: false,
             selected: null
-        }
+        };
     }
 
     componentDidMount() {
@@ -54,7 +54,9 @@ export default class Search extends Component {
                     <Icon name='chevron-left'
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
                           size={30}
-                          onPress={() => this.props.navigation.goBack()}
+                          onPress={() => {
+                              analytics.track('search page', {"type": "close"});
+                              this.props.navigation.goBack();}}
                     />
                 </View>
                 <Text style={{marginHorizontal: 20, marginVertical: 30}}>Places</Text>

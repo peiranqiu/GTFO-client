@@ -7,6 +7,7 @@ export const INSTAGRAM_SECRET = 'f080af0e3fb349b1988cbcee54973c22';
 export const INSTAGRAM_REDIRECT = 'https://elfsight.com/service/generate-instagram-access-token/';
 export const EXPO_URL = "https://exp.host/--/api/v2/push/send";
 export const MIXPANEL_TOKEN = '4a6cb5e1424f6d48daab4641701f3c1c';
+export const MIXPANEL_API_KEY = '017733c038dce79b235dbf49b381cb8e';
 
 export const GTFO_ID = 8;
 
