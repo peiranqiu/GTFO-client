@@ -5,8 +5,6 @@ import {Icon, SearchBar} from 'react-native-elements'
 import Modal from "react-native-modal";
 import Business from "./Business";
 
-import {setJSExceptionHandler, setNativeExceptionHandler} from 'react-native-exception-handler';
-
 
 export default class Search extends Component {
     constructor(props) {
@@ -78,7 +76,10 @@ export default class Search extends Component {
                               iconStyle={{color: 'grey', height: 32, width: 32}}
                               onPress={() => this.setState({visible: false})}
                         />
-                        <Business business={this.state.selected}/>
+                        <Business business={this.state.selected}
+                                  navigation={this.props.navigation}
+                                  refresh={() => {}}
+                                  close={() => this.setState({visible: false})}/>
                     </ScrollView>
                 </Modal>
             </SafeAreaView>

@@ -11,7 +11,6 @@ import {
     View
 } from 'react-native'
 import PostServiceClient from '../services/PostServiceClient'
-import AppBottomNav from './AppBottomNav'
 import {MapView, Permissions} from "expo"
 import Geolocation from 'react-native-geolocation-service';
 import * as constants from "../constants/constant";
@@ -36,6 +35,7 @@ import food_sm from '../resources/icons/food-sm.png';
 import music_sm from '../resources/icons/music-sm.png';
 import shopping_sm from '../resources/icons/shopping-sm.png';
 import notification from '../resources/icons/notification.png';
+import notification_new from '../resources/icons/notification_new.png';
 import all_sm from '../resources/icons/all.png';
 import mylocation from '../resources/icons/mylocation.png';
 import {Avatar, Icon} from 'react-native-elements'
@@ -55,7 +55,6 @@ const icons = [{uri: all_sm, filter: ""},
 export default class Explore extends Component {
 
     constructor(props) {
-        console.log('construct');
         super(props);
         this.postService = PostServiceClient.instance;
         this.userService = UserServiceClient.instance;
@@ -68,6 +67,7 @@ export default class Explore extends Component {
             visible: false,
             appReady: false,
             icon: 0,
+            notification: false,
             dropdown: false,
             gtfo: null,
             permission: null,
@@ -83,7 +83,6 @@ export default class Explore extends Component {
     }
 
     componentDidMount() {
-        console.log('didmount');
         this.userService.findUserById(constants.GTFO_ID)
             .then(gtfo => this.setState({gtfo: gtfo}));
         storage.load({key: 'region'})
@@ -93,7 +92,6 @@ export default class Explore extends Component {
                 this.loadData(region);
             })
             .catch(err => {
-                console.log('err');
                 this.getPermission();
                 Geolocation.getCurrentPosition(
                     (position) => {
@@ -132,6 +130,12 @@ export default class Explore extends Component {
         storage.load({key: 'user'})
             .then(user => {
                 this.setState({user: user});
+                this.userService.findFriendRequests(user._id)
+                    .then((requests) => {
+                        if(requests.length > 0) {
+                            this.setState({notification: true});
+                        }
+                    });
                 this.userService.findFriendList(user._id)
                     .then(friends => {
                         this.postService.findAllBusinesses()
@@ -385,8 +389,10 @@ export default class Explore extends Component {
                                       onPress={() => {
                                           analytics.track('explore page', {"type": "close"});
                                           analytics.track('notification page', {"type": "open"});
-                                          this.props.navigation.navigate("Notification");}}>
-                        <Image style={styles.icon} source={notification}/>
+                                          this.setState({notification: false});
+                                          this.props.navigation.navigate("Notification");
+                                      }}>
+                        <Image style={styles.icon} source={this.state.notification? notification_new : notification}/>
                     </TouchableOpacity>
                     <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                         <TouchableOpacity style={styles.search}
@@ -490,12 +496,6 @@ export default class Explore extends Component {
                             </View>
                         </View>
                     </TouchableOpacity>}
-
-                    <View style={{backgroundColor: 'white', bottom: 0}}>
-                        <SafeAreaView>
-                            <AppBottomNav/>
-                        </SafeAreaView>
-                    </View>
                 </View>
             </View>)
     }

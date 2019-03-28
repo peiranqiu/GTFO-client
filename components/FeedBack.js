@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import {
     Dimensions,
     Linking,
-    SafeAreaView, StatusBar,
+    SafeAreaView,
+    StatusBar,
     StyleSheet,
     Text,
     TouchableOpacity,

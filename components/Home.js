@@ -4,20 +4,23 @@ import {
     FlatList,
     Image,
     SafeAreaView,
-    ScrollView, StatusBar,
+    ScrollView,
+    StatusBar,
     StyleSheet,
     Text,
     TouchableOpacity,
-    View, VirtualizedList
+    View,
+    VirtualizedList
 } from 'react-native'
 import {Permissions} from "expo"
 import PostServiceClient from '../services/PostServiceClient'
-import AppBottomNav from './AppBottomNav'
 import {Avatar, Divider, Icon} from 'react-native-elements'
 import Modal from "react-native-modal";
 import UserServiceClient from "../services/UserServiceClient";
 import Business from './Business'
 import * as constants from "../constants/constant";
+import {CollapsibleHeaderScrollView} from 'react-native-collapsible-header-views';
+import DoubleClick from "react-native-double-tap";
 
 const data = [
     {title: "All", key: ""},
@@ -28,15 +31,11 @@ const data = [
     {title: "Movie", key: "movie"},
     {title: "Art", key: "art"},
 ];
-import {CollapsibleHeaderScrollView} from 'react-native-collapsible-header-views';
-import {AppLoading} from 'expo';
-import DoubleClick from "react-native-double-tap";
 
 
 export default class Home extends Component {
 
     constructor(props) {
-        console.log('home-construct');
         super(props);
         this.postService = PostServiceClient.instance;
         this.userService = UserServiceClient.instance;
@@ -55,7 +54,6 @@ export default class Home extends Component {
     }
 
     componentDidMount() {
-        console.log('home-didmount');
         this.userService.findUserById(constants.GTFO_ID)
             .then(gtfo => this.setState({gtfo: gtfo}));
         storage.load({key: 'user'})
@@ -322,7 +320,6 @@ export default class Home extends Component {
                                                  </TouchableOpacity>)
                                          }}/>}
                 </CollapsibleHeaderScrollView>
-                <AppBottomNav style={{alignSelf: 'flex-end'}}/>
             </SafeAreaView>
         )
     }

@@ -10,9 +10,9 @@ import food from '../resources/icons/food.png';
 import music from '../resources/icons/music.png';
 import {Avatar, Icon} from 'react-native-elements'
 import call from "react-native-phone-call";
-import openMap from "react-native-open-maps";
 import PostServiceClient from "../services/PostServiceClient";
 import UserServiceClient from "../services/UserServiceClient";
+
 export default class Business extends Component {
 
     constructor(props) {

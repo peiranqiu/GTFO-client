@@ -1,24 +1,23 @@
-import {Bubble, Composer, GiftedChat, InputToolbar} from 'react-native-gifted-chat';
+import {Bubble, GiftedChat, InputToolbar} from 'react-native-gifted-chat';
 import React, {Component} from 'react';
 import {
-    AsyncStorage,
     DatePickerIOS,
     Dimensions,
     Keyboard,
-    SafeAreaView, StatusBar,
+    SafeAreaView,
+    StatusBar,
     StyleSheet,
     Text,
     TouchableOpacity,
     TouchableWithoutFeedback,
     View
 } from "react-native";
+import {StackActions} from 'react-navigation';
 import CustomView from "./CustomView";
-import {Icon, FormInput} from 'react-native-elements'
+import {FormInput, Icon} from 'react-native-elements'
 import ChatServiceClient from "../services/ChatServiceClient";
 import Modal from "react-native-modal";
 import dismissKeyboard from 'react-native-dismiss-keyboard';
-
-import {AppLoading, BackgroundFetch, Font, Notifications, Permissions} from 'expo'
 
 console.disableYellowBox = true;
 
@@ -55,11 +54,6 @@ export default class Message extends Component {
     componentWillMount() {
         this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
         this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
-        Notifications.addListener(notification => {
-            if (notification.origin === 'received') {
-                Alert.alert(notification.title, notification.body);
-            }
-        });
     }
 
     componentWillUnmount() {
@@ -74,7 +68,7 @@ export default class Message extends Component {
         this.setState({chat: chat});
         if (chat.address.length > 0) {
             this.setState({
-                formTime: new Date(chat.time.slice(0, 19) + 'Z'),
+                formTime: new Date(chat.time.toString().slice(0, 19) + 'Z'),
                 formTitle: chat.name,
                 formLocation: chat.address
             })
@@ -116,13 +110,7 @@ export default class Message extends Component {
         if (messages.length > 0) {
             const chat = this.props.navigation.getParam('chat', {});
             const currentMessage = {text: messages[0].text, user: this.state.user};
-            this.chatService.createMessage(chat.id, currentMessage).then(() => {
-                    const refresh = this.props.navigation.state.params.refresh;
-                    if (typeof refresh === 'function') {
-                        refresh();
-                    }
-                }
-            );
+            this.chatService.createMessage(chat.id, currentMessage).then(() => {});
             this.setState((previousState) => {
                 return {
                     messages: GiftedChat.append(previousState.messages, messages)
@@ -204,18 +192,7 @@ export default class Message extends Component {
         chat.address = this.state.formLocation;
         this.setState({chat: chat});
         this.chatService.updateChat(chat.id, chat)
-            .then(() => {
-                this.setState({visible: false});
-                Permissions.getAsync(Permissions.NOTIFICATIONS).then(permission => {
-                    if (permission.status === 'granted') {
-                        this.scheduleNotification();
-                    }
-                })
-                const refresh = this.props.navigation.state.params.refresh;
-                if (typeof refresh === 'function') {
-                    refresh();
-                }
-            })
+            .then(() => this.setState({visible: false}))
     }
 
     render() {
@@ -236,7 +213,10 @@ export default class Message extends Component {
                               onPress={() => {
                                   analytics.track('message page', {"type": "close"});
                                   analytics.track('chats page', {"type": "open"});
-                                  this.props.navigation.navigate("Chats");}}
+                                  const pushAction = StackActions.push({
+                                      routeName: 'Chats'
+                                  });
+                                  this.props.navigation.dispatch(pushAction);}}
                         />
                         {this.state.chat.address.length > 0 &&
                         <View style={styles.reminder}>
@@ -247,11 +227,7 @@ export default class Message extends Component {
                                 <Text style={{
                                     marginBottom: 5,
                                     fontSize: 12
-                                }}>{this.state.chat.time === null ? "" : this.state.formTime.toString().slice(0, 21)
-                                    // (this.state.chat.time.toString().includes('.') ?
-                                    //     this.state.chat.time.toString().split('.')[0] :
-                                    //     this.state.chat.time.toString().slice(0, 21))
-                                }</Text>
+                                }}>{this.state.chat.time === null ? "" : this.state.formTime.toString().slice(0, 21)}</Text>
                                 <Text style={{fontSize: 12, color: 'grey'}}>{this.state.chat.address}</Text></View>
                         </View>}
                     </View>
@@ -318,9 +294,7 @@ export default class Message extends Component {
                                   iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 10}}
                             />
                             <FormInput containerStyle={styles.formInput}
-                                       value={this.state.formTime === null? "" : this.state.formTime.toString().slice(0, 21)
-                                           //this.state.formTime.toString().slice(0, 21)
-                                       }
+                                       value={this.state.formTime === null? "" : this.state.formTime.toString().slice(0, 21)}
                                        placeholder="Select Date and Time..."
                                        onFocus={() => {
                                            if (this.state.formTime === null) {

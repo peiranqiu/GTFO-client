@@ -4,7 +4,8 @@ import {
     FlatList,
     Image,
     SafeAreaView,
-    ScrollView, StatusBar,
+    ScrollView,
+    StatusBar,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -16,6 +17,7 @@ import {Avatar, Divider, Icon} from 'react-native-elements'
 import RadioButton from 'react-native-radio-button'
 import ChatServiceClient from "../services/ChatServiceClient";
 import group_add from '../resources/icons/group_add.png';
+import {StackActions} from "react-navigation";
 
 export default class Share extends Component {
     constructor(props) {
@@ -57,7 +59,13 @@ export default class Share extends Component {
                 .then(chat => {
                     analytics.track('share page', {"type": "close"});
                     analytics.track('message page', {"type": "open"});
-                    this.props.navigation.navigate("Message", {chat: chat, business: business});});
+
+                    const pushAction = StackActions.push({
+                        routeName: 'Message',
+                        params: {chat: chat, business: business},
+                    });
+                    this.props.navigation.dispatch(pushAction);
+                });
         }
     }
 
@@ -66,10 +74,14 @@ export default class Share extends Component {
         if (this.state.selectedChat !== null) {
             analytics.track('share page', {"type": "close"});
             analytics.track('message page', {"type": "open"});
-            this.props.navigation.navigate("Message", {
-                chat: this.state.chats[this.state.selectedChat],
-                business: business
+            const pushAction = StackActions.push({
+                routeName: 'Message',
+                params: {
+                    chat: this.state.chats[this.state.selectedChat],
+                    business: business
+                },
             });
+            this.props.navigation.dispatch(pushAction);
         }
 
     }
@@ -86,7 +98,8 @@ export default class Share extends Component {
                           onPress={() => {
 
                               analytics.track('share page', {"type": "close"});
-                              this.props.navigation.goBack();}}
+                              this.props.navigation.goBack();
+                          }}
                     />
                 </View>
                 <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
@@ -119,7 +132,8 @@ export default class Share extends Component {
 
                                                   analytics.track('share page', {"type": "close"});
                                                   analytics.track('friend page', {"type": "open"});
-                                                  this.props.navigation.navigate("Friend");}}>
+                                                  this.props.navigation.navigate("Friend");
+                                              }}>
                                 <Image
                                     style={{width: 40, height: 22, alignSelf: 'center'}}
                                     source={group_add}

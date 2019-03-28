@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Image, SafeAreaView, StatusBar, StyleSheet, Text, View} from "react-native";
-import AppBottomNav from "./AppBottomNav";
 import {Avatar, List, ListItem} from "react-native-elements";
 import friends from '../resources/icons/friends.png';
 import logout from '../resources/icons/logout.png';
@@ -100,7 +99,6 @@ export default class Me extends Component {
 
 
                 </View>
-                <AppBottomNav style={{alignSelf: 'flex-end'}}/>
             </SafeAreaView>
         );
     }

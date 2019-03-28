@@ -22,7 +22,7 @@ export default class Permission extends Component {
         Permissions.getAsync(Permissions.NOTIFICATIONS)
             .then(response => {
                 this.setState({notification: response.allowsAlert, ready1: true});
-                if (response.allowsAlert) {
+                if (response === 'granted' || response.allowsAlert || response.permissions.notifications.allowsAlert) {
                     this.setState({initial: this.state.initial + 1})
                 }
             });

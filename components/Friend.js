@@ -11,8 +11,7 @@ import {
     View
 } from 'react-native';
 import UserServiceClient from "../services/UserServiceClient";
-import {Avatar, SearchBar} from 'react-native-elements'
-import {Icon} from 'react-native-elements'
+import {Avatar, Icon, SearchBar} from 'react-native-elements'
 import friend_request from '../resources/icons/friend_request.svg';
 import add_friend from '../resources/icons/add_friend.png';
 import group_add from '../resources/icons/group_add.png';
@@ -109,7 +108,7 @@ export default class Friend extends Component {
             this.state.allUsers === undefined ?
                 [] :
                 this.state.allUsers.filter(users => {
-                    return users.name.includes(this.state.searchTerm) && users._id !== this.state.user._id;
+                    return users.name.includes(this.state.searchTerm) && users._id !== this.state.user._id && users._id !== constants.GTFO_ID;
                 }));
         return (
             <SafeAreaView style={{flex: 1}}>

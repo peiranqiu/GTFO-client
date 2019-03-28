@@ -59,4 +59,14 @@ export default class UserServiceClient {
     findFriendSends(userId) {
         return fetch(constants.SERVER + 'friend/send/' + userId).then(response => (response.json()));
     }
+
+    updateUser(userId, user) {
+        return fetch(constants.SERVER + 'user/' + userId + '/update', {
+            method: 'put',
+            body: JSON.stringify(user),
+            headers: {
+                'content-type': 'application/json'
+            }
+        }).then(response => console.log(response));
+    }
 }

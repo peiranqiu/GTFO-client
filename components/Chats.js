@@ -1,18 +1,8 @@
 import React, {Component} from 'react';
-import {
-    AsyncStorage,
-    Dimensions,
-    SafeAreaView,
-    ScrollView, StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from "react-native";
-import AppBottomNav from "./AppBottomNav";
+import {Dimensions, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import ChatServiceClient from '../services/ChatServiceClient'
 import {Icon} from "react-native-elements";
-import {Permissions, Notifications} from 'expo'
+import {StackActions} from "react-navigation";
 
 export default class Chats extends Component {
     constructor(props) {
@@ -20,7 +10,6 @@ export default class Chats extends Component {
         this.state = {
             user: null,
             chats: [],
-            refresh: false
         };
         this.chatService = ChatServiceClient.instance;
     }
@@ -36,41 +25,11 @@ export default class Chats extends Component {
                             .concat(chats.filter(chats => chats.address.length === 0))
                             .concat(chats.filter(chats => chats.address.length > 0 && new Date(chats.time.slice(0, 19) + 'Z') < new Date()));
                         this.setState({chats: sorted});
-                        Permissions.getAsync(Permissions.NOTIFICATIONS).then(permission => {
-                            if (permission.status === 'granted') {
-                                this.scheduleNotification(chats);
-                            }
-                        })
                     })
             })
             .catch(err => {
                 this.props.navigation.navigate("Welcome");
             });
-    }
-
-    scheduleNotification(chats) {
-        Notifications.cancelAllScheduledNotificationsAsync();
-        chats.map(chat => {
-            if (chat.address.length > 0) {
-                let date = new Date(chat.time.slice(0, 19) + 'Z');
-                date.setMinutes(date.getMinutes() - 30); // timestamp
-                date = new Date(date);
-                if (date > new Date()) {
-                    let localNotification = {
-                        title: 'Let\'s get out!',
-                        body: chat.name + ' is happening in 30 minute at ' + chat.address,
-                        ios: {
-                            sound: true
-                        },
-                    };
-                    let schedulingOptions = {
-                        time: date
-                    };
-                    Notifications.scheduleLocalNotificationAsync(localNotification, schedulingOptions);
-                }
-            }
-
-        })
     }
 
     render() {
@@ -97,10 +56,13 @@ export default class Chats extends Component {
                                               onPress={() => {
                                                   analytics.track('chats page', {"type": "close"});
                                                   analytics.track('message page', {"type": "open"});
-                                                  this.props.navigation.navigate("Message", {
-                                                      chat: chat,
-                                                      refresh: () => this.setState({refresh: true})
+                                                  const pushAction = StackActions.push({
+                                                      routeName: 'Message',
+                                                      params: {
+                                                          chat: chat,
+                                                      },
                                                   });
+                                                  this.props.navigation.dispatch(pushAction);
                                               }}>
                                 <View>
                                     <Text style={styles.title}>{chat.name}({chat.size})</Text>
@@ -112,7 +74,9 @@ export default class Chats extends Component {
                                       containerStyle={styles.icon}
                                       iconStyle={{
                                           margin: 15,
-                                          color: new Date(chat.time.slice(0, 19) + 'Z') > new Date() ? 'black' : 'lightgrey'
+                                          color: ((chat.time instanceof Date) ?
+                                              chat.time : new Date(chat.time.slice(0, 19) + 'Z')) > new Date() ?
+                                              'black' : 'lightgrey'
                                       }}
                                 />}
 
@@ -121,7 +85,6 @@ export default class Chats extends Component {
                     })}
 
                 </ScrollView>
-                <AppBottomNav style={{alignSelf: 'flex-end'}}/>
             </SafeAreaView>
         );
     }
