@@ -399,6 +399,9 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         color: 'white',
-        marginTop: 5
+        marginTop: 5,
+        textShadowColor: 'rgba(0, 0, 0, 0.75)',
+        textShadowOffset: {width: -1, height: 1},
+        textShadowRadius: 5
     }
 });
