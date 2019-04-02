@@ -3,6 +3,7 @@ import {Dimensions, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, Touch
 import ChatServiceClient from '../services/ChatServiceClient'
 import {Icon} from "react-native-elements";
 import {StackActions} from "react-navigation";
+import {Notifications} from 'expo';
 
 export default class Chats extends Component {
     constructor(props) {
@@ -15,15 +16,18 @@ export default class Chats extends Component {
     }
 
     componentDidMount() {
+        Notifications.setBadgeNumberAsync(0);
         storage.load({key: 'user'})
             .then(user => {
                 this.setState({user: user});
                 this.chatService.findChatsForUser(user._id)
                     .then(chats => {
-                        let sorted = chats.filter(chats => chats.address.length > 0 && new Date(chats.time.slice(0, 19) + 'Z') > new Date())
-                            .sort((b, a) => new Date(a.time.slice(0, 19) + 'Z') - new Date(b.time.slice(0, 19) + 'Z'))
-                            .concat(chats.filter(chats => chats.address.length === 0))
-                            .concat(chats.filter(chats => chats.address.length > 0 && new Date(chats.time.slice(0, 19) + 'Z') < new Date()));
+                        let date = new Date();
+                        date.setTime(date.getTime() - 12 * 60 * 60 * 1000);
+                        let sorted = chats.filter(chats => chats.address.length === 0 || new Date(chats.time.slice(0, 19) + 'Z') > date)
+                            .sort((b, a) => new Date(a.messages.sort((c, d) => new Date(d.createdAt.split('.')[0]) - new Date(c.createdAt.split('.')[0]))[0].createdAt.split('.')[0])
+                                - new Date(b.messages.sort((e, f) => new Date(f.createdAt.split('.')[0]) - new Date(e.createdAt.split('.')[0]))[0].createdAt.split('.')[0]))
+                            .concat(chats.filter(chats => chats.address.length > 0 && new Date(chats.time.slice(0, 19) + 'Z') <= date));
                         this.setState({chats: sorted});
                     })
             })
@@ -51,6 +55,8 @@ export default class Chats extends Component {
                         if (message !== undefined && message.businessId >= 0) {
                             message.text = '[shared business]';
                         }
+                        let date = new Date();
+                        date.setTime(date.getTime() - 12 * 60 * 60 * 1000);
                         return (
                             <TouchableOpacity key={i} style={styles.card}
                                               onPress={() => {
@@ -75,7 +81,7 @@ export default class Chats extends Component {
                                       iconStyle={{
                                           margin: 15,
                                           color: ((chat.time instanceof Date) ?
-                                              chat.time : new Date(chat.time.slice(0, 19) + 'Z')) > new Date() ?
+                                              chat.time : new Date(chat.time.slice(0, 19) + 'Z')) > date ?
                                               'black' : 'lightgrey'
                                       }}
                                 />}

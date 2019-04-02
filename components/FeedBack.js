@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import {FormInput, Icon} from "react-native-elements";
 import dismissKeyboard from 'react-native-dismiss-keyboard';
+import {Notifications} from 'expo';
 
 export default class FeedBack extends Component {
     constructor(props) {
@@ -23,6 +24,7 @@ export default class FeedBack extends Component {
     }
 
     componentDidMount() {
+        Notifications.setBadgeNumberAsync(0);
         storage.load({key: 'user'})
             .then(user => this.setState({user: user}))
             .catch(err => {

@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Dimensions, Image, Linking, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import background from '../resources/logos/background.png';
 import {Permissions} from "expo"
-
+import {StackActions, NavigationActions} from 'react-navigation';
 
 export default class Permission extends Component {
     constructor(props) {
@@ -18,7 +18,7 @@ export default class Permission extends Component {
         };
     }
 
-   componentDidMount() {
+    componentDidMount() {
         Permissions.getAsync(Permissions.NOTIFICATIONS)
             .then(response => {
                 this.setState({notification: response.allowsAlert, ready1: true});
@@ -68,7 +68,13 @@ export default class Permission extends Component {
                         <TouchableOpacity style={styles.button}
                                           onPress={() => {
                                               analytics.track('friend page', {"type": "open"});
-                                              this.props.navigation.navigate("Friend");}}>
+                                              const resetAction = StackActions.reset({
+                                                  index: 0,
+                                                  actions: [NavigationActions.navigate({routeName: 'Explore'})]
+                                              });
+                                              this.props.navigation.dispatch(resetAction);
+                                              this.props.navigation.navigate("Friend");
+                                          }}>
                             <Text style={{color: 'white'}}>Let's go!</Text>
                         </TouchableOpacity>
                     </View>

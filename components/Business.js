@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {Dimensions, Image, Linking, ScrollView, StyleSheet, Text, View} from 'react-native'
-import {MapView} from "expo"
+import {Notifications, MapView} from "expo"
 import * as constants from "../constants/constant";
 import art from '../resources/icons/art.png';
 import coffee from '../resources/icons/coffee.png';
@@ -30,6 +30,7 @@ export default class Business extends Component {
     }
 
     componentDidMount() {
+        Notifications.setBadgeNumberAsync(0);
         this.userService.findUserById(constants.GTFO_ID)
             .then(gtfo => this.setState({gtfo: gtfo}));
         const business = this.props.business;

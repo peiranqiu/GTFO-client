@@ -10,9 +10,9 @@ import {
     Text,
     TouchableOpacity,
     View,
-    VirtualizedList
+    VirtualizedList,
 } from 'react-native'
-import {Permissions} from "expo"
+import {Permissions, Notifications} from "expo"
 import PostServiceClient from '../services/PostServiceClient'
 import {Avatar, Divider, Icon} from 'react-native-elements'
 import Modal from "react-native-modal";
@@ -54,6 +54,7 @@ export default class Home extends Component {
     }
 
     componentDidMount() {
+        Notifications.setBadgeNumberAsync(0);
         this.userService.findUserById(constants.GTFO_ID)
             .then(gtfo => this.setState({gtfo: gtfo}));
         storage.load({key: 'user'})

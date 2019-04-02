@@ -18,6 +18,7 @@ import RadioButton from 'react-native-radio-button'
 import ChatServiceClient from "../services/ChatServiceClient";
 import group_add from '../resources/icons/group_add.png';
 import {StackActions} from "react-navigation";
+import {Notifications} from 'expo';
 
 export default class Share extends Component {
     constructor(props) {
@@ -34,6 +35,7 @@ export default class Share extends Component {
     }
 
     componentDidMount() {
+        Notifications.setBadgeNumberAsync(0);
         storage.load({key: 'user'})
             .then(user => {
                 this.setState({user: user});

@@ -18,6 +18,7 @@ import {FormInput, Icon} from 'react-native-elements'
 import ChatServiceClient from "../services/ChatServiceClient";
 import Modal from "react-native-modal";
 import dismissKeyboard from 'react-native-dismiss-keyboard';
+import {Notifications} from 'expo';
 
 console.disableYellowBox = true;
 
@@ -62,6 +63,7 @@ export default class Message extends Component {
     }
 
     componentDidMount() {
+        Notifications.setBadgeNumberAsync(0);
         const business = this.props.navigation.getParam('business', {});
         const chat = this.props.navigation.getParam('chat', {});
 

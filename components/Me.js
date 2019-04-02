@@ -5,6 +5,7 @@ import friends from '../resources/icons/friends.png';
 import logout from '../resources/icons/logout.png';
 import feedback from '../resources/icons/feedback.png';
 import privacy from '../resources/icons/privacy.png';
+import {Notifications} from 'expo';
 
 export default class Me extends Component {
     constructor(props) {
@@ -15,6 +16,7 @@ export default class Me extends Component {
     }
 
     componentDidMount() {
+        Notifications.setBadgeNumberAsync(0);
         storage.load({key: 'user'})
             .then(user => {
                 this.setState({user: user});
@@ -88,10 +90,10 @@ export default class Me extends Component {
                                   hideChevron/>
                     </List>
                     <View style={styles.center}>
-                        <Text style={styles.text}>Version 1.1.0</Text>
+                        <Text style={styles.text}>Version 1.0.0</Text>
                     </View>
                     <View style={styles.center}>
-                        <Text style={styles.text}>Copyright 2019 GTFO, Inc.</Text>
+                        <Text style={styles.text}>Copyright 2019 Wyse Technologies Inc.</Text>
                     </View>
                     <View style={styles.center}>
                         <Text style={styles.text}>All rights reserved.</Text>

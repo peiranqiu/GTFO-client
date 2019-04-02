@@ -11,7 +11,7 @@ import {
     View
 } from 'react-native'
 import PostServiceClient from '../services/PostServiceClient'
-import {MapView, Permissions} from "expo"
+import {MapView, Permissions, Notifications} from "expo"
 import Geolocation from 'react-native-geolocation-service';
 import * as constants from "../constants/constant";
 import art from '../resources/icons/art.png';
@@ -83,6 +83,7 @@ export default class Explore extends Component {
     }
 
     componentDidMount() {
+        Notifications.setBadgeNumberAsync(0);
         this.userService.findUserById(constants.GTFO_ID)
             .then(gtfo => this.setState({gtfo: gtfo}));
         storage.load({key: 'region'})
@@ -93,26 +94,29 @@ export default class Explore extends Component {
             })
             .catch(err => {
                 this.getPermission();
-                Geolocation.getCurrentPosition(
-                    (position) => {
-                        let region = {
-                            latitude: position.coords.latitude,
-                            longitude: position.coords.longitude,
-                            latitudeDelta: 0.08,
-                            longitudeDelta: 0.08,
-                        };
-                        this.loadData(region);
-                        storage.save({
-                            key: 'region',
-                            data: region
-                        });
-                    },
-                    (error) => {
-                    },
-                    {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000})
+                this.getPosition();
             });
     }
 
+    getPosition() {
+        Geolocation.getCurrentPosition(
+            (position) => {
+                let region = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    latitudeDelta: 0.08,
+                    longitudeDelta: 0.08,
+                };
+                this.loadData(region);
+                storage.save({
+                    key: 'region',
+                    data: region
+                });
+            },
+            (error) => {
+            },
+            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000})
+    }
     async getPermission() {
         await Permissions.getAsync(Permissions.LOCATION)
             .then(async (response) => {

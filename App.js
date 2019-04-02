@@ -51,7 +51,6 @@ const HomeStack = createStackNavigator({
         Welcome: Welcome,
         Search: Search,
         Share: Share,
-        Permission: Permission,
     },
     {
         initialRouteName: "Home",
@@ -65,7 +64,6 @@ const HomeStack = createStackNavigator({
 
 const ExploreStack = createStackNavigator({
         Explore: Explore,
-        Welcome: Welcome,
         Search: Search,
         Share: Share,
         Permission: Permission,
@@ -83,10 +81,8 @@ const ExploreStack = createStackNavigator({
 
 const ChatsStack = createStackNavigator({
         Chats: Chats,
-        Welcome: Welcome,
         Message: Message,
         Share: Share,
-        Permission: Permission,
     },
     {
         initialRouteName: "Chats",
@@ -100,10 +96,8 @@ const ChatsStack = createStackNavigator({
 
 const MeStack = createStackNavigator({
         Me: Me,
-        Welcome: Welcome,
         Search: Search,
         Friend: Friend,
-        Permission: Permission,
         FeedBack: FeedBack,
         Terms: Terms
     },

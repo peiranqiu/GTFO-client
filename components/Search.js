@@ -4,6 +4,7 @@ import PostServiceClient from "../services/PostServiceClient";
 import {Icon, SearchBar} from 'react-native-elements'
 import Modal from "react-native-modal";
 import Business from "./Business";
+import {Notifications} from 'expo';
 
 
 export default class Search extends Component {
@@ -19,6 +20,7 @@ export default class Search extends Component {
     }
 
     componentDidMount() {
+        Notifications.setBadgeNumberAsync(0);
         this.postService.findAllBusinesses()
             .then(businesses => {
                 this.setState({businesses: businesses});

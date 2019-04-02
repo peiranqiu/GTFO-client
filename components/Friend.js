@@ -17,6 +17,7 @@ import add_friend from '../resources/icons/add_friend.png';
 import group_add from '../resources/icons/group_add.png';
 import SvgUri from 'react-native-svg-uri';
 import * as constants from "../constants/constant";
+import {Notifications} from 'expo';
 
 export default class Friend extends Component {
     constructor(props) {
@@ -34,6 +35,7 @@ export default class Friend extends Component {
     }
 
     componentDidMount() {
+        Notifications.setBadgeNumberAsync(0);
         storage.load({key: 'user'})
             .then(user => {
                 this.setState({user: user});

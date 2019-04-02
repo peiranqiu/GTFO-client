@@ -5,6 +5,7 @@ import React, {Component} from 'react';
 import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, WebView} from "react-native";
 import Ins from 'react-native-instagram-login'
 import background from '../resources/logos/background.png';
+import {NavigationActions, StackActions} from "react-navigation";
 
 export default class Welcome extends Component {
     constructor(props) {
@@ -28,7 +29,12 @@ export default class Welcome extends Component {
                 }
             });
             this.postService.updateAll();
-            this.props.navigation.navigate("Permission");
+            const resetAction = StackActions.reset({
+                index: 0,
+                actions: [NavigationActions.navigate({routeName: 'Home'})]
+            });
+            this.props.navigation.dispatch(resetAction);
+            this.props.navigation.navigate("Explore");
         });
     }
 

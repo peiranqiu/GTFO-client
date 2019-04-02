@@ -4,6 +4,7 @@ import UserServiceClient from "../services/UserServiceClient";
 import {Avatar, Icon} from 'react-native-elements'
 import friend_request from '../resources/icons/friend_request.svg';
 import SvgUri from 'react-native-svg-uri';
+import {Notifications} from 'expo';
 
 
 export default class Notification extends Component {
@@ -17,6 +18,7 @@ export default class Notification extends Component {
     }
 
     componentDidMount() {
+        Notifications.setBadgeNumberAsync(0);
         storage.load({key: 'user'})
             .then(user => {
                 this.setState({user: user});
