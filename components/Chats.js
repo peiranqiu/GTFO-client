@@ -25,8 +25,8 @@ export default class Chats extends Component {
                         let date = new Date();
                         date.setTime(date.getTime() - 12 * 60 * 60 * 1000);
                         let sorted = chats.filter(chats => chats.address.length === 0 || new Date(chats.time.slice(0, 19) + 'Z') > date)
-                            .sort((b, a) => new Date(a.messages.sort((c, d) => new Date(d.createdAt.split('.')[0]) - new Date(c.createdAt.split('.')[0]))[0].createdAt.split('.')[0])
-                                - new Date(b.messages.sort((e, f) => new Date(f.createdAt.split('.')[0]) - new Date(e.createdAt.split('.')[0]))[0].createdAt.split('.')[0]))
+                            .sort((a, b) => this.sortByTime(a.messages.sort((c, d) => this.sortByTime(c, d))[0],
+                                b.messages.sort((c, d) => this.sortByTime(c, d))[0]))
                             .concat(chats.filter(chats => chats.address.length > 0 && new Date(chats.time.slice(0, 19) + 'Z') <= date));
                         this.setState({chats: sorted});
                     })
@@ -34,6 +34,10 @@ export default class Chats extends Component {
             .catch(err => {
                 this.props.navigation.navigate("Welcome");
             });
+    }
+
+    sortByTime(a, b) {
+        return new Date(b.createdAt.split('.')[0]) - new Date(a.createdAt.split('.')[0]);
     }
 
     render() {
@@ -49,9 +53,7 @@ export default class Chats extends Component {
                 </View>
                 <ScrollView>
                     {this.state.chats.map((chat, i) => {
-                        let message = chat.messages.sort(function (a, b) {
-                            return new Date(b.createdAt.split('.')[0]) - new Date(a.createdAt.split('.')[0]);
-                        })[0];
+                        let message = chat.messages.sort((a, b) => this.sortByTime(a, b))[0];
                         if (message !== undefined && message.businessId >= 0) {
                             message.text = '[shared business]';
                         }
@@ -71,7 +73,13 @@ export default class Chats extends Component {
                                                   this.props.navigation.dispatch(pushAction);
                                               }}>
                                 <View>
-                                    <Text style={styles.title}>{chat.name}({chat.size})</Text>
+                                    <Text style={{
+                                        paddingHorizontal: 20,
+                                        fontSize: 15,
+                                        marginBottom: 5,
+                                        color: (chat.address.length === 0 || new Date(chat.time.slice(0, 19) + 'Z') > date) ?
+                                            'black' : 'grey'
+                                    }}>{chat.name}({chat.size})</Text>
                                     {message !== undefined &&
                                     <Text style={styles.text}>{message.user.name}{': '}{message.text}</Text>}
                                 </View>
@@ -116,11 +124,6 @@ const styles = StyleSheet.create({
         marginTop: 15,
         paddingVertical: 18,
         paddingHorizontal: 5
-    },
-    title: {
-        paddingHorizontal: 20,
-        fontSize: 15,
-        marginBottom: 5
     },
     text: {
         paddingHorizontal: 20,

@@ -45,7 +45,6 @@ export default class Home extends Component {
             filter: "",
             visible: false,
             selected: null,
-            appReady: false,
             selectedIndex: 0,
             gtfo: null
         }
@@ -92,7 +91,7 @@ export default class Home extends Component {
                                             business.key = business.id.toString();
                                             let allBusinesses = this.state.businesses;
                                             allBusinesses.push(business);
-                                            this.setState({businesses: allBusinesses, appReady: !this.state.appReady});
+                                            this.setState({businesses: allBusinesses});
                                         }
                                     });
                                 }
@@ -218,6 +217,8 @@ export default class Home extends Component {
                         <VirtualizedList data={filteredResults}
                                          getItem={(data, index) => data[index]}
                                          getItemCount={() => length}
+                                         initialNumToRender = {2}
+                                         maxToRenderPerBatch = {2}
                                          renderItem={({item, index}) => {
                                              let ready = false;
                                              let followers = [];
