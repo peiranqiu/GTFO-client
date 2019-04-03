@@ -368,6 +368,7 @@ export default class Terms extends Component {
                     <Text style={styles.p}>If you have any questions about this Privacy Policy, please contact
                         us:</Text>
                     <Text style={styles.l}>• By email: dchen@gtfo.gg</Text>
+                    <View style={styles.container}/>
                 </ScrollView>
             </SafeAreaView>
         );
@@ -378,7 +379,7 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: 70,
-        margin: 0,
+        margin:0
     },
     h1: {
         fontSize: 22,

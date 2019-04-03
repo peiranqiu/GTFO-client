@@ -209,7 +209,6 @@ export default class Business extends Component {
                                   if (typeof close === 'function') {
                                       close();
                                   }
-
                                   analytics.track('detail page', { "type": "close" });
                                   analytics.track('share page', { "type": "open" });
                                   this.props.navigation.navigate("Share", {business: this.props.business});

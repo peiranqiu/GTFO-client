@@ -1,6 +1,6 @@
 import * as constants from "../constants/constant";
 import UserServiceClient from "../services/UserServiceClient";
-import PostServiceClient from '../services/PostServiceClient';
+import PostServiceClient from "../services/PostServiceClient";
 import React, {Component} from 'react';
 import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, WebView} from "react-native";
 import Ins from 'react-native-instagram-login'
@@ -10,8 +10,8 @@ import {NavigationActions, StackActions} from "react-navigation";
 export default class Welcome extends Component {
     constructor(props) {
         super(props);
-        this.postService = PostServiceClient.instance;
         this.userService = UserServiceClient.instance;
+        this.postService = PostServiceClient.instance;
         this.state = {}
     }
 
@@ -25,7 +25,7 @@ export default class Welcome extends Component {
                     _id: user._id,
                     name: user.name,
                     avatar: user.avatar,
-                    pushToken: null
+                    pushToken: user.pushToken
                 }
             });
             this.postService.updateAll();
@@ -43,7 +43,8 @@ export default class Welcome extends Component {
             <View style={styles.background}>
                 <Image style={styles.image} source={background}/>
                 <View style={styles.card}>
-                    <Text style={{marginLeft: 20, marginTop: 90, fontSize: 32, fontWeight: '400', color: '#4c4c4c'}}>Let’s GTFO</Text>
+                    <Text style={{marginLeft: 20, marginTop: 90, fontSize: 32, fontWeight: '400', color: '#4c4c4c'}}>Let’s
+                        GTFO</Text>
                     <Text style={{marginLeft: 20, marginTop: 10, fontSize: 12, color: 'grey'}}>
                         Discover places and things to do with your friends, wherever you are.
                     </Text>
@@ -72,8 +73,8 @@ export default class Welcome extends Component {
                     clientId={constants.INSTAGRAM_ID}
                     redirectUrl={constants.INSTAGRAM_REDIRECT}
                     scopes={['basic']}
-                    onLoginSuccess={(token) => this.login(token)}
-                    onLoginFailure={(data) => this.setState({failure: data})}
+                    onLoginSuccess={token => this.login(token)}
+                    onLoginFailure={data => this.setState({failure: data})}
                     onBackdropPress
                 />
             </View>

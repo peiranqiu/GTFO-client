@@ -92,42 +92,43 @@ export default class Explore extends Component {
                 this.setState({initialRegion: region, region: region, boundingBox: boundingBox});
                 this.loadData(region);
             })
-            .catch(err => {
-                this.getPermission();
-                this.getPosition();
-            });
+            .catch(err => this.getPermission());
     }
 
     getPosition() {
         Geolocation.getCurrentPosition(
-            (position) => {
+            position => {
                 let region = {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude,
                     latitudeDelta: 0.08,
                     longitudeDelta: 0.08,
                 };
-                this.loadData(region);
                 storage.save({
                     key: 'region',
                     data: region
                 });
+                let boundingBox = this.getBoundingBox(region);
+                this.setState({initialRegion: region, region: region, boundingBox: boundingBox});
+                this.loadData(region);
             },
-            (error) => {
+            error => {
             },
             {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000})
     }
-    async getPermission() {
-        await Permissions.getAsync(Permissions.LOCATION)
-            .then(async (response) => {
-                this.setState({location: response.status});
-                if (response.status === 'granted') {
-                    this.setState({permission: true});
-                }
-                else {
-                    this.setState({permission: false});
-                }
-            });
+
+    getPermission() {
+        Permissions.getAsync(Permissions.LOCATION).then(response => {
+            this.setState({location: response.status});
+            console.log(response);
+            if (response.status === 'granted') {
+                this.setState({permission: true});
+                this.getPosition();
+            }
+            else {
+                this.setState({permission: false});
+            }
+        });
     }
 
     loadData(region) {
@@ -135,7 +136,7 @@ export default class Explore extends Component {
             .then(user => {
                 this.setState({user: user});
                 this.userService.findFriendRequests(user._id)
-                    .then((requests) => {
+                    .then(requests => {
                         if(requests.length > 0) {
                             this.setState({notification: true});
                         }
@@ -326,7 +327,6 @@ export default class Explore extends Component {
             followers = size > 3 ? data.slice(0, 3) : data;
             ready = true;
         }
-
         return (
             <View style={{flex: 1}}>
                 <StatusBar barStyle='dark-content'/>
@@ -380,7 +380,7 @@ export default class Explore extends Component {
                         <Business business={this.state.businesses[this.state.selected]}
                                   navigation={this.props.navigation}
                                   close={() => this.setState({visible: false})}
-                                  refresh={(business) => {
+                                  refresh={business => {
                                       let businesses = this.state.businesses;
                                       businesses[this.state.selected] = business;
                                       this.setState({businesses: businesses})

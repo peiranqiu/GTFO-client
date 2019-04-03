@@ -6,6 +6,7 @@ import logout from '../resources/icons/logout.png';
 import feedback from '../resources/icons/feedback.png';
 import privacy from '../resources/icons/privacy.png';
 import {Notifications} from 'expo';
+import {NavigationActions, StackActions} from "react-navigation";
 
 export default class Me extends Component {
     constructor(props) {
@@ -29,8 +30,8 @@ export default class Me extends Component {
     signOut() {
         storage.remove({
             key: 'user'
-        });
-        this.props.navigation.navigate("Welcome");
+        }).then(() => this.props.navigation.navigate("Welcome"));
+
     }
 
     render() {

@@ -3,6 +3,7 @@ import {Dimensions, Image, Linking, StyleSheet, Text, TouchableOpacity, View} fr
 import background from '../resources/logos/background.png';
 import {Permissions} from "expo"
 import {StackActions, NavigationActions} from 'react-navigation';
+import Geolocation from "react-native-geolocation-service";
 
 export default class Permission extends Component {
     constructor(props) {
@@ -14,7 +15,8 @@ export default class Permission extends Component {
             ready1: false,
             ready2: false,
             finish1: false,
-            finish2: false
+            finish2: false,
+            region: null
         };
     }
 
@@ -35,16 +37,41 @@ export default class Permission extends Component {
             });
     }
 
+    getPosition() {
+        Geolocation.getCurrentPosition(
+            position => {
+                let region = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    latitudeDelta: 0.08,
+                    longitudeDelta: 0.08,
+                };
+                storage.save({
+                    key: 'region',
+                    data: region
+                });
+                this.setState({region: region});
+            },
+            error => {
+            },
+            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000})
+    }
+
+    async getPermission() {
+        const response = await Permissions.getAsync(Permissions.LOCATION);
+        if (response.status === 'granted') {
+            this.getPosition();
+        }
+    }
+
     async askLocation() {
-        Permissions.askAsync(Permissions.LOCATION)
-            .then(() => this.setState({location: null}));
-        this.setState({finish2: true});
+        const response = await Permissions.askAsync(Permissions.LOCATION);
+        this.setState({location: null, finish2: true});
     }
 
     async askNotification() {
-        Permissions.askAsync(Permissions.NOTIFICATIONS)
-            .then(() => this.setState({notification: null}));
-        this.setState({finish1: true});
+        const response = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        this.setState({notification: null, finish1: true});
     }
 
     render() {
@@ -68,11 +95,9 @@ export default class Permission extends Component {
                         <TouchableOpacity style={styles.button}
                                           onPress={() => {
                                               analytics.track('friend page', {"type": "open"});
-                                              const resetAction = StackActions.reset({
-                                                  index: 0,
-                                                  actions: [NavigationActions.navigate({routeName: 'Explore'})]
-                                              });
-                                              this.props.navigation.dispatch(resetAction);
+                                              this.getPermission();
+                                              const pushAction = StackActions.push({routeName: 'Explore'});
+                                              this.props.navigation.dispatch(pushAction);
                                               this.props.navigation.navigate("Friend");
                                           }}>
                             <Text style={{color: 'white'}}>Let's go!</Text>

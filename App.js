@@ -204,8 +204,7 @@ export default class App extends Component {
 
                 }
             });
-            UserServiceClient.instance.updateUser(user._id, user).then(user => {});
-
+            UserServiceClient.instance.updateUser(user._id, user);
         }
     }
 
