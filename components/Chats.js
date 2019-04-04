@@ -49,10 +49,7 @@ export default class Chats extends Component {
                     <Text style={{fontSize: 16, marginTop: 30, alignSelf: 'center'}}>Chats</Text>
                 </View>
                 <ScrollView>
-                    {(this.state.chats === null || this.state.chats === undefined) ?
-                        <View style={styles.placeholder}>
-                            <Text style={{fontSize: 14, alignSelf: 'center'}}>Loading...</Text>
-                        </View> :
+                    {(this.state.chats !== undefined && this.state.chats !== null) &&
                         (this.state.chats.length === 0 ?
                             <View style={styles.placeholder}>
                                 <Text style={{fontSize: 14, alignSelf: 'center'}}>You don't have any chat yet.</Text>

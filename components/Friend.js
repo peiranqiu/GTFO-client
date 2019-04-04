@@ -27,8 +27,8 @@ export default class Friend extends Component {
             user: null,
             allUsers: [],
             searchTerm: '',
-            friends: [],
-            requests: [],
+            friends: null,
+            requests: null,
             sends: [],
             searching: false
         };
@@ -176,7 +176,7 @@ export default class Friend extends Component {
                             </View>
                         )))}
                     </ScrollView> :
-                    (this.state.requests.length + this.state.friends.length === 0 ?
+                    ((this.state.requests !== null && this.state.friends !== null) && (this.state.requests.length + this.state.friends.length === 0 ?
                         <TouchableOpacity style={{width: Dimensions.get('window').width, marginTop: '30%', flex: 1, justifyContent: 'center'}}
                                           onPress={() => this.search.focus()}>
                             <Image
@@ -214,7 +214,7 @@ export default class Friend extends Component {
                                     </View>
                                 </View>
                             ))}
-                        </ScrollView>)
+                        </ScrollView>))
                 }
             </SafeAreaView>
         );

@@ -32,9 +32,9 @@ export default class Search extends Component {
             (this.state.businesses === undefined || this.state.searchTerm === "") ?
                 [] :
                 this.state.businesses.filter(business => {
-                    return business.name.includes(this.state.searchTerm)
-                        || business.category.includes(this.state.searchTerm)
-                        || business.address.includes(this.state.searchTerm);
+                    return business.name.toLowerCase().includes(this.state.searchTerm.toLowerCase())
+                        || business.category.includes(this.state.searchTerm.toLowerCase())
+                        || business.address.toLowerCase().includes(this.state.searchTerm.toLowerCase());
                 }).reverse());
         return (
             <SafeAreaView style={{flex: 1}}>
