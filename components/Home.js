@@ -12,7 +12,7 @@ import {
     View,
     VirtualizedList,
 } from 'react-native'
-import {Permissions, Notifications} from "expo"
+import {Notifications} from "expo"
 import PostServiceClient from '../services/PostServiceClient'
 import {Avatar, Divider, Icon} from 'react-native-elements'
 import Modal from "react-native-modal";
@@ -20,7 +20,6 @@ import UserServiceClient from "../services/UserServiceClient";
 import Business from './Business'
 import * as constants from "../constants/constant";
 import {CollapsibleHeaderScrollView} from 'react-native-collapsible-header-views';
-import Geolocation from 'react-native-geolocation-service';
 import DoubleClick from "react-native-double-tap";
 
 const data = [
@@ -49,7 +48,6 @@ export default class Home extends Component {
             selectedIndex: 0,
             gtfo: null
         }
-        this.getPermission = this.getPermission.bind(this);
         analytics.track('home page', {"type": "open"});
     }
 
@@ -102,32 +100,6 @@ export default class Home extends Component {
             .catch(err => {
                 this.props.navigation.navigate("Welcome");
             });
-        storage.load({key: 'region'})
-            .then(region => {
-            })
-            .catch(err => this.getPermission());
-    }
-
-    async getPermission() {
-        const response = await Permissions.getAsync(Permissions.LOCATION);
-        this.setState({location: response.status});
-        if (response.status === 'granted') {
-            Geolocation.getCurrentPosition(
-                (position) => {
-                    storage.save({
-                        key: 'region',
-                        data: {
-                            latitude: position.coords.latitude,
-                            longitude: position.coords.longitude,
-                            latitudeDelta: 0.08,
-                            longitudeDelta: 0.08,
-                        }
-                    })
-                },
-                (error) => {
-                },
-                {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000})
-        }
     }
 
     userLikesBusiness(business) {
