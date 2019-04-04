@@ -61,7 +61,8 @@ export default class Share extends Component {
                 .then(chat => {
                     analytics.track('share page', {"type": "close"});
                     analytics.track('message page', {"type": "open"});
-
+                    const popAction = StackActions.pop({n: 1,});
+                    this.props.navigation.dispatch(popAction);
                     const pushAction = StackActions.push({
                         routeName: 'Message',
                         params: {chat: chat, business: business},
@@ -76,6 +77,8 @@ export default class Share extends Component {
         if (this.state.selectedChat !== null) {
             analytics.track('share page', {"type": "close"});
             analytics.track('message page', {"type": "open"});
+            const popAction = StackActions.pop({n: 1,});
+            this.props.navigation.dispatch(popAction);
             const pushAction = StackActions.push({
                 routeName: 'Message',
                 params: {

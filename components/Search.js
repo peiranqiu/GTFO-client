@@ -29,7 +29,7 @@ export default class Search extends Component {
 
     render() {
         const filteredResults = (
-            this.state.businesses === undefined ?
+            (this.state.businesses === undefined || this.state.searchTerm === "") ?
                 [] :
                 this.state.businesses.filter(business => {
                     return business.name.includes(this.state.searchTerm)

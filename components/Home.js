@@ -88,7 +88,7 @@ export default class Home extends Component {
                                                 });
                                             this.postService.findIfInterested(business.id, user._id)
                                                 .then(response => business.interested = response);
-                                            business.key = business.id.toString();
+                                            business.key = "" + business.id;
                                             let allBusinesses = this.state.businesses;
                                             allBusinesses.push(business);
                                             this.setState({businesses: allBusinesses});
