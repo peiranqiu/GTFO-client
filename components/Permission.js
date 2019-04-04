@@ -77,7 +77,7 @@ export default class Permission extends Component {
     render() {
         if (this.state.initial === 2) {
             analytics.track('explore page', {"type": "open"});
-            this.props.navigation.navigate("Explore");
+            this.props.navigation.navigate("Home");
         }
         if (!this.state.ready1 || !this.state.ready2) {
             return null;

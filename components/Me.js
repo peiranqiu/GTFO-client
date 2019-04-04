@@ -30,8 +30,9 @@ export default class Me extends Component {
     signOut() {
         storage.remove({
             key: 'user'
-        }).then(() => this.props.navigation.navigate("Welcome"));
-
+        });
+        const pushAction = StackActions.push({routeName: 'Logout'});
+        this.props.navigation.dispatch(pushAction);
     }
 
     render() {

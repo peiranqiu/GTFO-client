@@ -149,8 +149,8 @@ export default class Friend extends Component {
                                 style={{width: 40, height: 22, alignSelf: 'center'}}
                                 source={group_add}
                             />
-                            <Text style={{marginTop: 20, alignSelf: 'center'}}>No result...</Text>
-                            <Text style={{marginTop: 10, alignSelf: 'center'}}>Try another search or ask your friend to sign up!</Text>
+                            <Text style={{fontSize: 14, marginTop: 20, alignSelf: 'center'}}>No result...</Text>
+                            <Text style={{fontSize: 14, marginTop: 10, alignSelf: 'center'}}>Try another search or ask your friend to sign up!</Text>
                         </TouchableOpacity> :
                         (filteredResults.map((u, i) => (
                             <View key={i} style={styles.resultItem}>
@@ -183,7 +183,7 @@ export default class Friend extends Component {
                                 style={{width: 40, height: 22, alignSelf: 'center'}}
                                 source={group_add}
                             />
-                            <Text style={{marginTop: 20, alignSelf: 'center'}}>You don't have any friend:( {"\n"} Search
+                            <Text style={{fontSize: 14, marginTop: 20, alignSelf: 'center'}}>You don't have any friend:( {"\n"} Search
                                 to add some friend!</Text>
                         </TouchableOpacity> :
                         <ScrollView>

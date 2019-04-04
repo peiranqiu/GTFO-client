@@ -10,7 +10,7 @@ export default class Chats extends Component {
         super(props);
         this.state = {
             user: null,
-            chats: [],
+            chats: null,
         };
         this.chatService = ChatServiceClient.instance;
     }
@@ -42,9 +42,6 @@ export default class Chats extends Component {
 
     render() {
         activeNav = "chats";
-        if (this.state.chats === undefined) {
-            return null;
-        }
         return (
             <SafeAreaView style={{flex: 1}}>
                 <StatusBar barStyle='dark-content'/>
@@ -52,58 +49,58 @@ export default class Chats extends Component {
                     <Text style={{fontSize: 16, marginTop: 30, alignSelf: 'center'}}>Chats</Text>
                 </View>
                 <ScrollView>
-                    {this.state.chats.length === 0 ?
-                        <View style={{
-                            width: Dimensions.get('window').width,
-                            marginTop: '40%',
-                            flex: 1,
-                            justifyContent: 'center'
-                        }}><Text style={{marginTop: 20, alignSelf: 'center'}}>You don't have any chat
-                            yet.</Text></View> :
-                        this.state.chats.map((chat, i) => {
-                            let message = chat.messages.sort((a, b) => this.sortByTime(a, b))[0];
-                            if (message !== undefined && message.businessId >= 0) {
-                                message.text = '[shared business]';
-                            }
-                            let date = new Date();
-                            date.setTime(date.getTime() - 12 * 60 * 60 * 1000);
-                            return (
-                                <TouchableOpacity key={i} style={styles.card}
-                                                  onPress={() => {
-                                                      analytics.track('chats page', {"type": "close"});
-                                                      analytics.track('message page', {"type": "open"});
-                                                      const pushAction = StackActions.push({
-                                                          routeName: 'Message',
-                                                          params: {
-                                                              chat: chat,
-                                                          },
-                                                      });
-                                                      this.props.navigation.dispatch(pushAction);
-                                                  }}>
-                                    <View>
-                                        <Text style={{
-                                            paddingHorizontal: 20,
-                                            fontSize: 15,
-                                            marginBottom: 5,
-                                            color: (chat.address.length === 0 || new Date(chat.time.slice(0, 19) + 'Z') > date) ?
-                                                'black' : 'grey'
-                                        }}>{chat.name}({chat.size})</Text>
-                                        {message !== undefined &&
-                                        <Text style={styles.text}>{message.user.name}{': '}{message.text}</Text>}
-                                    </View>
-                                    {chat.address.length > 0 &&
-                                    <Icon name='date-range'
-                                          containerStyle={styles.icon}
-                                          iconStyle={{
-                                              margin: 15,
-                                              color: ((chat.time instanceof Date) ?
-                                                  chat.time : new Date(chat.time.slice(0, 19) + 'Z')) > date ?
-                                                  'black' : 'lightgrey'
-                                          }}
-                                    />}
-                                </TouchableOpacity>
-                            )
-                        })}
+                    {(this.state.chats === null || this.state.chats === undefined) ?
+                        <View style={styles.placeholder}>
+                            <Text style={{fontSize: 14, alignSelf: 'center'}}>Loading...</Text>
+                        </View> :
+                        (this.state.chats.length === 0 ?
+                            <View style={styles.placeholder}>
+                                <Text style={{fontSize: 14, alignSelf: 'center'}}>You don't have any chat yet.</Text>
+                            </View> :
+                            this.state.chats.map((chat, i) => {
+                                let message = chat.messages.sort((a, b) => this.sortByTime(a, b))[0];
+                                if (message !== undefined && message.businessId >= 0) {
+                                    message.text = '[shared business]';
+                                }
+                                let date = new Date();
+                                date.setTime(date.getTime() - 12 * 60 * 60 * 1000);
+                                return (
+                                    <TouchableOpacity key={i} style={styles.card}
+                                                      onPress={() => {
+                                                          analytics.track('chats page', {"type": "close"});
+                                                          analytics.track('message page', {"type": "open"});
+                                                          const pushAction = StackActions.push({
+                                                              routeName: 'Message',
+                                                              params: {
+                                                                  chat: chat,
+                                                              },
+                                                          });
+                                                          this.props.navigation.dispatch(pushAction);
+                                                      }}>
+                                        <View>
+                                            <Text style={{
+                                                paddingHorizontal: 20,
+                                                fontSize: 15,
+                                                marginBottom: 5,
+                                                color: (chat.address.length === 0 || new Date(chat.time.slice(0, 19) + 'Z') > date) ?
+                                                    'black' : 'grey'
+                                            }}>{chat.name}({chat.size})</Text>
+                                            {message !== undefined &&
+                                            <Text style={styles.text}>{message.user.name}{': '}{message.text}</Text>}
+                                        </View>
+                                        {chat.address.length > 0 &&
+                                        <Icon name='date-range'
+                                              containerStyle={styles.icon}
+                                              iconStyle={{
+                                                  margin: 15,
+                                                  color: ((chat.time instanceof Date) ?
+                                                      chat.time : new Date(chat.time.slice(0, 19) + 'Z')) > date ?
+                                                      'black' : 'lightgrey'
+                                              }}
+                                        />}
+                                    </TouchableOpacity>
+                                )
+                            }))}
                 </ScrollView>
             </SafeAreaView>
         );
@@ -142,5 +139,11 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 10,
         right: 10
+    },
+    placeholder: {
+        width: Dimensions.get('window').width,
+        marginTop: '40%',
+        flex: 1,
+        justifyContent: 'center'
     }
 });

@@ -49,7 +49,7 @@ export default class Home extends Component {
             gtfo: null
         }
         this.getPermission = this.getPermission.bind(this);
-        analytics.track('home page', { "type": "open" });
+        analytics.track('home page', {"type": "open"});
     }
 
     componentDidMount() {
@@ -102,7 +102,8 @@ export default class Home extends Component {
                 this.props.navigation.navigate("Welcome");
             });
         storage.load({key: 'region'})
-            .then(region => {})
+            .then(region => {
+            })
             .catch(err => this.getPermission());
     }
 
@@ -179,7 +180,8 @@ export default class Home extends Component {
                                               onPress={() => {
                                                   analytics.track('home page', {"type": "close"});
                                                   analytics.track('search page', {"type": "open"});
-                                                  this.props.navigation.navigate("Search");}}>
+                                                  this.props.navigation.navigate("Search");
+                                              }}>
                                 <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                                     <Icon name='search'
                                           size={16}
@@ -208,15 +210,19 @@ export default class Home extends Component {
                     headerHeight={125}
                     statusBarHeight={0}
                 >
-                    {(this.state.filter !== "" && length === 0) ?
-                        <View style={{paddingTop: '50%', flex: 1, flexDirection: 'row', justifyContent: 'center'}}>
-                            <Text>Oops, this category is empty:(</Text>
-                        </View> :
+                    {length === 0 ?
+                        (this.state.filter === "" ?
+                            <View style={styles.placeholder}>
+                                <Text style={{fontSize: 14}}>Loading...</Text>
+                            </View> :
+                            <View style={styles.placeholder}>
+                                <Text style={{fontSize: 14}}>Oops, this category is empty:(</Text>
+                            </View>) :
                         <VirtualizedList data={filteredResults}
                                          getItem={(data, index) => data[index]}
                                          getItemCount={() => length}
-                                         initialNumToRender = {2}
-                                         maxToRenderPerBatch = {2}
+                                         initialNumToRender={2}
+                                         maxToRenderPerBatch={2}
                                          renderItem={({item, index}) => {
                                              let ready = false;
                                              let followers = [];
@@ -265,7 +271,7 @@ export default class Home extends Component {
                                                                      fontSize: 14,
                                                                      fontWeight: "700",
                                                                      marginBottom: 3
-                                                                 }}>{item.name.length > 32? item.name.slice(0, 29) + '...' : item.name}</Text>
+                                                                 }}>{item.name.length > 32 ? item.name.slice(0, 29) + '...' : item.name}</Text>
                                                              <Text style={{fontSize: 12}}>
                                                                  {item.address.slice(-7).includes("Canada") ?
                                                                      item.address.slice(0, -7) : item.address}
@@ -293,7 +299,8 @@ export default class Home extends Component {
                                                                    onPress={() => {
                                                                        analytics.track('home page', {"type": "close"});
                                                                        analytics.track('share page', {"type": "open"});
-                                                                       this.props.navigation.navigate("Share", {business: item});}}
+                                                                       this.props.navigation.navigate("Share", {business: item});
+                                                                   }}
                                                              />
                                                          </View>
                                                      </View>
@@ -403,5 +410,11 @@ const styles = StyleSheet.create({
         textShadowColor: 'rgba(0, 0, 0, 0.75)',
         textShadowOffset: {width: -1, height: 1},
         textShadowRadius: 5
+    },
+    placeholder: {
+        paddingTop: '50%',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center'
     }
 });

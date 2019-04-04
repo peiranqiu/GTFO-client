@@ -5,7 +5,6 @@ import React, {Component} from 'react';
 import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, WebView} from "react-native";
 import Ins from 'react-native-instagram-login'
 import background from '../resources/logos/background.png';
-import {NavigationActions, StackActions} from "react-navigation";
 
 export default class Welcome extends Component {
     constructor(props) {
@@ -13,6 +12,12 @@ export default class Welcome extends Component {
         this.userService = UserServiceClient.instance;
         this.postService = PostServiceClient.instance;
         this.state = {}
+    }
+
+    componentDidMount() {
+        storage.load({key: 'user'})
+            .then(user => this.props.navigation.navigate("Home"))
+            .catch(err => {});
     }
 
     login(token) {
@@ -29,11 +34,6 @@ export default class Welcome extends Component {
                 }
             });
             this.postService.updateAll();
-            const resetAction = StackActions.reset({
-                index: 0,
-                actions: [NavigationActions.navigate({routeName: 'Home'})]
-            });
-            this.props.navigation.dispatch(resetAction);
             this.props.navigation.navigate("Explore");
         });
     }
@@ -45,10 +45,10 @@ export default class Welcome extends Component {
                 <View style={styles.card}>
                     <Text style={{marginLeft: 20, marginTop: 90, fontSize: 32, fontWeight: '400', color: '#4c4c4c'}}>Let’s
                         GTFO</Text>
-                    <Text style={{marginLeft: 20, marginTop: 10, fontSize: 12, color: 'grey'}}>
+                    <Text style={{marginLeft: 20, marginTop: 10, fontSize: 14, lineHeight: 20, color: 'grey'}}>
                         Discover places and things to do with your friends, wherever you are.
                     </Text>
-                    <View style={{justifyContent: 'center', flexDirection: 'row', marginTop: 90}}>
+                    <View style={{justifyContent: 'center', flexDirection: 'row', marginTop: 70}}>
                         <TouchableOpacity style={styles.button} onPress={() => this.refs.ins.show()}>
                             <Text style={{color: 'white'}}>Sign In With Instagram</Text>
                             <View style={{height: 0, width: 0}}>

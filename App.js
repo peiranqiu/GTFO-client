@@ -4,6 +4,7 @@ import Storage from 'react-native-storage';
 import {createAppContainer, createBottomTabNavigator, createStackNavigator} from "react-navigation";
 import Home from "./components/Home";
 import Welcome from "./components/Welcome";
+import Logout from "./components/Logout";
 import Explore from "./components/Explore";
 import Me from "./components/Me";
 import Search from "./components/Search";
@@ -48,7 +49,6 @@ const transitionConfig = () => ({
 
 const HomeStack = createStackNavigator({
         Home: Home,
-        Welcome: Welcome,
         Search: Search,
         Share: Share,
     },
@@ -99,7 +99,8 @@ const MeStack = createStackNavigator({
         Search: Search,
         Friend: Friend,
         FeedBack: FeedBack,
-        Terms: Terms
+        Terms: Terms,
+        Logout: Logout
     },
     {
         initialRouteName: "Me",
@@ -169,7 +170,20 @@ const TabNavigator = createBottomTabNavigator({
         transitionConfig: transitionConfig,
     });
 
-const AppContainer = createAppContainer(TabNavigator);
+const Navigation = createStackNavigator({
+        Welcome: Welcome,
+        Screens: TabNavigator
+    },
+    {
+        initialRouteName: "Welcome",
+        headerMode: 'none',
+        navigationOptions: ({navigation}) => ({
+            headerVisible: false,
+        }),
+        transitionConfig: transitionConfig,
+    });
+
+const AppContainer = createAppContainer(Navigation);
 
 export default class App extends Component {
     state = {

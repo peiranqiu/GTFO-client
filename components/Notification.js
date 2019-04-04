@@ -32,6 +32,15 @@ export default class Notification extends Component {
             });
     }
 
+    acceptRequest(i) {
+        let requests = this.state.requests;
+        this.userService.acceptFriendRequest(requests[i].id)
+            .then(() => {
+                requests.splice(i, 1);
+                this.setState({requests: requests});
+            });
+    }
+
     render() {
 
         return (
@@ -48,7 +57,11 @@ export default class Notification extends Component {
                     />
                 </View>
                 <ScrollView>
-                    {this.state.requests.map((request, i) => (
+                    {this.state.requests.length === 0 ?
+                        <View style={styles.placeholder}>
+                            <Text style={{fontSize: 14, alignSelf: 'center'}}>You are all caught up</Text>
+                        </View> :
+                        this.state.requests.map((request, i) => (
                         <View key={i} style={styles.resultItem}>
                             <View style={{flexDirection: 'row'}}>
                                 <Avatar size={20} rounded source={{uri: request.firstUser.avatar}}/>
@@ -92,4 +105,10 @@ const styles = StyleSheet.create({
         paddingTop: 25,
         width: Dimensions.get('window').width,
     },
+    placeholder: {
+        width: Dimensions.get('window').width,
+        marginTop: '40%',
+        flex: 1,
+        justifyContent: 'center'
+    }
 });
