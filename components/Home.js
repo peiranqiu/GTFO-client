@@ -20,6 +20,7 @@ import UserServiceClient from "../services/UserServiceClient";
 import Business from './Business'
 import * as constants from "../constants/constant";
 import {CollapsibleHeaderScrollView} from 'react-native-collapsible-header-views';
+import Geolocation from 'react-native-geolocation-service';
 import DoubleClick from "react-native-double-tap";
 
 const data = [

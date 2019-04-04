@@ -19,7 +19,7 @@ import FeedBack from "./components/FeedBack";
 import * as constants from "./constants/constant";
 import {AppLoading, Font} from 'expo'
 import ExpoMixpanelAnalytics from 'expo-mixpanel-analytics';
-
+import Geolocation from 'react-native-geolocation-service';
 import me from './resources/icons/me.svg';
 import home from './resources/icons/home.svg';
 import explore from './resources/icons/explore.svg';
@@ -195,9 +195,32 @@ export default class App extends Component {
             'Material Icons': require('@expo/vector-icons/fonts/MaterialIcons.ttf'),
         });
         this.setState({fontLoaded: true});
+        this.getPermission();
         const user = await storage.load({key: 'user'});
         if (user.pushToken === null || user.pushToken === undefined) {
             this.registerForPushNotificationsAsync(user);
+        }
+    }
+
+    async getPermission() {
+        const response = await Permissions.getAsync(Permissions.LOCATION);
+        this.setState({location: response.status});
+        if (response.status === 'granted') {
+            Geolocation.getCurrentPosition(
+                position => {
+                    storage.save({
+                        key: 'region',
+                        data: {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude,
+                            latitudeDelta: 0.08,
+                            longitudeDelta: 0.08,
+                        }
+                    })
+                },
+                (error) => {
+                },
+                {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000})
         }
     }
 

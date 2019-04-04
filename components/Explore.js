@@ -360,7 +360,7 @@ export default class Explore extends Component {
                     ))}
                     {this.state.selected !== null && businesses[this.state.selected] !== undefined &&
                     <MapView.Marker
-                        zIndex={5000}
+                        zIndex={8000}
                         anchor={{x: 0.5, y: 1}}
                         image={this.getLargeCategory(businesses[this.state.selected].category)}
                         coordinate={{
