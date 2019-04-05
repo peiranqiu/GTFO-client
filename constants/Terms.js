@@ -14,7 +14,7 @@ export default class Terms extends Component {
                           onPress={() => this.props.navigation.navigate("Me")}
                     />
                 </View>
-                <ScrollView style={{padding: 5}}>
+                <ScrollView style={{padding: 10}}>
 
                     <Text style={styles.h1}>Terms and Conditions</Text>
                     <Text style={styles.pp}>Last updated: January 17, 2019</Text>

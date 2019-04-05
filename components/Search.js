@@ -72,7 +72,7 @@ export default class Search extends Component {
                     ))}
                 </ScrollView>
                 <Modal isVisible={this.state.visible}>
-                    <ScrollView style={styles.modal}>
+                    <ScrollView style={styles.modal} showsVerticalScrollIndicator={false}>
                         <Icon name='close'
                               containerStyle={{position: 'absolute', right: 0, top: -30}}
                               iconStyle={{color: 'grey', height: 32, width: 32}}

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Image, SafeAreaView, StatusBar, StyleSheet, Text, View} from "react-native";
+import {Image, SafeAreaView, StatusBar, StyleSheet, Text, View, WebView} from "react-native";
 import {Avatar, List, ListItem} from "react-native-elements";
 import friends from '../resources/icons/friends.png';
 import logout from '../resources/icons/logout.png';
@@ -31,8 +31,7 @@ export default class Me extends Component {
         storage.remove({
             key: 'user'
         });
-        const pushAction = StackActions.push({routeName: 'Logout'});
-        this.props.navigation.dispatch(pushAction);
+        this.props.navigation.navigate("Welcome");
     }
 
     render() {
@@ -42,7 +41,6 @@ export default class Me extends Component {
         }
         return (
             <SafeAreaView style={{flex: 1}}>
-
                 <StatusBar barStyle='dark-content'/>
                 <View style={{marginTop: 50, flex: 1}}>
                     <View style={styles.center}>
@@ -52,7 +50,7 @@ export default class Me extends Component {
                     <View style={styles.center}>
                         <Text style={{marginTop: 10, color: 'grey'}}>@{this.state.user.name}</Text>
                     </View>
-                    <List containerStyle={{borderColor: 'white', marginTop: 80, paddingBottom: 40}}>
+                    <List containerStyle={{borderColor: 'white', marginTop: 80, paddingBottom: 60}}>
                         <ListItem containerStyle={styles.listItem}
                                   titleStyle = {{fontSize: 16}}
                                   leftIcon={<Image style={styles.listImage}
@@ -100,8 +98,12 @@ export default class Me extends Component {
                     <View style={styles.center}>
                         <Text style={styles.text}>All rights reserved.</Text>
                     </View>
-
-
+                </View>
+                <View style={{height: 0, width: 0}}>
+                    <WebView
+                        automaticallyAdjustContentInsets={false}
+                        source={{uri: 'https://instagram.com/accounts/logout/'}}
+                    />
                 </View>
             </SafeAreaView>
         );

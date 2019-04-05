@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
         paddingTop: 40,
         height: 80,
         flex: 1,
-        marginLeft: 60
+        marginLeft: Dimensions.get('window').width > 350 ? 60 : 20,
     },
     button: {
         borderRadius: 20,

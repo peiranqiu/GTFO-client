@@ -61,7 +61,7 @@ export default class CustomView extends Component {
                     </View>
                 </TouchableOpacity>}
                 <Modal isVisible={this.state.visible}>
-                    <ScrollView style={styles.modal}>
+                    <ScrollView style={styles.modal} showsVerticalScrollIndicator={false}>
                         <Icon name='close'
                               containerStyle={{position: 'absolute', right: 0, top: -30}}
                               iconStyle={{color: 'grey'}}
@@ -76,7 +76,8 @@ export default class CustomView extends Component {
         );
     }
 }
-
+const device = Dimensions.get('window').width;
+const width = device > 350 ? device - 208 : device - 120;
 const styles = StyleSheet.create({
     modal: {
         flex: 1,
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
         borderRadius: 10
     },
     text: {
-        width: Dimensions.get('window').width - 208,
+        width: width,
         paddingHorizontal: 10,
         height: 60
     },

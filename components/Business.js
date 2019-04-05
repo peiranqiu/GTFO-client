@@ -150,7 +150,7 @@ export default class Business extends Component {
         if (this.props.business === undefined) {
             return null;
         }
-
+        const widthOffset = Dimensions.get('window').width > 350 ? 32 : 25;
         let size = 0;
         let followers = [];
         let data = this.state.followers;
@@ -179,7 +179,7 @@ export default class Business extends Component {
                                 fontSize: 14,
                                 fontWeight: "700",
                                 marginBottom: 3
-                            }}>{this.props.business.name.length > 32 ? this.props.business.name.slice(0, 29) + '...' : this.props.business.name}</Text>
+                            }}>{this.props.business.name.length > widthOffset ? this.props.business.name.slice(0, widthOffset-3) + '...' : this.props.business.name}</Text>
                         <Text style={{fontSize: 12}}>
                             {this.props.business.address.slice(-7).includes("Canada") ?
                                 this.props.business.address.slice(0, -7)

@@ -120,7 +120,6 @@ export default class Explore extends Component {
     getPermission() {
         Permissions.getAsync(Permissions.LOCATION).then(response => {
             this.setState({location: response.status});
-            console.log(response);
             if (response.status === 'granted') {
                 this.setState({permission: true});
                 this.getPosition();
@@ -371,7 +370,7 @@ export default class Explore extends Component {
                 </MapView>
                 }
                 <Modal isVisible={this.state.visible}>
-                    <ScrollView style={styles.modal}>
+                    <ScrollView style={styles.modal} showsVerticalScrollIndicator={false}>
                         <Icon name='close'
                               containerStyle={{position: 'absolute', right: 0, top: -30}}
                               iconStyle={{color: 'grey', height: 32, width: 32}}
@@ -505,6 +504,9 @@ export default class Explore extends Component {
     }
 }
 
+const dimension = Dimensions.get('window').width;
+const margin = dimension > 400 ? 30 : 20;
+
 const styles = StyleSheet.create({
     card: {
         height: 175,
@@ -524,15 +526,15 @@ const styles = StyleSheet.create({
         borderRadius: 10
     },
     text: {
-        width: Dimensions.get('window').width - 175,
+        width: dimension > 350 ? dimension - 175 : dimension - 140,
         paddingHorizontal: 20,
-        height: 90
+        height: dimension > 350 ? 90 : 70
     },
     search: {
         borderRadius: 30,
         backgroundColor: 'white',
         height: 40,
-        width: 237,
+        width: dimension > 350 ? 237 : 190,
         justifyContent: 'center',
         alignItems: 'center',
         shadowOpacity: 0.1,
@@ -554,10 +556,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flex: 1,
         position: 'absolute',
-        top: 50,
+        top: dimension > 400 ? 50 : 30,
         left: 0,
         right: 0,
-        width: Dimensions.get('window').width,
+        width: dimension,
         justifyContent: 'center'
     },
     leftCircle: {
@@ -568,7 +570,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowOffset: {width: 0, height: 0},
         shadowRadius: 10,
-        marginRight: 30
+        marginRight: margin
 
     },
     icon: {
@@ -585,7 +587,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowOffset: {width: 0, height: 0},
         shadowRadius: 10,
-        marginLeft: 30
+        marginLeft: margin
     },
     dropdown: {
         height: 280,
@@ -595,7 +597,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowOffset: {width: 0, height: 0},
         shadowRadius: 10,
-        marginLeft: 30
+        marginLeft: margin
 
     }
 });

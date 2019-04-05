@@ -130,11 +130,12 @@ export default class Home extends Component {
             businesses.category.includes(this.state.filter));
         const length = filteredResults.length;
 
+        const widthOffset = Dimensions.get('window').width > 350 ? 32 : 25;
         return (
             <SafeAreaView style={{flex: 1}}>
                 <StatusBar barStyle='dark-content'/>
                 <Modal isVisible={this.state.visible}>
-                    <ScrollView style={styles.modal}>
+                    <ScrollView style={styles.modal} showsVerticalScrollIndicator={false}>
                         <Icon name='close'
                               containerStyle={{position: 'absolute', right: 0, top: -30}}
                               iconStyle={{color: 'grey', height: 32, width: 32}}
@@ -248,8 +249,8 @@ export default class Home extends Component {
                                                                      fontSize: 14,
                                                                      fontWeight: "700",
                                                                      marginBottom: 3
-                                                                 }}>{item.name.length > 32 ? item.name.slice(0, 29) + '...' : item.name}</Text>
-                                                             <Text style={{fontSize: 12}}>
+                                                                 }}>{item.name.length > widthOffset ? item.name.slice(0, widthOffset-3) + '...' : item.name}</Text>
+                                                             <Text style={{height: 15, fontSize: 12}}>
                                                                  {item.address.slice(-7).includes("Canada") ?
                                                                      item.address.slice(0, -7) : item.address}
                                                              </Text>
@@ -376,7 +377,7 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
     },
     imageText: {
-        width: 250,
+        width: Dimensions.get('window').width < 350? 170 : 250,
         height: 60,
         marginLeft: 20,
         lineHeight: 17,
