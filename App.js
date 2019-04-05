@@ -4,7 +4,6 @@ import Storage from 'react-native-storage';
 import {createAppContainer, createBottomTabNavigator, createStackNavigator} from "react-navigation";
 import Home from "./components/Home";
 import Welcome from "./components/Welcome";
-import Logout from "./components/Logout";
 import Explore from "./components/Explore";
 import Me from "./components/Me";
 import Search from "./components/Search";
@@ -100,7 +99,6 @@ const MeStack = createStackNavigator({
         Friend: Friend,
         FeedBack: FeedBack,
         Terms: Terms,
-        Logout: Logout
     },
     {
         initialRouteName: "Me",

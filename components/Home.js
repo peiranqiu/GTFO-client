@@ -113,7 +113,6 @@ export default class Home extends Component {
                 businesses[index].interested = !businesses[index].interested;
                 if (businesses[index].interested) {
                     businesses[index].followers.push(this.state.user);
-                    console.log(businesses[index].followers);
                 }
                 else {
                     businesses[index].followers = businesses[index].followers.filter(users =>

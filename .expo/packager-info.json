@@ -1,9 +1,9 @@
 {
-  "expoServerPort": null,
-  "packagerPort": null,
-  "packagerPid": null,
-  "devToolsPort": 19002,
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 50307,
+  "devToolsPort": 19003,
   "expoServerNgrokUrl": "https://hb-t2h.peggypeggyq.client.exp.direct",
   "packagerNgrokUrl": "https://packager.hb-t2h.peggypeggyq.client.exp.direct",
-  "ngrokPid": 49820
+  "ngrokPid": 50321
 }
