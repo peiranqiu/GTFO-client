@@ -43,6 +43,7 @@ export default class Business extends Component {
                             .then(response => {
                                 let friendIds = [];
                                 friends.map(user => friendIds.push(user._id));
+                                friendIds.push(this.state.user._id);
                                 response = response.filter(u => friendIds.includes(u._id));
                                 response.push(this.state.gtfo);
                                 this.setState({followers: response});

@@ -68,6 +68,7 @@ export default class Home extends Component {
                                     let friendIds = [];
                                     friends.map(u => friendIds.push(u._id));
                                     friendIds.push(this.state.user._id);
+                                    let count = 0;
                                     businesses.map(business => {
                                         let posts = [];
                                         business.posts.map(post => {
@@ -88,9 +89,11 @@ export default class Home extends Component {
                                             this.postService.findIfInterested(business.id, user._id)
                                                 .then(response => business.interested = response);
                                             business.key = "" + business.id;
+                                            business.position = count;
                                             let allBusinesses = this.state.businesses;
                                             allBusinesses.push(business);
                                             this.setState({businesses: allBusinesses});
+                                            count++;
                                         }
                                     });
                                 }
@@ -110,6 +113,7 @@ export default class Home extends Component {
                 businesses[index].interested = !businesses[index].interested;
                 if (businesses[index].interested) {
                     businesses[index].followers.push(this.state.user);
+                    console.log(businesses[index].followers);
                 }
                 else {
                     businesses[index].followers = businesses[index].followers.filter(users =>
@@ -139,7 +143,7 @@ export default class Home extends Component {
                         <Business business={this.state.businesses[this.state.selected]}
                                   navigation={this.props.navigation}
                                   close={() => this.setState({visible: false})}
-                                  refresh={(business) => {
+                                  refresh={business => {
                                       let businesses = this.state.businesses;
                                       businesses[this.state.selected] = business;
                                       this.setState({businesses: businesses})
@@ -211,7 +215,7 @@ export default class Home extends Component {
                                                                    activeOpacity={1}
                                                                    style={styles.card}
                                                                    onPress={() => this.setState({
-                                                                       selected: index,
+                                                                       selected: item.position,
                                                                        visible: true
                                                                    })}>
                                                      <View>
