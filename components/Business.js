@@ -165,16 +165,7 @@ export default class Business extends Component {
                     />
                     <View style={{position: 'absolute', padding: 20, bottom: 20, flexDirection: 'row'}}>
                         <Avatar medium rounded source={{uri: this.props.business.posts[0].user.avatar}}/>
-                        <Text style={{
-                            width: 250,
-                            height: 60,
-                            marginLeft: 20,
-                            lineHeight: 17,
-                            fontSize: 14,
-                            fontWeight: '600',
-                            color: 'white',
-                            marginTop: 5
-                        }}>
+                        <Text style={styles.imageText}>
                             {this.props.business.posts[0].user.name === 'gtfo_guide' ?
                                 '' : this.props.business.posts[0].user.name}
                             {this.props.business.posts[0].user.name === 'gtfo_guide' ? '' : ': '}
@@ -345,5 +336,18 @@ const styles = StyleSheet.create({
         marginTop: 20,
         borderRadius: 10,
         marginHorizontal: 5
-    }
+    },
+    imageText: {
+        width: 230,
+        height: 60,
+        marginLeft: 10,
+        lineHeight: 17,
+        fontSize: 14,
+        fontWeight: '600',
+        color: 'white',
+        marginTop: 5,
+        textShadowColor: 'rgba(0, 0, 0, 0.75)',
+        textShadowOffset: {width: -1, height: 1},
+        textShadowRadius: 5
+    },
 });

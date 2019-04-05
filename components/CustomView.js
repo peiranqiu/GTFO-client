@@ -43,10 +43,10 @@ export default class CustomView extends Component {
                            source={{uri: business.posts[0].photo}}
                     />
                     <View style={styles.text}>
-                        <Text style={{fontSize: 17, marginTop: 15}}>
+                        <Text style={{fontSize: 17, marginTop: 10}}>
                             {business.name}
                         </Text>
-                        <Text style={{lineHeight: 16, fontSize: 14, color: 'grey', marginTop: 10}}>
+                        <Text style={{lineHeight: 16, fontSize: 14, color: 'grey', marginTop: 5}}>
                             {business.posts[0].user.name === 'gtfo_guide' ?
                                 '' : business.posts[0].user.name}
                             {business.posts[0].user.name === 'gtfo_guide' ? '' : ': '}
