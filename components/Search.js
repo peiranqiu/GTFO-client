@@ -28,7 +28,7 @@ export default class Search extends Component {
                     blockedBusinessId.push(blockedBusiness.businessId)
                 );
                 this.postService.findAllBusinesses().then(result => {
-                    this.setState({businesses: result.filter(business => !business.open && !blockedBusinessId.includes(business.id))});
+                    this.setState({businesses: result.filter(business => !blockedBusinessId.includes(business.id))});
                 });
             })
             .catch(err =>
@@ -60,7 +60,7 @@ export default class Search extends Component {
                         containerStyle={styles.searchContainer}
                         placeholder='Search Places'/>
                     <Icon name='chevron-left'
-                          containerStyle={{position: 'absolute', left: 10, top: 20}}
+                          containerStyle={{position: 'absolute', left: 10, top: 15}}
                           size={40}
                           onPress={() => {
                               analytics.track('search page', {"type": "close"});
@@ -142,8 +142,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         fontSize: 14,
         textAlign: 'left',
-        paddingBottom: 12,
-        paddingLeft: 30
+        paddingBottom: 10,
+        paddingLeft: 40
     },
     modal: {
         flex: 1,

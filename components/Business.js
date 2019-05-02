@@ -148,7 +148,6 @@ export default class Business extends Component {
     }
 
     updatePreviousPage() {
-        Alert.alert("Thanks for letting us know");
         let business = this.props.business;
         business.open = true;
         const refresh = this.props.refresh;
@@ -166,6 +165,7 @@ export default class Business extends Component {
         if (this.props.business.id !== constants.GTFO_ID) {
             this.postService.reportBusiness(this.props.business.id);
         }
+        this.blockBusiness();
     }
 
     blockBusiness() {
@@ -214,24 +214,15 @@ export default class Business extends Component {
                         }
                     }}
                 ><TouchableOpacity style={styles.resultItem}
-                                   onPress={() => {
-                                       this.reportBusiness();
-                                       this.blockBusiness();
-                                   }}>
+                                   onPress={() => this.reportBusiness()}>
                     <Text style={styles.resultText}>It's spam</Text>
                 </TouchableOpacity>
                     <TouchableOpacity style={styles.resultItem}
-                                      onPress={() => {
-                                          this.reportBusiness();
-                                          this.blockBusiness();
-                                      }}>
+                                      onPress={() => this.reportBusiness()}>
                         <Text style={styles.resultText}>It's inappropriate</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.resultItem}
-                                      onPress={() => {
-                                          this.reportBusiness();
-                                          this.blockBusiness();
-                                      }}>
+                                      onPress={() => this.reportBusiness()}>
                         <Text style={styles.resultText}>It's a scam</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.resultItem}

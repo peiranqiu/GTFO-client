@@ -74,7 +74,7 @@ export default class Home extends Component {
                                         blockedBusinessId.push(blockedBusiness.businessId)
                                     );
                                     businesses.map(business => {
-                                        if (!business.open && !blockedBusinessId.includes(business.id)) {
+                                        if (!blockedBusinessId.includes(business.id)) {
                                             let posts = [];
                                             business.posts.map(post => {
                                                 if (friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID) {

@@ -10,7 +10,7 @@ export default class Terms extends Component {
                 <View style={styles.container}>
                     <Icon name='chevron-left'
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
-                          size={30}
+                          size={40}
                           onPress={() => this.props.navigation.goBack()}
                     />
                 </View>

@@ -148,9 +148,8 @@ export default class Explore extends Component {
                                 user.blockedBusinessId.map(blockedBusiness =>
                                     blockedBusinessId.push(blockedBusiness.businessId)
                                 );
-                                console.log(blockedBusinessId);
                                 businesses = this.filterFriends(businesses, friends).filter(business =>
-                                    !business.open && !blockedBusinessId.includes(business.id));
+                                    !blockedBusinessId.includes(business.id));
                                 businesses.map(business => {
                                     business.interested = false;
                                     business.followers = [];
