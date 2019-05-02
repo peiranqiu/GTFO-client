@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Dimensions, Image, Linking, ScrollView, StyleSheet, Text, View, TouchableOpacity} from 'react-native'
+import {Dimensions, Image, Linking, ScrollView, StyleSheet, Text, View, TouchableOpacity, Alert} from 'react-native'
 import {Notifications, MapView} from "expo"
 import * as constants from "../constants/constant";
 import art from '../resources/icons/art.png';
@@ -148,6 +148,7 @@ export default class Business extends Component {
     }
 
     updatePreviousPage() {
+        Alert.alert("Thanks for letting us know");
         let business = this.props.business;
         business.open = true;
         const refresh = this.props.refresh;
@@ -170,7 +171,6 @@ export default class Business extends Component {
     blockBusiness() {
         let user = this.state.user;
         this.postService.blockBusiness(user._id, this.props.business.id).then(blockedBusiness => {
-            console.log(blockedBusiness);
             let list = user.blockedBusinessId;
             list.push(blockedBusiness);
             storage.save({

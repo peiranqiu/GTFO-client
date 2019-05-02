@@ -8,8 +8,7 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-    View,
-    Alert
+    View
 } from 'react-native';
 import UserServiceClient from "../services/UserServiceClient";
 import {Avatar, Icon, SearchBar} from 'react-native-elements'
@@ -53,9 +52,7 @@ export default class Friend extends Component {
                 this.props.navigation.navigate("Welcome");
             });
         this.userService.findAllUsers()
-            .then((users) => {
-                this.setState({allUsers: users})
-            });
+            .then(users => this.setState({allUsers: users}));
     }
 
     acceptRequest(i) {
@@ -86,6 +83,14 @@ export default class Friend extends Component {
                 this.setState({friends: friends});
                 this.RBSheet.close();
             });
+    }
+
+    reportUser(userId) {
+        this.userService.reportUser(userId).then(() => {
+            let users = this.state.allUsers.filter(users => users._id !== userId);
+            this.setState({allUsers: users});
+            this.deleteFriend(this.state.selected);
+        });
     }
 
     isFriend(user) {
@@ -149,7 +154,8 @@ export default class Friend extends Component {
                           onPress={() => {
                               analytics.track('friend page', {"type": "close"});
                               analytics.track('me page', {"type": "open"});
-                              this.props.navigation.navigate("Me");}}
+                              this.props.navigation.navigate("Me");
+                          }}
                     />
                 </View>
                 <RBSheet
@@ -165,24 +171,15 @@ export default class Friend extends Component {
                         }
                     }}
                 ><TouchableOpacity style={styles.resultItem}
-                                   onPress={() => {
-                                       this.userService.reportUser(this.state.friends[this.state.selected]._id);
-                                       this.deleteFriend(this.state.selected);
-                                   }}>
+                                   onPress={() => this.reportUser(this.state.friends[this.state.selected]._id)}>
                     <Text style={styles.resultText}>Report spam</Text>
                 </TouchableOpacity>
                     <TouchableOpacity style={styles.resultItem}
-                                      onPress={() => {
-                                          this.userService.reportUser(this.state.friends[this.state.selected]._id);
-                                          this.deleteFriend(this.state.selected);
-                                      }}>
+                                      onPress={() => this.reportUser(this.state.friends[this.state.selected]._id)}>
                         <Text style={styles.resultText}>Report inappropriate</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.resultItem}
-                                      onPress={() => {
-                                          this.userService.reportUser(this.state.friends[this.state.selected]._id);
-                                          this.deleteFriend(this.state.selected);
-                                      }}>
+                                      onPress={() => this.reportUser(this.state.friends[this.state.selected]._id)}>
                         <Text style={styles.resultText}>Report scam</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.resultItem}
@@ -197,47 +194,65 @@ export default class Friend extends Component {
                     <ScrollView>
                         <Text style={{marginHorizontal: 20, marginTop: 30}}>Users on GTFO</Text>
                         {filteredResults.length === 0 ?
-                        <TouchableOpacity style={{width: Dimensions.get('window').width, marginTop: '30%', flex: 1, justifyContent: 'center'}}
-                                          onPress={() => this.search.focus()}>
-                            <Image
-                                style={{width: 40, height: 22, alignSelf: 'center'}}
-                                source={group_add}
-                            />
-                            <Text style={{fontSize: 14, marginTop: 20, alignSelf: 'center'}}>No result...</Text>
-                            <Text style={{fontSize: 14, marginTop: 10, alignSelf: 'center'}}>Try another search or ask your friend to sign up!</Text>
-                        </TouchableOpacity> :
-                        (filteredResults.map((u, i) => (
-                            <View key={i} style={styles.resultItem}>
-                                <View style={{flexDirection: 'row'}}>
-                                    <Avatar size={20} rounded source={{uri: u.avatar}}/>
-                                    <Text style={{margin: 6}}>{u.name}</Text>
-                                    {!this.isSent(u) && !this.isInRequest(u) && !this.isFriend(u) &&
-                                    <TouchableOpacity style={{position: 'absolute', right: 30, top: 5}}
-                                                      onPress={() => this.sendRequest(u)}>
-                                        <Image
-                                            style={{width: 20, height: 20}}
-                                            source={add_friend}
-                                        />
-                                    </TouchableOpacity>}
-                                    {this.isSent(u) &&
-                                    <Text
-                                        style={{fontSize: 14, color: 'grey', position: 'absolute', right: 30, top: 5}}>
-                                        Pending</Text>}
-                                    {this.isInRequest(u) &&
-                                    <Text style={{position: 'absolute', right: 30, top: 5}}>
-                                        <SvgUri width="20" height="20" source={friend_request}/></Text>}
+                            <TouchableOpacity style={{
+                                width: Dimensions.get('window').width,
+                                marginTop: '30%',
+                                flex: 1,
+                                justifyContent: 'center'
+                            }}
+                                              onPress={() => this.search.focus()}>
+                                <Image
+                                    style={{width: 40, height: 22, alignSelf: 'center'}}
+                                    source={group_add}
+                                />
+                                <Text style={{fontSize: 14, marginTop: 20, alignSelf: 'center'}}>No result...</Text>
+                                <Text style={{fontSize: 14, marginTop: 10, alignSelf: 'center'}}>Try another search or
+                                    ask your friend to sign up!</Text>
+                            </TouchableOpacity> :
+                            (filteredResults.map((u, i) => (
+                                <View key={i} style={styles.resultItem}>
+                                    <View style={{flexDirection: 'row'}}>
+                                        <Avatar size={20} rounded source={{uri: u.avatar}}/>
+                                        <Text style={{margin: 6}}>{u.name}</Text>
+                                        {!this.isSent(u) && !this.isInRequest(u) && !this.isFriend(u) &&
+                                        <TouchableOpacity style={{position: 'absolute', right: 30, top: 5}}
+                                                          onPress={() => this.sendRequest(u)}>
+                                            <Image
+                                                style={{width: 20, height: 20}}
+                                                source={add_friend}
+                                            />
+                                        </TouchableOpacity>}
+                                        {this.isSent(u) &&
+                                        <Text
+                                            style={{
+                                                fontSize: 14,
+                                                color: 'grey',
+                                                position: 'absolute',
+                                                right: 30,
+                                                top: 5
+                                            }}>
+                                            Pending</Text>}
+                                        {this.isInRequest(u) &&
+                                        <Text style={{position: 'absolute', right: 30, top: 5}}>
+                                            <SvgUri width="20" height="20" source={friend_request}/></Text>}
+                                    </View>
                                 </View>
-                            </View>
-                        )))}
+                            )))}
                     </ScrollView> :
                     ((this.state.requests !== null && this.state.friends !== null) && (this.state.requests.length + this.state.friends.length === 0 ?
-                        <TouchableOpacity style={{width: Dimensions.get('window').width, marginTop: '30%', flex: 1, justifyContent: 'center'}}
+                        <TouchableOpacity style={{
+                            width: Dimensions.get('window').width,
+                            marginTop: '30%',
+                            flex: 1,
+                            justifyContent: 'center'
+                        }}
                                           onPress={() => this.search.focus()}>
                             <Image
                                 style={{width: 40, height: 22, alignSelf: 'center'}}
                                 source={group_add}
                             />
-                            <Text style={{fontSize: 14, marginTop: 20, alignSelf: 'center'}}>You don't have any friend:( {"\n"} Search
+                            <Text style={{fontSize: 14, marginTop: 20, alignSelf: 'center'}}>You don't have any
+                                friend:( {"\n"} Search
                                 to add some friend!</Text>
                         </TouchableOpacity> :
                         <ScrollView>

@@ -27,7 +27,7 @@ export default class Welcome extends Component {
     login(token) {
         this.setState({token: token});
         this.userService.createUser(token).then(user => {
-            if(user.status) {
+            if (user.status) {
                 storage.save({
                     key: 'user',
                     data: {
@@ -58,7 +58,7 @@ export default class Welcome extends Component {
                     <View style={{justifyContent: 'center', flexDirection: 'row', marginTop: 55, marginBottom: 15}}>
                         <TouchableOpacity style={{
                             borderRadius: 20,
-                            backgroundColor: this.state.checked? '#4c4c4c' : '#9c9c9c',
+                            backgroundColor: this.state.checked ? '#4c4c4c' : '#9c9c9c',
                             height: 42,
                             width: 246,
                             justifyContent: 'center',
@@ -80,7 +80,7 @@ export default class Welcome extends Component {
                     </View>
                     <View style={{justifyContent: 'center', flexDirection: 'row'}}>
                         <CheckBox
-                            size = {20}
+                            size={20}
                             containerStyle={{margin: 0, padding: 0, backgroundColor: "white", borderColor: "white"}}
                             textStyle={{margin: 0, padding: 0}}
                             checked={this.state.checked}
