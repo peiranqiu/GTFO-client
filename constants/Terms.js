@@ -11,13 +11,126 @@ export default class Terms extends Component {
                     <Icon name='chevron-left'
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
                           size={30}
-                          onPress={() => this.props.navigation.navigate("Me")}
+                          onPress={() => this.props.navigation.goBack()}
                     />
                 </View>
                 <ScrollView style={{padding: 10}}>
 
+
+                    <Text style={styles.h1}>End-User License Agreement (EULA)</Text>
+                    <Text style={styles.pp}>Last updated: April 17, 2019</Text>
+
+                    <Text style={styles.p}>This End-User License Agreement ("EULA") is a legal agreement between you and
+                        Wyse Technologies Inc.</Text>
+
+                    <Text style={styles.p}>This EULA agreement governs your acquisition and use of our GTFO(Get the Fun
+                        Outside) software
+                        ("Software") directly from Wyse Technologies Inc. or
+                        indirectly through a Wyse Technologies Inc. authorized
+                        reseller or distributor (a "Reseller").</Text>
+
+                    <Text style={styles.p}>Please read this EULA agreement carefully before completing the installation
+                        process and using
+                        the software. It provides a license
+                        to use the GTFO(Get the Fun Outside) software and contains
+                        warranty information and liability disclaimers.</Text>
+
+                    <Text style={styles.p}>If you register for a free trial of the GTFO(Get the Fun Outside) software,
+                        this EULA agreement will also
+                        govern that trial. By clicking "accept" or installing and/or using the GTFO(Get the Fun Outside)
+                        software, you are confirming your
+                        acceptance of the Software and agreeing to become bound by the terms of this EULA
+                        agreement.</Text>
+
+                    <Text style={styles.p}>If you are entering into this EULA agreement on behalf of a company or other
+                        legal entity, you
+                        represent that you have the authority to bind such entity and its affiliates to these terms and
+                        conditions. If you do not have such authority or if you do not agree with the terms and
+                        conditions of this EULA agreement, do not install or use the Software, and you must not accept
+                        this EULA agreement.</Text>
+
+                    <Text style={styles.p}>This EULA agreement shall apply only to the Software supplied by Wyse
+                        Technologies Inc. herewith
+                        regardless of whether other software is referred to or described herein. The terms also apply to
+                        any Wyse Technologies Inc. updates, supplements,
+                        Internet-based services, and support services for the Software, unless other terms accompany
+                        those items on delivery. If so, those terms apply. </Text>
+
+                    <Text style={styles.h2}>License Grant</Text>
+
+                    <Text style={styles.p}>Wyse Technologies Inc. hereby grants you a personal,
+                        non-transferable, non-exclusive licence to use the GTFO(Get the Fun Outside) software
+                        on your devices in accordance with the terms of this EULA agreement.</Text>
+
+                    <Text style={styles.p}>You are permitted to load the GTFO(Get the Fun Outside) software (for example
+                        a PC, laptop,
+                        mobile or tablet) under your control. You are responsible for ensuring your device meets the
+                        minimum requirements of the GTFO(Get the Fun Outside) software.</Text>
+
+                    <Text style={styles.p}>You are not permitted to:</Text>
+
+                    <Text style={styles.l}>• Edit, alter, modify, adapt, translate or otherwise change the whole or any
+                        part of the
+                        Software nor permit the whole or any part of the Software to be combined with or become
+                        incorporated in any other software, nor decompile, disassemble or reverse engineer the
+                        Software or attempt to do any such things
+                    </Text>
+                    <Text style={styles.l}>• Reproduce, copy, distribute, resell or otherwise use the Software for any
+                        commercial
+                        purpose
+                    </Text>
+                    <Text style={styles.l}>• Allow any third party to use the Software on behalf of or for the benefit
+                        of any third
+                        party
+                    </Text>
+                    <Text style={styles.l}>• Use the Software in any way which breaches any applicable local, national
+                        or international law
+                    </Text>
+                    <Text style={styles.l}>• use the Software for any purpose that Wyse Technologies Inc. considers
+                        is a breach of this EULA agreement
+                    </Text>
+
+                    <Text style={styles.h2}>Intellectual Property and Ownership</Text>
+
+                    <Text style={styles.p}>Wyse Technologies Inc. shall at all times retain
+                        ownership of the Software as originally downloaded by you and all subsequent downloads of
+                        the Software by you. The Software (and the copyright, and other intellectual property rights
+                        of whatever nature in the Software, including any modifications made thereto) are and shall
+                        remain the property of Wyse Technologies Inc..</Text>
+
+                    <Text style={styles.p}>Wyse Technologies Inc. reserves the right to grant
+                        licences to use the Software to third parties.</Text>
+
+                    <Text style={styles.h2}>Termination</Text>
+
+                    <Text style={styles.p}>This EULA agreement is effective from the date you first use the Software and
+                        shall continue
+                        until terminated. You may terminate it at any time upon written notice to Wyse Technologies
+                        Inc..</Text>
+
+                    <Text style={styles.p}>It will also terminate immediately if you fail to comply with any term of
+                        this EULA
+                        agreement. Upon such termination, the licenses granted by this EULA agreement will
+                        immediately terminate and you agree to stop all access and use of the Software. The
+                        provisions that by their nature continue and survive will survive any termination of this
+                        EULA agreement.</Text>
+
+                    <Text style={styles.h2}>Governing Law</Text>
+
+                    <Text style={styles.p}>This EULA agreement, and any dispute arising out of or in connection with
+                        this EULA
+                        agreement, shall be governed by and construed in accordance with the laws.</Text>
+
+
+
+
+
+
+
+
+
                     <Text style={styles.h1}>Terms and Conditions</Text>
-                    <Text style={styles.pp}>Last updated: January 17, 2019</Text>
+                    <Text style={styles.pp}>Last updated: April 17, 2019</Text>
 
                     <Text style={styles.p}>These Terms and Conditions ("Terms", "Terms and Conditions") govern your
                         relationship with GTFO mobile application (the "Service") operated by Wyse Technologies Inc
@@ -176,8 +289,14 @@ export default class Terms extends Component {
                         gtfotesting@gmail.com.</Text>
 
 
+
+
+
+
+
+
                     <Text style={styles.h1}>Privacy Policy</Text>
-                    <Text style={styles.pp}>Effective date: January 17, 2019</Text>
+                    <Text style={styles.pp}>Effective date: April 17, 2019</Text>
 
                     <Text style={styles.p}>Wyse Technologies Inc ("us", "we", or "our") operates the GTFO mobile
                         application (hereinafter referred to as the "Service").</Text>
@@ -364,8 +483,12 @@ export default class Terms extends Component {
                     <Text style={styles.p}>You are advised to review this Privacy Policy periodically for any changes.
                         Changes to this Privacy Policy are effective when they are posted on this page.</Text>
 
+
+
+
+
                     <Text style={styles.h2}>Contact Us</Text>
-                    <Text style={styles.p}>If you have any questions about this Privacy Policy, please contact
+                    <Text style={styles.p}>If you have any questions, please contact
                         us:</Text>
                     <Text style={styles.l}>• By email: dchen@gtfo.gg</Text>
                     <View style={styles.container}/>
@@ -379,7 +502,7 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: 70,
-        margin:0
+        margin: 0
     },
     h1: {
         fontSize: 22,

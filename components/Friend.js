@@ -8,7 +8,8 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-    View
+    View,
+    Alert
 } from 'react-native';
 import UserServiceClient from "../services/UserServiceClient";
 import {Avatar, Icon, SearchBar} from 'react-native-elements'
@@ -18,6 +19,7 @@ import group_add from '../resources/icons/group_add.png';
 import SvgUri from 'react-native-svg-uri';
 import * as constants from "../constants/constant";
 import {Notifications} from 'expo';
+import RBSheet from "react-native-raw-bottom-sheet";
 
 export default class Friend extends Component {
     constructor(props) {
@@ -30,7 +32,8 @@ export default class Friend extends Component {
             friends: null,
             requests: null,
             sends: [],
-            searching: false
+            searching: false,
+            selected: null
         };
     }
 
@@ -72,6 +75,16 @@ export default class Friend extends Component {
                 let sends = this.state.sends;
                 sends.push(user);
                 this.setState({sends: sends});
+            });
+    }
+
+    deleteFriend(i) {
+        let friends = this.state.friends;
+        this.userService.deleteFriend(this.state.user._id, friends[i]._id)
+            .then(() => {
+                friends.splice(i, 1);
+                this.setState({friends: friends});
+                this.RBSheet.close();
             });
     }
 
@@ -132,13 +145,54 @@ export default class Friend extends Component {
                         placeholder='Search friends by Instagram ID'/>
                     <Icon name='chevron-left'
                           containerStyle={{position: 'absolute', left: 10, top: 15}}
-                          size={30}
+                          size={40}
                           onPress={() => {
                               analytics.track('friend page', {"type": "close"});
                               analytics.track('me page', {"type": "open"});
                               this.props.navigation.navigate("Me");}}
                     />
                 </View>
+                <RBSheet
+                    ref={ref => {
+                        this.RBSheet = ref;
+                    }}
+                    height={220}
+                    duration={250}
+                    customStyles={{
+                        container: {
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }
+                    }}
+                ><TouchableOpacity style={styles.resultItem}
+                                   onPress={() => {
+                                       this.userService.reportUser(this.state.friends[this.state.selected]._id);
+                                       this.deleteFriend(this.state.selected);
+                                   }}>
+                    <Text style={styles.resultText}>Report spam</Text>
+                </TouchableOpacity>
+                    <TouchableOpacity style={styles.resultItem}
+                                      onPress={() => {
+                                          this.userService.reportUser(this.state.friends[this.state.selected]._id);
+                                          this.deleteFriend(this.state.selected);
+                                      }}>
+                        <Text style={styles.resultText}>Report inappropriate</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.resultItem}
+                                      onPress={() => {
+                                          this.userService.reportUser(this.state.friends[this.state.selected]._id);
+                                          this.deleteFriend(this.state.selected);
+                                      }}>
+                        <Text style={styles.resultText}>Report scam</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.resultItem}
+                                      onPress={() => this.deleteFriend(this.state.selected)}>
+                        <Text style={{
+                            justifyContent: 'center',
+                            fontSize: 14
+                        }}>Delete friend</Text>
+                    </TouchableOpacity>
+                </RBSheet>
                 {this.state.searchTerm.length > 0 ?
                     <ScrollView>
                         <Text style={{marginHorizontal: 20, marginTop: 30}}>Users on GTFO</Text>
@@ -211,6 +265,14 @@ export default class Friend extends Component {
                                     <View style={{flexDirection: 'row'}}>
                                         <Avatar size={20} rounded source={{uri: friend.avatar}}/>
                                         <Text style={{margin: 6}}>{friend.name}</Text>
+                                        <Icon name='more-horiz'
+                                              containerStyle={{position: 'absolute', right: 10, top: 5}}
+                                              size={16}
+                                              onPress={() => {
+                                                  this.setState({selected: i});
+                                                  this.RBSheet.open();
+                                              }}
+                                        />
                                     </View>
                                 </View>
                             ))}
@@ -261,5 +323,16 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         paddingBottom: 10,
         paddingLeft: 40
-    }
+    },
+    resultItem: {
+        borderBottomWidth: 0.5,
+        borderColor: 'white',
+        padding: 15,
+        justifyContent: 'center'
+    },
+    resultText: {
+        color: 'red',
+        justifyContent: 'center',
+        fontSize: 14
+    },
 });

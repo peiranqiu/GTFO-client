@@ -47,7 +47,7 @@ export default class FeedBack extends Component {
                         <Text style={styles.searchContainer}>Feedback</Text>
                         <Icon name='chevron-left'
                               containerStyle={{position: 'absolute', left: 10, top: 20}}
-                              size={30}
+                              size={40}
                               onPress={() => {
                                   analytics.track('feedback page', {"type": "close"});
                                   analytics.track('me page', {"type": "open"});

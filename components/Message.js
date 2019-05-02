@@ -19,9 +19,10 @@ import ChatServiceClient from "../services/ChatServiceClient";
 import Modal from "react-native-modal";
 import dismissKeyboard from 'react-native-dismiss-keyboard';
 import {Notifications} from 'expo';
+import RBSheet from "react-native-raw-bottom-sheet";
+import * as constants from "../constants/constant";
 
 console.disableYellowBox = true;
-
 
 
 export default class Message extends Component {
@@ -112,7 +113,8 @@ export default class Message extends Component {
         if (messages.length > 0) {
             const chat = this.props.navigation.getParam('chat', {});
             const currentMessage = {text: messages[0].text, user: this.state.user};
-            this.chatService.createMessage(chat.id, currentMessage).then(() => {});
+            this.chatService.createMessage(chat.id, currentMessage).then(() => {
+            });
             this.setState((previousState) => {
                 return {
                     messages: GiftedChat.append(previousState.messages, messages)
@@ -123,7 +125,7 @@ export default class Message extends Component {
 
     renderCustomView(props) {
         if (props.currentMessage.businessId > 0) {
-            return (<CustomView {...props}  navigation={this.props.navigation}/>);
+            return (<CustomView {...props} navigation={this.props.navigation}/>);
         }
         return null;
     }
@@ -182,6 +184,16 @@ export default class Message extends Component {
                              }}/>
     }
 
+    leaveChat() {
+        let user = this.state.user;
+        this.chatService.leaveChat(user._id, this.state.chat.id).then(chat => {
+            this.RBSheet.close();
+            const pushAction = StackActions.push({
+                routeName: 'Chats'
+            });
+            this.props.navigation.dispatch(pushAction);
+        });
+    }
 
     submit() {
         if (this.state.formTitle.length === 0 || this.state.formLocation.length === 0) {
@@ -207,18 +219,65 @@ export default class Message extends Component {
                 <SafeAreaView style={{flex: 1}}
                               keyboardShouldPersistTaps={'handled'}>
                     <StatusBar barStyle='dark-content'/>
+                    <RBSheet
+                        ref={ref => {
+                            this.RBSheet = ref;
+                        }}
+                        height={220}
+                        duration={250}
+                        customStyles={{
+                            container: {
+                                justifyContent: "center",
+                                alignItems: "center"
+                            }
+                        }}
+                    ><TouchableOpacity style={styles.resultItem}
+                                       onPress={() => {
+                                           this.chatService.reportChat(this.state.chat.id);
+                                           this.leaveChat();
+                                       }}>
+                        <Text style={styles.resultText}>Report spam</Text>
+                    </TouchableOpacity>
+                        <TouchableOpacity style={styles.resultItem}
+                                          onPress={() => {
+                                              this.chatService.reportChat(this.state.chat.id);
+                                              this.leaveChat();
+                                          }}>
+                            <Text style={styles.resultText}>Report inappropriate</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.resultItem}
+                                          onPress={() => {
+                                              this.chatService.reportChat(this.state.chat.id);
+                                              this.leaveChat();
+                                          }}>
+                            <Text style={styles.resultText}>Report scam</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.resultItem}
+                                          onPress={() => this.leaveChat()}>
+                            <Text style={{
+                                justifyContent: 'center',
+                                fontSize: 14
+                            }}>Delete and leave</Text>
+                        </TouchableOpacity>
+                    </RBSheet>
                     <View style={this.state.chat.address.length > 0 ? styles.containerWithReminder : styles.container}>
                         <Text style={styles.searchContainer}>{this.state.chat.name}({this.state.chat.size})</Text>
                         <Icon name='chevron-left'
                               containerStyle={{position: 'absolute', left: 10, top: 20}}
-                              size={30}
+                              size={40}
                               onPress={() => {
                                   analytics.track('message page', {"type": "close"});
                                   analytics.track('chats page', {"type": "open"});
                                   const pushAction = StackActions.push({
                                       routeName: 'Chats'
                                   });
-                                  this.props.navigation.dispatch(pushAction);}}
+                                  this.props.navigation.dispatch(pushAction);
+                              }}
+                        />
+                        <Icon name='more-horiz'
+                              containerStyle={{position: 'absolute', right: 10, top: 20}}
+                              size={30}
+                              onPress={() => this.RBSheet.open()}
                         />
                         {this.state.chat.address.length > 0 &&
                         <View style={styles.reminder}>
@@ -296,7 +355,7 @@ export default class Message extends Component {
                                   iconStyle={{color: 'grey', marginLeft: 20, marginBottom: 10}}
                             />
                             <FormInput containerStyle={styles.formInput}
-                                       value={this.state.formTime === null? "" : this.state.formTime.toString().slice(0, 21)}
+                                       value={this.state.formTime === null ? "" : this.state.formTime.toString().slice(0, 21)}
                                        placeholder="Select Date and Time..."
                                        onFocus={() => {
                                            if (this.state.formTime === null) {
@@ -393,5 +452,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         bottom: 17,
         position: 'absolute'
-    }
+    },
+    resultItem: {
+        borderBottomWidth: 0.5,
+        borderColor: 'white',
+        padding: 15,
+        justifyContent: 'center'
+    },
+    resultText: {
+        color: 'red',
+        justifyContent: 'center',
+        fontSize: 14
+    },
 });

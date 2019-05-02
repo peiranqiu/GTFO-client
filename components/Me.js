@@ -79,7 +79,7 @@ export default class Me extends Component {
                                       this.props.navigation.navigate("Terms");}}
                                   leftIcon={<Image style={styles.listImage}
                                                    source={privacy}/>}
-                                  title="Terms and Privacy"
+                                  title="Agreement, Terms and Privacy"
                                   hideChevron/>
                         <ListItem containerStyle={styles.listItem}
                                   titleStyle = {{fontSize: 16}}

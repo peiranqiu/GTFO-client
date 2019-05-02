@@ -69,31 +69,37 @@ export default class Home extends Component {
                                     friends.map(u => friendIds.push(u._id));
                                     friendIds.push(this.state.user._id);
                                     let count = 0;
+                                    let blockedBusinessId = [];
+                                    user.blockedBusinessId.map(blockedBusiness =>
+                                        blockedBusinessId.push(blockedBusiness.businessId)
+                                    );
                                     businesses.map(business => {
-                                        let posts = [];
-                                        business.posts.map(post => {
-                                            if (friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID) {
-                                                posts.push(post);
+                                        if (!business.open && !blockedBusinessId.includes(business.id)) {
+                                            let posts = [];
+                                            business.posts.map(post => {
+                                                if (friendIds.includes(post.user._id) || post.user._id === constants.GTFO_ID) {
+                                                    posts.push(post);
+                                                }
+                                            });
+                                            if (posts.length > 0) {
+                                                business.posts = posts;
+                                                business.interested = false;
+                                                business.followers = [];
+                                                this.postService.findFollowersForBusiness(business.id)
+                                                    .then(response => {
+                                                        response = response.filter(u => friendIds.includes(u._id));
+                                                        response.push(this.state.gtfo);
+                                                        business.followers = response;
+                                                    });
+                                                this.postService.findIfInterested(business.id, user._id)
+                                                    .then(response => business.interested = response);
+                                                business.key = "" + business.id;
+                                                business.position = count;
+                                                let allBusinesses = this.state.businesses;
+                                                allBusinesses.push(business);
+                                                this.setState({businesses: allBusinesses});
+                                                count++;
                                             }
-                                        });
-                                        if (posts.length > 0) {
-                                            business.posts = posts;
-                                            business.interested = false;
-                                            business.followers = [];
-                                            this.postService.findFollowersForBusiness(business.id)
-                                                .then(response => {
-                                                    response = response.filter(u => friendIds.includes(u._id));
-                                                    response.push(this.state.gtfo);
-                                                    business.followers = response;
-                                                });
-                                            this.postService.findIfInterested(business.id, user._id)
-                                                .then(response => business.interested = response);
-                                            business.key = "" + business.id;
-                                            business.position = count;
-                                            let allBusinesses = this.state.businesses;
-                                            allBusinesses.push(business);
-                                            this.setState({businesses: allBusinesses});
-                                            count++;
                                         }
                                     });
                                 }
@@ -126,7 +132,7 @@ export default class Home extends Component {
     render() {
         activeNav = "home";
         const filteredResults = this.state.businesses.filter(businesses =>
-            businesses.category.includes(this.state.filter));
+            businesses.category.includes(this.state.filter) && !businesses.open);
         const length = filteredResults.length;
 
         const widthOffset = Dimensions.get('window').width > 350 ? 32 : 25;
@@ -147,7 +153,8 @@ export default class Home extends Component {
                                       let businesses = this.state.businesses;
                                       businesses[this.state.selected] = business;
                                       this.setState({businesses: businesses})
-                                  }}/>
+                                  }}
+                                  hide={() => this.setState({visible: false})}/>
                     </ScrollView>
                 </Modal>
                 <CollapsibleHeaderScrollView
@@ -248,7 +255,7 @@ export default class Home extends Component {
                                                                      fontSize: 14,
                                                                      fontWeight: "700",
                                                                      marginBottom: 3
-                                                                 }}>{item.name.length > widthOffset ? item.name.slice(0, widthOffset-3) + '...' : item.name}</Text>
+                                                                 }}>{item.name.length > widthOffset ? item.name.slice(0, widthOffset - 3) + '...' : item.name}</Text>
                                                              <Text style={{height: 15, fontSize: 12}}>
                                                                  {item.address.slice(-7).includes("Canada") ?
                                                                      item.address.slice(0, -7) : item.address}
@@ -376,7 +383,7 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
     },
     imageText: {
-        width: Dimensions.get('window').width < 350? 170 : 250,
+        width: Dimensions.get('window').width < 350 ? 170 : 250,
         height: 60,
         marginLeft: 20,
         lineHeight: 17,

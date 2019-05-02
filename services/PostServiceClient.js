@@ -15,19 +15,19 @@ export default class PostServiceClient {
     }
 
     updateAll() {
-        return fetch(constants.SERVER + 'instagram/newpost').then(response => (response.json()));
+        return fetch(constants.SERVER + 'instagram/newpost').then(response => response.json());
     }
 
     findAllPosts() {
-        return fetch(constants.SERVER + 'post').then(response => (response.json()));
+        return fetch(constants.SERVER + 'post').then(response => response.json());
     }
 
     findAllBusinesses() {
-        return fetch(constants.SERVER + 'business').then(response => (response.json()));
+        return fetch(constants.SERVER + 'business').then(response => response.json());
     }
 
     findBusinessforPost(postId) {
-        return fetch(constants.SERVER + 'post/' + postId + '/business').then(response => (response.json()));
+        return fetch(constants.SERVER + 'post/' + postId + '/business').then(response => response.json());
     }
 
     findIfInterested(businessId, userId) {
@@ -45,10 +45,22 @@ export default class PostServiceClient {
     }
 
     findFollowersForBusiness(businessId) {
-        return fetch(constants.SERVER + 'interested/business/' + businessId).then(response => (response.json()));
+        return fetch(constants.SERVER + 'interested/business/' + businessId).then(response => response.json());
     }
 
     findBusinessById(businessId) {
-        return fetch(constants.SERVER + 'business/' + businessId).then(response => (response.json()));
+        return fetch(constants.SERVER + 'business/' + businessId).then(response => response.json());
+    }
+
+    reportBusiness(businessId) {
+        return fetch(constants.SERVER + 'business/' + businessId + '/status/block', {
+            method: 'put'
+        }).then(response => console.log(response));
+    }
+
+    blockBusiness(userId, businessId) {
+        return fetch(constants.SERVER + 'user/' + userId + '/block/' + businessId, {
+            method: 'post'
+        }).then(response => response.json());
     }
 }

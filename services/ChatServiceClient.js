@@ -53,4 +53,17 @@ export default class ChatServiceClient {
         return fetch(constants.SERVER + 'chat/' + chatId + '/message').then(response => (response.json()));
 
     }
+
+    leaveChat(userId, chatId) {
+        return fetch(constants.SERVER + 'chat/' + chatId + '/leave/' + userId, {
+            method: 'put'
+        }).then(response => response.json());
+    }
+
+    reportChat(chatId) {
+        return fetch(constants.SERVER + 'chat/' + chatId + '/status/block', {
+            method: 'put'
+        }).then(response => console.log(response));
+    }
+
 }

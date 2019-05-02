@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Dimensions, Image, Linking, ScrollView, StyleSheet, Text, View} from 'react-native'
+import {Dimensions, Image, Linking, ScrollView, StyleSheet, Text, View, TouchableOpacity} from 'react-native'
 import {Notifications, MapView} from "expo"
 import * as constants from "../constants/constant";
 import art from '../resources/icons/art.png';
@@ -12,6 +12,7 @@ import {Avatar, Icon} from 'react-native-elements'
 import call from "react-native-phone-call";
 import PostServiceClient from "../services/PostServiceClient";
 import UserServiceClient from "../services/UserServiceClient";
+import RBSheet from "react-native-raw-bottom-sheet";
 
 export default class Business extends Component {
 
@@ -127,7 +128,7 @@ export default class Business extends Component {
     userLikesBusiness() {
         this.postService.userLikesBusiness(this.props.business.id, this.state.user)
             .then(() => {
-                var business = this.props.business;
+                let business = this.props.business;
                 this.setState({interested: !this.state.interested});
                 let followers = this.state.followers;
                 if (this.state.interested) {
@@ -146,6 +147,47 @@ export default class Business extends Component {
             })
     }
 
+    updatePreviousPage() {
+        let business = this.props.business;
+        business.open = true;
+        const refresh = this.props.refresh;
+        if (typeof refresh === 'function') {
+            refresh(business);
+        }
+        this.RBSheet.close();
+        const hide = this.props.hide;
+        if (typeof hide === 'function') {
+            hide();
+        }
+    }
+
+    reportBusiness() {
+        if (this.props.business.id !== constants.GTFO_ID) {
+            this.postService.reportBusiness(this.props.business.id);
+        }
+    }
+
+    blockBusiness() {
+        let user = this.state.user;
+        this.postService.blockBusiness(user._id, this.props.business.id).then(blockedBusiness => {
+            console.log(blockedBusiness);
+            let list = user.blockedBusinessId;
+            list.push(blockedBusiness);
+            storage.save({
+                key: 'user',
+                data: {
+                    token: user.token,
+                    _id: user._id,
+                    name: user.name,
+                    avatar: user.avatar,
+                    pushToken: user.pushToken,
+                    blockedBusinessId: list
+                }
+            });
+            this.updatePreviousPage();
+        });
+    }
+
     render() {
         if (this.props.business === undefined) {
             return null;
@@ -159,6 +201,47 @@ export default class Business extends Component {
 
         return (
             <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
+                <RBSheet
+                    ref={ref => {
+                        this.RBSheet = ref;
+                    }}
+                    height={220}
+                    duration={250}
+                    customStyles={{
+                        container: {
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }
+                    }}
+                ><TouchableOpacity style={styles.resultItem}
+                                   onPress={() => {
+                                       this.reportBusiness();
+                                       this.blockBusiness();
+                                   }}>
+                    <Text style={styles.resultText}>It's spam</Text>
+                </TouchableOpacity>
+                    <TouchableOpacity style={styles.resultItem}
+                                      onPress={() => {
+                                          this.reportBusiness();
+                                          this.blockBusiness();
+                                      }}>
+                        <Text style={styles.resultText}>It's inappropriate</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.resultItem}
+                                      onPress={() => {
+                                          this.reportBusiness();
+                                          this.blockBusiness();
+                                      }}>
+                        <Text style={styles.resultText}>It's a scam</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.resultItem}
+                                      onPress={() => this.blockBusiness()}>
+                        <Text style={{
+                            justifyContent: 'center',
+                            fontSize: 14
+                        }}>Don't show it again</Text>
+                    </TouchableOpacity>
+                </RBSheet>
                 <View>
                     <Image style={styles.image}
                            source={{uri: this.props.business.posts[0].photo}}
@@ -179,7 +262,7 @@ export default class Business extends Component {
                                 fontSize: 14,
                                 fontWeight: "700",
                                 marginBottom: 3
-                            }}>{this.props.business.name.length > widthOffset ? this.props.business.name.slice(0, widthOffset-3) + '...' : this.props.business.name}</Text>
+                            }}>{this.props.business.name.length > widthOffset ? this.props.business.name.slice(0, widthOffset - 3) + '...' : this.props.business.name}</Text>
                         <Text style={{fontSize: 12}}>
                             {this.props.business.address.slice(-7).includes("Canada") ?
                                 this.props.business.address.slice(0, -7)
@@ -201,8 +284,8 @@ export default class Business extends Component {
                                   if (typeof close === 'function') {
                                       close();
                                   }
-                                  analytics.track('detail page', { "type": "close" });
-                                  analytics.track('share page', { "type": "open" });
+                                  analytics.track('detail page', {"type": "close"});
+                                  analytics.track('share page', {"type": "open"});
                                   this.props.navigation.navigate("Share", {business: this.props.business});
                               }}
                         />
@@ -233,7 +316,7 @@ export default class Business extends Component {
                         }}
                     />
                 </MapView>
-                <View style={{margin: 20}}>
+                {this.props.business.schedules.length > 0 && <View style={{margin: 20}}>
                     <Text>{this.state.open ? "Open now" : "Closed"}</Text>
                     <View style={{flexDirection: 'row', marginTop: 5}}>
                         <Text style={{fontSize: 12, color: 'grey', marginTop: 8}}>Hours</Text>
@@ -248,8 +331,8 @@ export default class Business extends Component {
                     this.props.business.schedules.map(schedule =>
                         <Text style={{fontSize: 12, marginTop: 5, color: 'grey'}}>{this.format(schedule)}</Text>
                     )}
-                </View>
-                <View style={{flex: 1, justifyContent: 'center', flexDirection: 'row', marginBottom: 30}}>
+                </View>}
+                <View style={{flex: 1, justifyContent: 'center', flexDirection: 'row', marginBottom: 20}}>
                     <View>
                         <Icon iconStyle={styles.icon}
                               containerStyle={styles.iconOuter}
@@ -294,6 +377,11 @@ export default class Business extends Component {
                         <Text style={styles.iconText}>Contact</Text>
                     </View>
                 </View>
+                <View style={{justifyContent: 'center', marginTop: 0, marginBottom: 70}}>
+                    <Text style={{fontSize: 14, alignSelf: 'center', color: "red"}}
+                          onPress={() => this.RBSheet.open()}
+                    >Report & Block</Text>
+                </View>
             </ScrollView>
         )
     }
@@ -317,7 +405,7 @@ const styles = StyleSheet.create({
 
     iconOuter: {
         paddingTop: 10,
-        paddingHorizontal: 45,
+        paddingHorizontal: Dimensions.get('window').width < 350 ? 25 : 45,
     },
     icon: {
         color: '#4c4c4c',
@@ -349,5 +437,16 @@ const styles = StyleSheet.create({
         textShadowColor: 'rgba(0, 0, 0, 0.75)',
         textShadowOffset: {width: -1, height: 1},
         textShadowRadius: 5
+    },
+    resultItem: {
+        borderBottomWidth: 0.5,
+        borderColor: 'white',
+        padding: 15,
+        justifyContent: 'center'
+    },
+    resultText: {
+        color: 'red',
+        justifyContent: 'center',
+        fontSize: 14
     },
 });

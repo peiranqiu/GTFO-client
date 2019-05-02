@@ -98,7 +98,7 @@ export default class Share extends Component {
                 <View style={styles.container}>
                     <Text style={styles.searchContainer}>Share to...</Text>
                     <Icon name='chevron-left'
-                          size={30}
+                          size={40}
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
                           onPress={() => {
 

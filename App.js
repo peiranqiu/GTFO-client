@@ -170,6 +170,7 @@ const TabNavigator = createBottomTabNavigator({
 
 const Navigation = createStackNavigator({
         Welcome: Welcome,
+        Terms: Terms,
         Screens: TabNavigator
     },
     {
@@ -191,6 +192,7 @@ export default class App extends Component {
     async componentDidMount() {
         await Font.loadAsync({
             'Material Icons': require('@expo/vector-icons/fonts/MaterialIcons.ttf'),
+            'FontAwesome': require('@expo/vector-icons/fonts/FontAwesome.ttf'),
         });
         this.setState({fontLoaded: true});
         this.getPermission();
@@ -235,8 +237,8 @@ export default class App extends Component {
                     _id: user._id,
                     name: user.name,
                     avatar: user.avatar,
-                    pushToken: user.pushToken
-
+                    pushToken: user.pushToken,
+                    blockedBusinessId: user.blockedBusinessId
                 }
             });
             UserServiceClient.instance.updateUser(user._id, user);

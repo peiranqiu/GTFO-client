@@ -60,6 +60,18 @@ export default class UserServiceClient {
         return fetch(constants.SERVER + 'friend/send/' + userId).then(response => (response.json()));
     }
 
+    deleteFriend(userId, anotherUserId) {
+        return fetch(constants.SERVER + 'friend/' + userId + '/delete/' + anotherUserId, {
+            method: 'delete'
+        }).then(response => console.log(response));
+    }
+
+    reportUser(userId) {
+        return fetch(constants.SERVER + 'user/' + userId + '/status/block', {
+            method: 'put'
+        }).then(response => console.log(response));
+    }
+
     updateUser(userId, user) {
         return fetch(constants.SERVER + 'user/' + userId + '/update', {
             method: 'put',

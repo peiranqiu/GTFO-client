@@ -144,7 +144,13 @@ export default class Explore extends Component {
                     .then(friends => {
                         this.postService.findAllBusinesses()
                             .then(businesses => {
-                                businesses = this.filterFriends(businesses, friends);
+                                let blockedBusinessId = [];
+                                user.blockedBusinessId.map(blockedBusiness =>
+                                    blockedBusinessId.push(blockedBusiness.businessId)
+                                );
+                                console.log(blockedBusinessId);
+                                businesses = this.filterFriends(businesses, friends).filter(business =>
+                                    !business.open && !blockedBusinessId.includes(business.id));
                                 businesses.map(business => {
                                     business.interested = false;
                                     business.followers = [];
@@ -318,7 +324,7 @@ export default class Explore extends Component {
         let followers = [];
         let businesses = this.state.businesses;
         const filteredResults = businesses.filter(businesses =>
-            this.isInBoudingBox({latitude: businesses.latitude, longitude: businesses.longitude}));
+            this.isInBoudingBox({latitude: businesses.latitude, longitude: businesses.longitude}) && !businesses.open);
 
         if (businesses !== [] && businesses[this.state.selected] !== undefined && businesses[this.state.selected].followers !== undefined) {
             let data = businesses[this.state.selected].followers;
@@ -379,6 +385,10 @@ export default class Explore extends Component {
                         <Business business={this.state.businesses[this.state.selected]}
                                   navigation={this.props.navigation}
                                   close={() => this.setState({visible: false})}
+                                  hide={() => {
+                                      this.setState({selected: null});
+                                      this.setState({visible: false});
+                                  }}
                                   refresh={business => {
                                       let businesses = this.state.businesses;
                                       businesses[this.state.selected] = business;

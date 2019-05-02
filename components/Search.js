@@ -21,29 +21,37 @@ export default class Search extends Component {
 
     componentDidMount() {
         Notifications.setBadgeNumberAsync(0);
-        this.postService.findAllBusinesses()
-            .then(businesses => {
-                this.setState({businesses: businesses});
-            });
+        storage.load({key: 'user'})
+            .then(user => {
+                let blockedBusinessId = [];
+                user.blockedBusinessId.map(blockedBusiness =>
+                    blockedBusinessId.push(blockedBusiness.businessId)
+                );
+                this.postService.findAllBusinesses().then(result => {
+                    this.setState({businesses: result.filter(business => !business.open && !blockedBusinessId.includes(business.id))});
+                });
+            })
+            .catch(err =>
+                this.props.navigation.navigate("Welcome")
+            );
     }
 
     render() {
-        const filteredResults = (
+        const filteredResults =
             (this.state.businesses === undefined || this.state.searchTerm === "") ?
                 [] :
-                this.state.businesses.filter(business => {
-                    return business.name.toLowerCase().includes(this.state.searchTerm.toLowerCase())
-                        || business.category.includes(this.state.searchTerm.toLowerCase())
-                        || business.address.toLowerCase().includes(this.state.searchTerm.toLowerCase());
-                }).reverse());
+                this.state.businesses.filter(business =>
+                    !business.open && (business.name.toLowerCase().includes(this.state.searchTerm.toLowerCase())
+                    || business.category.includes(this.state.searchTerm.toLowerCase())
+                    || business.address.toLowerCase().includes(this.state.searchTerm.toLowerCase()))).reverse();
         return (
             <SafeAreaView style={{flex: 1}}>
                 <StatusBar barStyle='dark-content'/>
                 <View style={styles.container}>
                     <SearchBar
                         clearIcon
-                        autoCapitalize = {'none'}
-                        autoCorrect = {false}
+                        autoCapitalize={'none'}
+                        autoCorrect={false}
                         leftIcon={{name: 'chevron-left'}}
                         noIcon
                         value={this.state.searchTerm}
@@ -53,10 +61,11 @@ export default class Search extends Component {
                         placeholder='Search Places'/>
                     <Icon name='chevron-left'
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
-                          size={30}
+                          size={40}
                           onPress={() => {
                               analytics.track('search page', {"type": "close"});
-                              this.props.navigation.goBack();}}
+                              this.props.navigation.goBack();
+                          }}
                     />
                 </View>
                 <Text style={{marginHorizontal: 20, marginVertical: 30}}>Places</Text>
@@ -80,7 +89,12 @@ export default class Search extends Component {
                         />
                         <Business business={this.state.selected}
                                   navigation={this.props.navigation}
-                                  refresh={() => {}}
+                                  refresh={business => {
+                                      let businesses = this.state.businesses;
+                                      businesses[this.state.selected] = business;
+                                      this.setState({businesses: businesses})
+                                  }}
+                                  hide={() => this.setState({visible: false})}
                                   close={() => this.setState({visible: false})}/>
                     </ScrollView>
                 </Modal>

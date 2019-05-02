@@ -50,7 +50,7 @@ export default class Notification extends Component {
                     <Text style={styles.searchContainer}>Notification</Text>
                     <Icon name='chevron-left'
                           containerStyle={{position: 'absolute', left: 10, top: 20}}
-                          size={30}
+                          size={40}
                           onPress={() => {
                               analytics.track('notification page', {"type": "close"});
                               this.props.navigation.goBack();}}

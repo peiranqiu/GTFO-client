@@ -112,11 +112,6 @@ export default class Permission extends Component {
                         Get notifications and never miss an important reminder or invite.
                     </Text>
                     <View style={styles.content}>
-                        <TouchableOpacity onPress={() => this.setState({notification: null})}>
-                            <Text style={{fontSize: 16, textAlign: 'center', margin: 20}}>
-                                Not now
-                            </Text>
-                        </TouchableOpacity>
                         <TouchableOpacity style={styles.button} onPress={() => this.askNotification()}>
                             <Text style={{color: 'white'}}>Turn on</Text>
                         </TouchableOpacity>

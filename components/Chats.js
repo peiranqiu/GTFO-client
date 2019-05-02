@@ -24,7 +24,7 @@ export default class Chats extends Component {
                     .then(chats => {
                         let date = new Date();
                         date.setTime(date.getTime() - 12 * 60 * 60 * 1000);
-                        let sorted = chats.filter(chats => chats.address.length === 0 || new Date(chats.time.slice(0, 19) + 'Z') > date)
+                        let sorted = chats.filter(chats => chats.status && (chats.address.length === 0 || new Date(chats.time.slice(0, 19) + 'Z') > date))
                             .sort((a, b) => this.sortByTime(a.messages.sort((c, d) => this.sortByTime(c, d))[0],
                                 b.messages.sort((e, f) => this.sortByTime(e, f))[0]))
                             .concat(chats.filter(chats => chats.address.length > 0 && new Date(chats.time.slice(0, 19) + 'Z') <= date));
