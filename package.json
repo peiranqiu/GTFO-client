@@ -26,7 +26,7 @@
     "@material-ui/icons": "^3.0.1",
     "cross-cookie": "0.0.9",
     "exp": "^57.2.1",
-    "expo": "^32.0.0",
+    "expo": "^46.0.16",
     "expo-cli": "^2.15.4",
     "expo-mixpanel-analytics": "0.0.7",
     "jsdom": "^13.2.0",
